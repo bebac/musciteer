@@ -7,24 +7,18 @@
 //
 //
 // ----------------------------------------------------------------------------
-#include "http/http_connection.h"
+#ifndef __dripcore__base64_h__
+#define __dripcore__base64_h__
 
 // ----------------------------------------------------------------------------
-#include <dripcore/loop.h>
-#include <dripcore/task.h>
-#include <dripcore/tcp_server.h>
+#include <string>
 
 // ----------------------------------------------------------------------------
-int main(int argc, char *argv[])
+namespace base64
 {
-  dripcore::loop loop;
-
-  auto on_connection = [&](dripcore::socket socket) {
-    loop.spawn<http_connection>(std::move(socket));
-  };
-
-  loop.spawn<dripcore::tcp_server>("0.0.0.0", 4321, on_connection);
-  loop.run();
-
-  return 0;
+  std::string encode(const void* data, size_t len);
+  std::string decode(const void* data, size_t len);
 }
+
+// ----------------------------------------------------------------------------
+#endif

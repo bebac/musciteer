@@ -11,6 +11,42 @@ rule ar
 rule ld
   command = g++ -pthread -Lbuild -o $out $in $libs
 
-build build/main.o: cc source/main.cpp
+###
+# libdripcore
 
-build build/mboxd: ld build/main.o
+build build/dripcore.d/loop.o: cc lib/dripcore/source/loop.cpp
+  includes = -Ilib/dripcore/include
+
+build build/dripcore.d/task.o: cc lib/dripcore/source/task.cpp
+  includes = -Ilib/dripcore/include
+
+build build/libdripcore.a: ar build/dripcore.d/loop.o build/dripcore.d/task.o
+
+###
+# libhttp
+
+build build/http.d/base64.o: cc lib/http/source/base64.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/common.o: cc lib/http/source/common.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/request.o: cc lib/http/source/request.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/websocket_handler_base.o: cc lib/http/source/handlers/websocket_handler_base.cpp
+  includes = -Ilib/http/include
+
+build build/libhttp.a: ar build/http.d/base64.o build/http.d/common.o build/http.d/request.o build/http.d/websocket_handler_base.o
+
+###
+# main
+
+build build/http_connection.o: cc source/http/http_connection.cpp
+  includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
+
+build build/main.o: cc source/main.cpp
+  includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
+
+build build/mboxd: ld build/http_connection.o build/main.o
+  libs = -ldripcore -lhttp -lcrypto++

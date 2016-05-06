@@ -1,0 +1,16 @@
+cxxflags = -O2 -std=c++11 -DNDEBUG
+#cxxflags = -g -std=c++11
+
+rule cc
+  depfile = $out.d
+  command = g++ -MMD -MF $out.d $cxxflags $includes -c $in -o $out
+
+rule ar
+  command = ar -r $out $in
+
+rule ld
+  command = g++ -pthread -Lbuild -o $out $in $libs
+
+build build/main.o: cc source/main.cpp
+
+build build/mboxd: ld build/main.o

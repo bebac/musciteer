@@ -1,4 +1,4 @@
-cxxflags = -O2 -std=c++11 -DNDEBUG
+cxxflags = -Os -flto -std=c++11 -DNDEBUG
 #cxxflags = -g -std=c++11
 
 rule cc
@@ -6,10 +6,10 @@ rule cc
   command = g++ -MMD -MF $out.d $cxxflags $includes -c $in -o $out
 
 rule ar
-  command = ar -r $out $in
+  command = gcc-ar -r $out $in
 
 rule ld
-  command = g++ -pthread -Lbuild -o $out $in $libs
+  command = g++ -flto -pthread -Lbuild -o $out $in $libs
 
 ###
 # libdripcore

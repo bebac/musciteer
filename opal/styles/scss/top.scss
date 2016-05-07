@@ -1,0 +1,40 @@
+.top
+{
+  position: relative;
+  height: 3em;
+  background: #F1EFEC;
+  border-bottom: 1px solid #ccc;
+
+  > div
+  {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    >div
+    {
+      display: inline-block;
+    }
+
+    img
+    {
+      display: block;
+    }
+  }
+
+  #menu-toggle, #settings-toggle  {
+    position: relative;
+    height: 1.5em;
+  }
+
+  #menu-toggle {
+    float: left;
+    padding-left: 1em;
+  }
+
+  #settings-toggle {
+    float: right;
+    padding-right: 1em;
+  }
+}

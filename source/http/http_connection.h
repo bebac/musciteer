@@ -20,6 +20,9 @@
 #include <http/handlers/websocket_handler_base.h>
 
 // ----------------------------------------------------------------------------
+#include <json.h>
+
+// ----------------------------------------------------------------------------
 class websocket_handler : public http::websocket_handler_base
 {
   using websocket_handler_base::websocket_handler_base;
@@ -37,7 +40,24 @@ class websocket_handler : public http::websocket_handler_base
 
   void on_message(const std::string& message) override
   {
-    std::cout << "websocket message=\"" << message << "\"" << std::endl;
+    auto j = json::parse(message);
+
+    if ( j.count("event") )
+    {
+      if ( j["event"] == "audio_device_list_sync" )
+      {
+        std::cout << "audio_device_list_sync" << std::endl;
+
+        json audio_device_list = {
+          { "event", "audio_device_list"},
+          { "data", { "default", "pulse" } }
+        };
+
+        send_message(audio_device_list.dump());
+      }
+    }
+
+    std::cout << "websocket message=\"" << j << "\"" << std::endl;
   }
 };
 

@@ -84,6 +84,9 @@ protected:
       else if ( ext == ".css" ) {
         res = "text/css";
       }
+      else if ( ext == ".svg" ) {
+        res = "image/svg+xml svg";
+      }
     }
 
     return res;

@@ -77,7 +77,15 @@ namespace http
       }
       void payload_length(unsigned value)
       {
-        frame_.len = value;
+        if ( value > 125 )
+        {
+          frame_.len = value < 0x10000 ? 126 : 127;
+          payload_len_ = value;
+        }
+        else
+        {
+          frame_.len = value;
+        }
       }
     public:
       uint8_t masking_key(uint64_t i) const
@@ -112,6 +120,14 @@ namespace http
       {
         os.put(frame_.fin << 7 | frame_.rsv << 4 | frame_.opc);
         os.put(frame_.msk << 7 | frame_.len);
+
+        if ( frame_.len == 126 )
+        {
+          os.put(payload_len_ >> 8);
+          os.put(payload_len_);
+        }
+
+        // TODO frame_len == 127 (64 bit)
       }
     private:
       frame    frame_;

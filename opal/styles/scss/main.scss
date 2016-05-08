@@ -3,3 +3,16 @@
 @import "layout";
 @import "top";
 @import "settings";
+
+body
+{
+  font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+}
+
+#play
+{
+  display: block;
+  height: 50px;
+  width: 200px;
+  background: #999;
+}

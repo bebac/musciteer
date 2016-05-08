@@ -11,6 +11,9 @@
 #define __musciteer__http_connection_h__
 
 // ----------------------------------------------------------------------------
+#include "../player/player.h"
+
+// ----------------------------------------------------------------------------
 #include <dripcore/task.h>
 #include <dripcore/socket.h>
 
@@ -23,6 +26,24 @@
 #include <json.h>
 
 // ----------------------------------------------------------------------------
+class websocket_handler;
+
+// ----------------------------------------------------------------------------
+class websocket_send_task : public dripcore::task
+{
+public:
+  websocket_send_task(websocket_handler& handler, message_channel ch)
+    : handler_(handler), ch_(ch)
+  {
+  }
+private:
+  void main() override;
+private:
+  websocket_handler& handler_;
+  message_channel ch_;
+};
+
+// ----------------------------------------------------------------------------
 class websocket_handler : public http::websocket_handler_base
 {
   using websocket_handler_base::websocket_handler_base;
@@ -30,12 +51,20 @@ class websocket_handler : public http::websocket_handler_base
   void on_connect() override
   {
     std::cout << "websocket connected" << std::endl;
-    send_message("{\"event\":\"hello\"}");
+
+    // Start send task.
+    task_->spawn<websocket_send_task>(*this, message_ch_);
+
+    musicbox::player().subscribe(message_ch_);
   }
 
   void on_close() override
   {
     std::cout << "websocket closed" << std::endl;
+
+    musicbox::player().unsubscribe(message_ch_);
+
+    message_ch_.send(message{}, task_);
   }
 
   void on_message(const std::string& message) override
@@ -46,19 +75,29 @@ class websocket_handler : public http::websocket_handler_base
     {
       if ( j["event"] == "audio_device_list_sync" )
       {
-        std::cout << "audio_device_list_sync" << std::endl;
-
-        json audio_device_list = {
-          { "event", "audio_device_list"},
-          { "data", { "default", "pulse" } }
-        };
-
-        send_message(audio_device_list.dump());
+        musicbox::player().audio_device_list(message_ch_);
+      }
+      else if ( j["event"] == "audio_device" )
+      {
+        musicbox::player().audio_device(j["data"].get<std::string>());
+      }
+      else if ( j["event"] == "play" )
+      {
+        musicbox::player().play();
       }
     }
 
     std::cout << "websocket message=\"" << j << "\"" << std::endl;
   }
+public:
+  void set_task(dripcore::task* task)
+  {
+    task_ = task;
+  }
+private:
+  message_channel message_ch_;
+private:
+  dripcore::task* task_;
 };
 
 // ----------------------------------------------------------------------------

@@ -35,7 +35,7 @@ namespace http
     virtual void on_connect() {}
     virtual void on_close() {}
     virtual void on_message(const std::string& message) {}
-  protected:
+  public:
     void send_message(const std::string& message);
   protected:
     http::request& request;

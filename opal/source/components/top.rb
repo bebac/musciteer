@@ -14,10 +14,10 @@ class Top
     div class: 'top' do
       div do
         div id: 'menu-toggle', onclick: method(:toggle_menu) do
-          text 'menu'
+          img src: 'assets/menu.svg'
         end
         div id: 'settings-toggle', onclick: method(:toggle_settings) do
-          text 'settings'
+          img src: 'assets/settings.svg'
         end
       end
     end

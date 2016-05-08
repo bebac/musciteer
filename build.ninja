@@ -10,6 +10,7 @@ rule ar
 
 rule ld
   command = g++ -flto -pthread -Lbuild -o $out $in $libs
+#  command = g++ -pthread -Lbuild -o $out $in $libs
 
 ###
 # libdripcore
@@ -45,8 +46,14 @@ build build/libhttp.a: ar build/http.d/base64.o build/http.d/common.o build/http
 build build/http_connection.o: cc source/http/http_connection.cpp
   includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
 
+build build/player/audio_output.o: cc source/player/audio_output.cpp
+  includes = -Ilib/dripcore/include
+
+build build/player/player.o: cc source/player/player.cpp
+  includes = -Ilib/dripcore/include
+
 build build/main.o: cc source/main.cpp
   includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
 
-build build/mboxd: ld build/http_connection.o build/main.o
-  libs = -ldripcore -lhttp -lcrypto++
+build build/mboxd: ld build/http_connection.o build/player/audio_output.o build/player/player.o build/main.o
+  libs = -ldripcore -lhttp -lasound -lFLAC++ -lcrypto++

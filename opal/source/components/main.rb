@@ -4,9 +4,13 @@ class Main
   def initialize
   end
 
+  def play
+    store.play
+  end
+
   def render
-    h1 do
-      text 'Hello, World'
+    div id: 'play', onclick: method(:play) do
+      text 'Play'
     end
   end
 end

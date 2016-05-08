@@ -25,10 +25,15 @@ class Store
   end
 
   def set_audio_output_device(device_name)
+    message_channel_send({ :event => :audio_device, :data => device_name })
   end
 
   def audio_device_list
     @audio_device_list ||= []
+  end
+
+  def play
+    message_channel_send({ :event => :play })
   end
 
   private

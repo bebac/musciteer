@@ -15,6 +15,7 @@
 {
   position: fixed;
   width: 50%;
+  min-width: 600px;
   height: 100vh;
   right: 0;
   background: #F1EFEC;
@@ -50,6 +51,14 @@
     height: 3em;
     border-bottom: 1px solid #ccc;
 
+    > h1
+    {
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
     > div
     {
       position: absolute;
@@ -71,12 +80,21 @@
     }
 
     div:nth-child(1) {
+      width: 25%;
       text-align: right;
       border-right: 1px solid #ddd;
     }
 
     div:nth-child(2) {
       /*text-align: center;*/
+      select {
+        width: 100%;
+      }
+    }
+
+    div:nth-child(3) {
+      /*text-align: center;*/
+      width: 25%;
     }
 
     padding: 1em;

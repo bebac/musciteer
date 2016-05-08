@@ -5,6 +5,8 @@
   background: #F1EFEC;
   border-bottom: 1px solid #ccc;
 
+  @include noselect;
+
   > div
   {
     position: absolute;
@@ -12,20 +14,21 @@
     top: 50%;
     transform: translateY(-50%);
 
-    >div
-    {
+    >div {
       display: inline-block;
     }
 
-    img
-    {
+    // Change display to center virtically.
+    img {
       display: block;
     }
   }
 
   #menu-toggle, #settings-toggle  {
     position: relative;
-    height: 1.5em;
+    >img {
+      height: 1.5em;
+    }
   }
 
   #menu-toggle {

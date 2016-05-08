@@ -18,6 +18,69 @@
 #include <regex>
 
 // ----------------------------------------------------------------------------
+void websocket_send_task::main()
+{
+  std::cout << "websocket_send_task started" << std::endl;
+  while ( true )
+  {
+    auto msg = ch_.recv(this);
+
+    if ( msg.type == 0 ) {
+      break;
+    }
+
+    switch ( msg.type )
+    {
+      case message::device_list_res_id:
+      {
+        json event = {
+          { "event", "audio_device_list"},
+          { "data",  msg.device_list_res.device_names }
+        };
+
+        handler_.send_message(event.dump());
+        break;
+      }
+      case message::stream_begin_notify_id:
+      {
+        json event = {
+          { "event", "stream_begin"},
+          { "data",  { "stream_id", msg.stream_begin_notify.stream_id } }
+        };
+
+        handler_.send_message(event.dump());
+        break;
+      }
+      case message::stream_end_notify_id:
+      {
+        json event = {
+          { "event", "stream_end"},
+          { "data",  { "stream_id", msg.stream_begin_notify.stream_id } }
+        };
+
+        handler_.send_message(event.dump());
+        break;
+      }
+      case message::stream_progress_notify_id:
+      {
+        json event = {
+          { "event", "stream_progress"},
+          { "data", {
+            { "stream_id", msg.stream_progress_notify.stream_id },
+            { "duration", msg.stream_progress_notify.duration },
+            { "length", msg.stream_progress_notify.length } }
+          }
+        };
+
+        handler_.send_message(event.dump());
+        break;
+      }
+    }
+  }
+  std::cout << "websocket_send_task stopped" << std::endl;
+}
+
+// ----------------------------------------------------------------------------
 http_connection::http_connection(dripcore::socket socket)
   : socket_(std::move(socket))
 {
@@ -71,6 +134,7 @@ void http_connection::loop(std::streambuf* sbuf)
         {
           //std::cout << "connection " << size_t(this) << " upgrade to websocket" << std::endl;
           websocket_handler handler(request, response);
+          handler.set_task(this);
           handler.call(request.uri());
           return;
         }

@@ -12,6 +12,17 @@ rule ld
 #  command = g++ -flto -pthread -Lbuild -o $out $in $libs
   command = g++ -pthread -Lbuild -o $out $in $libs
 
+rule dep
+  command = git clone $url $out
+
+###
+# Download dependencies.
+
+build lib/json/nlohmann: dep
+  url = https://github.com/nlohmann/json.git
+
+build deps: phony lib/json/nlohmann/
+
 
 ###
 # libdripcore
@@ -93,13 +104,3 @@ build build/main.o: cc source/main.cpp
 
 build build/mboxd: ld build/http_connection.o build/player/audio_output.o build/player/player.o build/main.o | build/libmusicbox_dm.a build/libhttp.a
   libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet
-
-
-###
-# flac_test
-
-build build/flac_test.d/flac_test.o: cc source/flac_test/flac_test.cpp
-  includes = -Ilib/msgpack/include
-
-build build/flac_test: ld build/flac_test.d/flac_test.o | build/libmusicbox_dm.a build/libmsgpack.a
-  libs = -lmusicbox_dm -lFLAC++ -lmsgpack -lkyotocabinet

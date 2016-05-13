@@ -25,80 +25,23 @@ namespace musicbox
   class album
   {
     using track_id_list = std::set<std::string>;
+    using alt_id_list = std::set<std::string>;
   public:
-    album() : id_(), title_()
-    {
-    }
+    album();
   public:
-    const std::string& id() const
-    {
-      return id_;
-    }
+    const std::string& id() const;
+    const std::string& title() const;
   public:
-    void id(const std::string& id)
-    {
-      id_ = id;
-    }
+    void id(const std::string&);
+    void title(const std::string&);
   public:
-    const std::string& title() const
-    {
-      return title_;
-    }
-  public:
-    void title(const std::string& title)
-    {
-      title_ = title;
-    }
-  public:
-    void read(msgpack::istream& is)
-    {
-      msgpack::map map;
-
-      if ( is >> map )
-      {
-        for ( size_t i=0; i<map.size(); i++ )
-        {
-          unsigned key;
-
-          if ( is >> key )
-          {
-            switch ( key )
-            {
-              case 1: is >> id_; break;
-              case 2: is >> title_; break;
-              case 3: is >> track_ids; break;
-              default:
-                //is >> msgpack::skip;
-                break;
-            }
-          }
-          else
-          {
-            // ERROR!
-            std::cout << "failed to read album key" << std::endl;
-          }
-        }
-      }
-      else
-      {
-        // ERROR!
-        std::cout << "failed to read album map" << std::endl;
-      }
-    }
-  public:
-    void write(msgpack::ostream& os) const
-    {
-      msgpack::map map{2};
-
-      os << map
-        << 1 << id_
-        << 2 << title_
-        << 3 << track_ids;
-    }
+    void read(msgpack::istream&);
+    void write(msgpack::ostream&) const;
   private:
     std::string id_;
     std::string title_;
-    track_id_list track_ids;
+    track_id_list track_ids_;
+    alt_id_list alt_ids_;
   };
 
   inline msgpack::istream& operator>>(msgpack::istream& is, album& value)

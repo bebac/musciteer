@@ -78,13 +78,16 @@ build build/storage/base62.o: cc source/storage/base62.cpp
 build build/dm/artist.o: cc source/dm/artist.cpp
   includes = -Ilib/msgpack/include
 
+build build/dm/album.o: cc source/dm/album.cpp
+  includes = -Ilib/msgpack/include
+
 build build/dm/track.o: cc source/dm/track.cpp
   includes = -Ilib/msgpack/include
 
 build build/dm/track_source.o: cc source/dm/track_source.cpp
   includes = -Ilib/msgpack/include
 
-build build/libmusicbox_dm.a: ar build/storage/kvstore.o build/storage/base62.o build/dm/artist.o build/dm/track.o build/dm/track_source.o
+build build/libmusicbox_dm.a: ar build/storage/kvstore.o build/storage/base62.o build/dm/artist.o build/dm/track.o build/dm/track_source.o build/dm/album.o
 
 
 ###

@@ -25,10 +25,7 @@ namespace musicbox
   class player_impl
   {
   public:
-    player_impl(dripcore::loop* loop)
-      : loop_(loop), audio_output_device_()
-    {
-    }
+    player_impl(dripcore::loop* loop);
   public:
     void subscribe(message_channel ch);
     void unsubscribe(message_channel ch);
@@ -36,11 +33,13 @@ namespace musicbox
     void audio_device_list(message_channel reply_ch);
     void audio_device(const std::string& device_name);
   public:
-    void play();
+    void play(const std::string& id);
   private:
     dripcore::loop* loop_;
-    std::string audio_output_device_;
+    std::string output_device_;
     audio_output_alsa audio_output_;
+  private:
+    static constexpr const char* output_device_key = "__output_device__";
   };
 
   class player
@@ -77,10 +76,10 @@ namespace musicbox
       instance_->audio_device(device_name);
     }
   public:
-    void play()
+    void play(const std::string& id)
     {
       assert(instance_);
-      instance_->play();
+      instance_->play(id);
     }
   public:
     static void start(dripcore::loop* loop)

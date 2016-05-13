@@ -7,10 +7,16 @@
 //
 //
 // ----------------------------------------------------------------------------
-#include "http/http_connection.h"
+#include "player/player.h"
 
 // ----------------------------------------------------------------------------
-#include "player/player.h"
+#include "storage/kvstore.h"
+
+// ----------------------------------------------------------------------------
+#include "dm/artist.h"
+
+// ----------------------------------------------------------------------------
+#include "http/http_connection.h"
 
 // ----------------------------------------------------------------------------
 #include <dripcore/loop.h>
@@ -22,6 +28,7 @@ int main(int argc, char *argv[])
 {
   dripcore::loop loop;
 
+  musicbox::kvstore::start(".mboxd");
   musicbox::player::start(&loop);
 
   auto on_connection = [&](dripcore::socket socket) {

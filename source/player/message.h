@@ -91,6 +91,7 @@ public:
   }
   audio_output_device_list_request(audio_output_device_list_request&& other)
   {
+    current = std::move(other.current);
     reply = std::move(other.reply);
   }
 #if 0
@@ -100,6 +101,7 @@ public:
   }
 #endif
 public:
+  std::string current;
   message_channel reply;
 };
 
@@ -122,6 +124,7 @@ public:
   audio_output_device_list_response(audio_output_device_list_response&& other)
   {
     device_names = std::move(other.device_names);
+    current = std::move(other.current);
   }
 #if 0
 public:
@@ -135,6 +138,7 @@ public:
 #endif
 public:
   std::vector<std::string> device_names;
+  std::string current;
 };
 
 // ----------------------------------------------------------------------------

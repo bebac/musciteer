@@ -131,6 +131,9 @@ void audio_output_alsa::handle(device_list_request& m, unsigned ref)
   }
   snd_device_name_free_hint(hints);
 
+  // Just loopback current.
+  r.device_list_res.current = m.current;
+
   m.reply.send(std::move(r));
 }
 

@@ -1,5 +1,5 @@
-cxxflags = -Os -flto -std=c++11 -DNDEBUG
-#cxxflags = -g -std=c++11
+#cxxflags = -Os -flto -std=c++11 -DNDEBUG
+cxxflags = -g -std=c++11
 
 rule cc
   depfile = $out.d
@@ -9,8 +9,9 @@ rule ar
   command = gcc-ar -r $out $in
 
 rule ld
-  command = g++ -flto -pthread -Lbuild -o $out $in $libs
-#  command = g++ -pthread -Lbuild -o $out $in $libs
+#  command = g++ -flto -pthread -Lbuild -o $out $in $libs
+  command = g++ -pthread -Lbuild -o $out $in $libs
+
 
 ###
 # libdripcore
@@ -22,6 +23,19 @@ build build/dripcore.d/task.o: cc lib/dripcore/source/task.cpp
   includes = -Ilib/dripcore/include
 
 build build/libdripcore.a: ar build/dripcore.d/loop.o build/dripcore.d/task.o
+
+
+###
+# libmsgpack
+
+build build/msgpack.d/istream.o: cc lib/msgpack/source/istream.cpp
+  includes = -Ilib/msgpack/include
+
+build build/msgpack.d/ostream.o: cc lib/msgpack/source/ostream.cpp
+  includes = -Ilib/msgpack/include
+
+build build/libmsgpack.a: ar build/msgpack.d/istream.o build/msgpack.d/ostream.o
+
 
 ###
 # libhttp
@@ -40,20 +54,52 @@ build build/http.d/websocket_handler_base.o: cc lib/http/source/handlers/websock
 
 build build/libhttp.a: ar build/http.d/base64.o build/http.d/common.o build/http.d/request.o build/http.d/websocket_handler_base.o
 
+
+###
+# libmusicbox_dm
+
+build build/storage/kvstore.o: cc source/storage/kvstore.cpp
+  includes = -Ilib/msgpack/include
+
+build build/storage/base62.o: cc source/storage/base62.cpp
+  includes = -Ilib/msgpack/include
+
+build build/dm/artist.o: cc source/dm/artist.cpp
+  includes = -Ilib/msgpack/include
+
+build build/dm/track.o: cc source/dm/track.cpp
+  includes = -Ilib/msgpack/include
+
+build build/dm/track_source.o: cc source/dm/track_source.cpp
+  includes = -Ilib/msgpack/include
+
+build build/libmusicbox_dm.a: ar build/storage/kvstore.o build/storage/base62.o build/dm/artist.o build/dm/track.o build/dm/track_source.o
+
+
 ###
 # main
 
 build build/http_connection.o: cc source/http/http_connection.cpp
-  includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
 build build/player/audio_output.o: cc source/player/audio_output.cpp
   includes = -Ilib/dripcore/include
 
 build build/player/player.o: cc source/player/player.cpp
-  includes = -Ilib/dripcore/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
 build build/main.o: cc source/main.cpp
-  includes = -Ilib/dripcore/include -Ilib/http/include -Ilib/json/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
-build build/mboxd: ld build/http_connection.o build/player/audio_output.o build/player/player.o build/main.o
-  libs = -ldripcore -lhttp -lasound -lFLAC++ -lcrypto++
+build build/mboxd: ld build/http_connection.o build/player/audio_output.o build/player/player.o build/main.o | build/libmusicbox_dm.a build/libhttp.a
+  libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet
+
+
+###
+# flac_test
+
+build build/flac_test.d/flac_test.o: cc source/flac_test/flac_test.cpp
+  includes = -Ilib/msgpack/include
+
+build build/flac_test: ld build/flac_test.d/flac_test.o | build/libmusicbox_dm.a build/libmsgpack.a
+  libs = -lmusicbox_dm -lFLAC++ -lmsgpack -lkyotocabinet

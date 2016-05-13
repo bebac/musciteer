@@ -83,7 +83,7 @@ class websocket_handler : public http::websocket_handler_base
       }
       else if ( j["event"] == "play" )
       {
-        musicbox::player().play();
+        musicbox::player().play(j["data"].get<std::string>());
       }
     }
 

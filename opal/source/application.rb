@@ -1,6 +1,7 @@
 require 'opal'
 require 'browser'
 require 'browser/socket'
+require 'browser/http'
 require 'browser/location'
 require 'browser/interval'
 require 'browser/effects'
@@ -12,12 +13,33 @@ require 'layout'
 
 require_tree './components'
 
+class Track
+  attr_accessor :id
+  attr_accessor :title
+
+  def initialize(attrs)
+    attrs.each do |k,v|
+      instance_variable_set("@#{k}", v) unless v.nil?
+    end
+  end
+
+  def artists
+    names = Array(@artists).collect { |artist| artist['name'] }
+    names.join(",")
+  end
+
+  def album
+    @album["title"]
+  end
+end
+
 class Store
   include Inesita::Store
 
   def initialize
     super
     message_channel_start
+    load_tracks
   end
 
   def audio_device_list_sync
@@ -28,12 +50,36 @@ class Store
     message_channel_send({ :event => :audio_device, :data => device_name })
   end
 
+  def audio_device
+    @audio_device ||= ""
+  end
+
   def audio_device_list
     @audio_device_list ||= []
   end
 
-  def play
-    message_channel_send({ :event => :play })
+  def load_tracks
+    Browser::HTTP.get("/tracks") do |request|
+      request.on :success do |response|
+        response.json.each do |attrs|
+          tracks << Track.new(attrs)
+        end
+      end
+    end
+  end
+
+  def tracks
+    @tracks ||= []
+  end
+  #def tracks
+  #  [
+  #    Track.new(:id => 1, :title => "I Told You So", :artists => "Carrie Underwood", :album => "I Told You So"),
+  #    Track.new(:id => 2, :title => "Somebody Like You", :artists => "Keith Urban", :album => "Days Go By")
+  #  ]
+  #end
+
+  def play(id)
+    message_channel_send({ event: :play, data: id })
   end
 
   private
@@ -60,7 +106,8 @@ class Store
     p "Received #{message}"
     case message['event']
     when "audio_device_list"
-      @audio_device_list = message['data']
+      @audio_device = message["data"][0]
+      @audio_device_list = message['data'][1]
       render!
     end
   end

@@ -8,6 +8,7 @@
 //
 // ----------------------------------------------------------------------------
 #include "http_connection.h"
+#include "track_handler.h"
 #include "static_file_handler.h"
 
 // ----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ void websocket_send_task::main()
       {
         json event = {
           { "event", "audio_device_list"},
-          { "data",  msg.device_list_res.device_names }
+          { "data",  { msg.device_list_res.current, msg.device_list_res.device_names } }
         };
 
         handler_.send_message(event.dump());
@@ -161,20 +162,39 @@ void http_connection::dispatch(http::request& request, http::response& response)
 {
   auto uri = request.uri();
 
+  std::regex track_re("^/tracks(/.*)?");
   std::regex assets_re("^/(assets/.+)");
-  std::smatch assets_match;
+
+  std::smatch match;
+
+  std::cout << "dispatch uri " << uri << std::endl;
 
   if ( uri == "/")
   {
     static_file_handler handler(request, response);
     handler.call("index.html");
   }
-  else if ( std::regex_match(uri, assets_match, assets_re) )
+  else if ( std::regex_match(uri, match, track_re) )
   {
-    if ( assets_match.size() == 2 )
+    track_handler handler(request, response);
+
+    std::cout << "track match size=" << match.size() << std::endl;
+
+    if ( match.size() == 2 )
+    {
+      handler.call(match[1]);
+    }
+    else
+    {
+      // ERROR!
+    }
+  }
+  else if ( std::regex_match(uri, match, assets_re) )
+  {
+    if ( match.size() == 2 )
     {
       static_file_handler handler(request, response);
-      handler.call(assets_match[1]);
+      handler.call(match[1]);
     }
     else
     {

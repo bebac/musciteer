@@ -7,6 +7,7 @@
 body
 {
   font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+  font-size: 0.88em;
 }
 
 #play
@@ -15,4 +16,50 @@ body
   height: 50px;
   width: 200px;
   background: #999;
+}
+
+#track-list
+{
+  width: 100%;
+
+  @include noselect;
+
+  >ul
+  {
+    li:first-child {
+      color: #666;
+      font-weight: bold;
+    }
+
+    li:not(:first-child):hover {
+        background: #eee;
+    }
+
+    >li
+    {
+      .col1,.col2,.col3,.col4 {
+        display: inline-block;
+      }
+
+      .col1 {
+        width: 10%;
+      }
+
+      .col2 {
+        width: 30%;
+      }
+
+      .col3 {
+        width: 30%;
+      }
+
+      .col4 {
+        width: 30%;
+      }
+
+      padding: 0.33em;
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+  }
 }

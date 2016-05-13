@@ -25,10 +25,9 @@ class Settings
           end
           div do
             select class: 'setting', onchange: method(:set_audio_output_device) do
+              option do; text store.audio_device; end
               store.audio_device_list.each do |value|
-                option do
-                  text value
-                end
+                option do; text value end
               end
             end
           end

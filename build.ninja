@@ -33,7 +33,9 @@ build build/dripcore.d/loop.o: cc lib/dripcore/source/loop.cpp
 build build/dripcore.d/task.o: cc lib/dripcore/source/task.cpp
   includes = -Ilib/dripcore/include
 
-build build/libdripcore.a: ar build/dripcore.d/loop.o build/dripcore.d/task.o
+build build/libdripcore.a: ar $
+  build/dripcore.d/loop.o $
+  build/dripcore.d/task.o
 
 
 ###
@@ -45,7 +47,9 @@ build build/msgpack.d/istream.o: cc lib/msgpack/source/istream.cpp
 build build/msgpack.d/ostream.o: cc lib/msgpack/source/ostream.cpp
   includes = -Ilib/msgpack/include
 
-build build/libmsgpack.a: ar build/msgpack.d/istream.o build/msgpack.d/ostream.o
+build build/libmsgpack.a: ar $
+  build/msgpack.d/istream.o $
+  build/msgpack.d/ostream.o
 
 
 ###
@@ -63,7 +67,11 @@ build build/http.d/request.o: cc lib/http/source/request.cpp
 build build/http.d/websocket_handler_base.o: cc lib/http/source/handlers/websocket_handler_base.cpp
   includes = -Ilib/http/include
 
-build build/libhttp.a: ar build/http.d/base64.o build/http.d/common.o build/http.d/request.o build/http.d/websocket_handler_base.o
+build build/libhttp.a: ar $
+  build/http.d/base64.o $
+  build/http.d/common.o $
+  build/http.d/request.o $
+  build/http.d/websocket_handler_base.o
 
 
 ###
@@ -87,7 +95,17 @@ build build/dm/track.o: cc source/dm/track.cpp
 build build/dm/track_source.o: cc source/dm/track_source.cpp
   includes = -Ilib/msgpack/include
 
-build build/libmusicbox_dm.a: ar build/storage/kvstore.o build/storage/base62.o build/dm/artist.o build/dm/track.o build/dm/track_source.o build/dm/album.o
+build build/dm/album_cover.o: cc source/dm/album_cover.cpp
+  includes = -Ilib/msgpack/include
+
+build build/libmusicbox_dm.a: ar $
+  build/storage/kvstore.o $
+  build/storage/base62.o $
+  build/dm/artist.o $
+  build/dm/track.o $
+  build/dm/track_source.o $
+  build/dm/album.o $
+  build/dm/album_cover.o
 
 
 ###
@@ -105,5 +123,9 @@ build build/player/player.o: cc source/player/player.cpp
 build build/main.o: cc source/main.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
-build build/mboxd: ld build/http_connection.o build/player/audio_output.o build/player/player.o build/main.o | build/libmusicbox_dm.a build/libhttp.a
+build build/mboxd: ld $
+  build/http_connection.o $
+  build/player/audio_output.o $
+  build/player/player.o $
+  build/main.o | build/libmusicbox_dm.a build/libhttp.a
   libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet

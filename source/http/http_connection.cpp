@@ -8,7 +8,8 @@
 //
 // ----------------------------------------------------------------------------
 #include "http_connection.h"
-#include "track_handler.h"
+#include "tracks_handler.h"
+#include "albums_handler.h"
 #include "static_file_handler.h"
 
 // ----------------------------------------------------------------------------
@@ -163,6 +164,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
   auto uri = request.uri();
 
   std::regex track_re("^/tracks(/.*)?");
+  std::regex albums_re("^/albums(/.*)?");
   std::regex assets_re("^/(assets/.+)");
 
   std::smatch match;
@@ -178,7 +180,18 @@ void http_connection::dispatch(http::request& request, http::response& response)
   {
     track_handler handler(request, response);
 
-    std::cout << "track match size=" << match.size() << std::endl;
+    if ( match.size() == 2 )
+    {
+      handler.call(match[1]);
+    }
+    else
+    {
+      // ERROR!
+    }
+  }
+  else if ( std::regex_match(uri, match, albums_re) )
+  {
+    albums_handler handler(request, response);
 
     if ( match.size() == 2 )
     {

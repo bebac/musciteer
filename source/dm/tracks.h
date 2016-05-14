@@ -26,7 +26,11 @@ namespace musicbox
   public:
     track find_by_id(const std::string& id)
     {
-      return kvstore_.get<musicbox::track>(id);
+      auto track = musicbox::track();
+
+      kvstore_.get(id, track);
+
+      return track;
     }
   public:
     void save(const musicbox::track& track)

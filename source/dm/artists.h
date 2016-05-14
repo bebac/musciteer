@@ -26,7 +26,11 @@ namespace musicbox
   public:
     artist find_by_id(const std::string& id)
     {
-      return kvstore_.get<musicbox::artist>(id);
+      auto artist = musicbox::artist();
+
+      kvstore_.get(id, artist);
+
+      return artist;
     }
   public:
     void save(const musicbox::artist& artist)

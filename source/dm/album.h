@@ -43,7 +43,7 @@ namespace musicbox
     void title(const std::string&);
   public:
     void tracks_add(const musicbox::track&);
-    void tracks_each(std::function<void(const musicbox::track& track)>);
+    void tracks_each(std::function<void(const musicbox::track& track)>) const;
   public:
     void artist(const musicbox::artist&);
   public:

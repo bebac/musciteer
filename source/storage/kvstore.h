@@ -38,10 +38,8 @@ namespace musicbox
     }
   public:
     template<typename T>
-    T get(const std::string& key)
+    bool get(const std::string& key, T& value)
     {
-      T value;
-
       std::string sbuf;
 
       if ( db_.get(key, &sbuf) )
@@ -51,13 +49,17 @@ namespace musicbox
 
         if ( is >> value )
         {
-          return value;
+          return true;
         }
         else
         {
           // TODO: error.
           std::cout << "kvstore get error" << std::endl;
         }
+      }
+      else
+      {
+        return false;
       }
     }
   public:
@@ -125,13 +127,12 @@ namespace musicbox
       assert(instance_);
       return instance_->increment(key, num, orig);
     }
-
   public:
     template<typename T>
-    T get(const std::string& key)
+    bool get(const std::string& key, T& value)
     {
       assert(instance_);
-      return instance_->get<T>(key);
+      return instance_->get<T>(key, value);
     }
   public:
     template<typename T>

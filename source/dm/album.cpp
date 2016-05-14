@@ -52,7 +52,7 @@ namespace musicbox
     track_ids_.insert(track.id());
   }
 
-  void album::tracks_each(std::function<void(const musicbox::track& track)> cb)
+  void album::tracks_each(std::function<void(const musicbox::track& track)> cb) const
   {
     auto tracks = musicbox::tracks();
 

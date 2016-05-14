@@ -151,7 +151,7 @@ namespace musicbox
   {
     auto kvstore = musicbox::kvstore();
 
-    output_device_ = kvstore.get<std::string>(output_device_key);
+    kvstore.get(output_device_key, output_device_);
   }
 
   void player_impl::subscribe(message_channel ch)

@@ -31,7 +31,7 @@ namespace musicbox
     artist();
   public:
     const std::string& id() const;
-    const std::string& name();
+    const std::string& name() const;
   public:
     void id(const std::string& id);
     void name(const std::string& name);

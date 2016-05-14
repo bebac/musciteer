@@ -171,8 +171,6 @@ namespace musicbox
   {
     msgpack::map map{8};
 
-    std::cout << "write track" << std::endl;
-
     os << map
       << 1 << id_
       << 2 << title_

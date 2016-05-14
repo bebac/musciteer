@@ -20,7 +20,7 @@ namespace musicbox
     return id_;
   }
 
-  const std::string& artist::name()
+  const std::string& artist::name() const
   {
     return name_;
   }

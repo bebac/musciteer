@@ -22,6 +22,9 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
+  class track;
+  class artist;
+
   class album
   {
     using track_id_list = std::set<std::string>;
@@ -32,8 +35,19 @@ namespace musicbox
     const std::string& id() const;
     const std::string& title() const;
   public:
+    musicbox::artist artist() const;
+  public:
+    bool alt_ids_find(const std::string& alt_id) const;
+  public:
     void id(const std::string&);
     void title(const std::string&);
+  public:
+    void tracks_add(const musicbox::track&);
+    void tracks_each(std::function<void(const musicbox::track& track)>);
+  public:
+    void artist(const musicbox::artist&);
+  public:
+    void alt_ids_add(const std::string& alt_id);
   public:
     void read(msgpack::istream&);
     void write(msgpack::ostream&) const;
@@ -41,6 +55,7 @@ namespace musicbox
     std::string id_;
     std::string title_;
     track_id_list track_ids_;
+    std::string artist_id_;
     alt_id_list alt_ids_;
   };
 

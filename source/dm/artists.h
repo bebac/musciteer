@@ -63,7 +63,7 @@ namespace musicbox
       );
     }
   public:
-    artist create_artist()
+    artist create_artist(const std::string& name)
     {
       musicbox::artist artist;
 
@@ -75,6 +75,8 @@ namespace musicbox
       }
 
       artist.id(base62_encode(id));
+      artist.name(name);
+
       return artist;
     }
   private:

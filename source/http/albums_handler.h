@@ -144,16 +144,10 @@ private:
   {
     auto artist = album.artist();
 
-    json jtracks;
-
-    album.tracks_each([&](const musicbox::track& track) {
-      jtracks.push_back(track.id());
-    });
-
     json jalbum = {
-      { "id",    album.id() },
+      { "id", album.id() },
       { "title", album.title() },
-      { "tracks", jtracks },
+      { "tracks", album.track_ids() },
       { "artist", {
         { "id", artist.id() },
         { "name", artist.name() } }

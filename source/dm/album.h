@@ -34,6 +34,7 @@ namespace musicbox
   public:
     const std::string& id() const;
     const std::string& title() const;
+    const track_id_list& track_ids() const;
   public:
     musicbox::artist artist() const;
   public:

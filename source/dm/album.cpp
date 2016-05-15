@@ -26,6 +26,11 @@ namespace musicbox
     return title_;
   }
 
+  const album::track_id_list& album::track_ids() const
+  {
+    return track_ids_;
+  }
+
   musicbox::artist album::artist() const
   {
     auto artists = musicbox::artists();

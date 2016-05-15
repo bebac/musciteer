@@ -37,12 +37,12 @@ public:
 
       if ( std::regex_match(path, match, route_re_) )
       {
-        std::cout << "albums route match size=" << match.size() << std::endl;
-
+#if 0
         for ( auto m : match )
         {
           std::cout << "albums route m.length=" << m.length() << ", m=" << m << std::endl;
         }
+#endif
 
         if ( match[0].length() == 0 ) {
           get_albums(path);
@@ -126,7 +126,7 @@ private:
 
     if ( kvstore.get(id+"/cover", cover) )
     {
-      auto data = cover.data();
+      auto& data = cover.data();
 
       response << "HTTP/1.1 200 OK" << crlf
         << "Content-Type: " << cover.mime_type() << crlf
@@ -138,24 +138,6 @@ private:
     {
       not_found();
     }
-
-#if 0
-    if ( !album.id().empty() )
-    {
-      json j = album_to_json(album);
-
-      auto payload = j.dump();
-
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << payload.length() << crlf
-        << crlf
-        << payload;
-    }
-    else
-    {
-      not_found();
-    }
-#endif
   }
 private:
   json album_to_json(const musicbox::album& album)

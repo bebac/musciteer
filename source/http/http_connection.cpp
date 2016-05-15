@@ -163,15 +163,15 @@ void http_connection::dispatch(http::request& request, http::response& response)
 {
   auto uri = request.uri();
 
-  std::regex track_re("^/tracks(/.*)?");
-  std::regex albums_re("^/albums(/.*)?");
+  std::regex track_re("^/api/tracks(/.*)?");
+  std::regex albums_re("^/api/albums(/.*)?");
   std::regex assets_re("^/(assets/.+)");
 
   std::smatch match;
 
   std::cout << "dispatch uri " << uri << std::endl;
 
-  if ( uri == "/")
+  if ( uri == "/" || uri == "/albums" )
   {
     static_file_handler handler(request, response);
     handler.call("index.html");

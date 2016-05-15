@@ -12,26 +12,7 @@ require 'router'
 require 'layout'
 
 require_tree './components'
-
-class Track
-  attr_accessor :id
-  attr_accessor :title
-
-  def initialize(attrs)
-    attrs.each do |k,v|
-      instance_variable_set("@#{k}", v) unless v.nil?
-    end
-  end
-
-  def artists
-    names = Array(@artists).collect { |artist| artist['name'] }
-    names.join(",")
-  end
-
-  def album
-    @album["title"]
-  end
-end
+require_tree './models'
 
 class Store
   include Inesita::Store
@@ -39,7 +20,6 @@ class Store
   def initialize
     super
     message_channel_start
-    load_tracks
   end
 
   def audio_device_list_sync
@@ -59,24 +39,41 @@ class Store
   end
 
   def load_tracks
-    Browser::HTTP.get("/tracks") do |request|
+    Browser::HTTP.get("/api/tracks") do |request|
       request.on :success do |response|
         response.json.each do |attrs|
           tracks << Track.new(attrs)
         end
       end
     end
+    render!
   end
 
   def tracks
     @tracks ||= []
   end
+
   #def tracks
   #  [
   #    Track.new(:id => 1, :title => "I Told You So", :artists => "Carrie Underwood", :album => "I Told You So"),
   #    Track.new(:id => 2, :title => "Somebody Like You", :artists => "Keith Urban", :album => "Days Go By")
   #  ]
   #end
+
+  def load_albums
+    Browser::HTTP.get("/api/albums") do |request|
+      request.on :success do |response|
+        response.json.each do |attrs|
+          albums << Album.new(attrs)
+        end
+      end
+    end
+    render!
+  end
+
+  def albums
+    @albums ||= []
+  end
 
   def play(id)
     message_channel_send({ event: :play, data: id })
@@ -103,7 +100,7 @@ class Store
   end
 
   def message_channel_recv(message)
-    p "Received #{message}"
+    #p "Received #{message}"
     case message['event']
     when "audio_device_list"
       @audio_device = message["data"][0]

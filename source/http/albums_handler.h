@@ -176,7 +176,7 @@ private:
         { "id", artist.id() },
         { "name", artist.name() } }
       },
-      { "cover", "/albums/"+album.id()+"/cover" }
+      { "cover", "/api/albums/"+album.id()+"/cover" }
     };
 
     return jalbum;

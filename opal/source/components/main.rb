@@ -1,7 +1,9 @@
 class Main
   include Inesita::Component
 
-  def initialize
+  def init
+    puts "init Main"
+    store.load_tracks
   end
 
   def play
@@ -29,6 +31,11 @@ class Main
             span class: 'col4' do track.album; end
           end
         end
+      end
+    end
+    div do
+       a href: router.url_for(:albums) do
+        text "Albums"
       end
     end
   end

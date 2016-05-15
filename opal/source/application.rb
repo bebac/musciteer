@@ -44,9 +44,9 @@ class Store
         response.json.each do |attrs|
           tracks << Track.new(attrs)
         end
+        render!
       end
     end
-    render!
   end
 
   def tracks
@@ -66,13 +66,14 @@ class Store
         response.json.each do |attrs|
           albums << Album.new(attrs)
         end
+        render!
       end
     end
-    render!
   end
 
   def albums
     @albums ||= []
+    @albums.sort! { |x,y| x.artist <=> y.artist }
   end
 
   def play(id)

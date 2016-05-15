@@ -1,4 +1,4 @@
-class Main
+class Tracks
   include Inesita::Component
 
   def init
@@ -31,11 +31,6 @@ class Main
             span class: 'col4' do track.album; end
           end
         end
-      end
-    end
-    div do
-       a href: router.url_for(:albums) do
-        text "Albums"
       end
     end
   end

@@ -17,8 +17,11 @@
 // ----------------------------------------------------------------------------
 #include <ucontext.h>
 #include <unistd.h>
+#include <sys/mman.h>
 
+// ----------------------------------------------------------------------------
 #include <iostream>
+#include <cstring>
 
 // ----------------------------------------------------------------------------
 namespace dripcore
@@ -31,10 +34,41 @@ namespace dripcore
     done
   };
 
+  class task_stack
+  {
+  public:
+    task_stack(size_t size) : size_(size)
+    {
+      ptr_ = mmap(nullptr, size_, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
+
+      if ( ptr_ == MAP_FAILED ) {
+        throw std::system_error(errno, std::system_category());
+      }
+    }
+  public:
+    ~task_stack()
+    {
+      if ( munmap(ptr_, size_) < 0 ) {
+        std::cerr << "munmap failed " << strerror(errno) << std::endl;
+      }
+    }
+  public:
+    void * ptr()
+    {
+      return ptr_;
+    }
+  public:
+    size_t size()
+    {
+      return size_;
+    }
+  private:
+    size_t size_;
+    void * ptr_;
+  };
+
   class task
   {
-  private:
-    using stack_ptr = std::unique_ptr<unsigned char[]>;
   private:
     union function_arguments
     {
@@ -44,8 +78,7 @@ namespace dripcore
   public:
     task()
       :
-      stack_size_(32*1024),
-      stack_ptr_{new unsigned char[stack_size_]},
+      stack_(0x10000),
       rdy_(),
       state_(task_state::init),
       loop_(nullptr)
@@ -137,8 +170,7 @@ namespace dripcore
   private:
     ucontext_t       caller_;
     ucontext_t       callee_;
-    size_t           stack_size_;
-    stack_ptr        stack_ptr_;
+    task_stack       stack_;
     event            rdy_;
     event_descriptor ed_;
     task_state       state_;

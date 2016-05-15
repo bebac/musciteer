@@ -40,8 +40,8 @@ namespace dripcore
         getcontext(&callee_);
 
         callee_.uc_link = &caller_;
-        callee_.uc_stack.ss_size = stack_size_;
-        callee_.uc_stack.ss_sp = stack_ptr_.get();
+        callee_.uc_stack.ss_size = stack_.size();
+        callee_.uc_stack.ss_sp = stack_.ptr();
 
         function_arguments args;
 
@@ -54,8 +54,10 @@ namespace dripcore
       case task_state::stopping:
         swapcontext(&caller_, &callee_);
         break;
-      case task_state::done:
-        break;
+    }
+
+    if ( state_ == task_state::done ) {
+      loop_->del(this);
     }
   }
 
@@ -107,9 +109,7 @@ namespace dripcore
 
     task* self = reinterpret_cast<task *>(args.ptr);
 
-    //self->func_(*self);
     self->main();
     self->state_ = task_state::done;
-    self->loop_->del(self);
   }
 }

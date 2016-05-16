@@ -12,4 +12,8 @@ class Album
   def artist
     @artist['name']
   end
+
+  def tracks
+    @tracks ||= []
+  end
 end

@@ -66,6 +66,10 @@ class Store
         response.json.each do |attrs|
           albums << Album.new(attrs)
         end
+        albums.sort! do |x, y|
+          (x.artist <=> y.artist).nonzero? ||
+          (x.title <=> y.title)
+        end
         render!
       end
     end
@@ -73,7 +77,23 @@ class Store
 
   def albums
     @albums ||= []
-    @albums.sort! { |x,y| x.artist <=> y.artist }
+  end
+
+  def load_album_details(album_id)
+    @album = @albums.find { |x| x.id == album_id }
+    Browser::HTTP.get("/api/albums/#{album_id}/tracks") do |request|
+      request.on :success do |response|
+        @album.tracks.clear
+        response.json.each do |attrs|
+          @album.tracks << Track.new(attrs)
+        end
+        render!
+      end
+    end
+  end
+
+  def album_details
+    @album
   end
 
   def play(id)

@@ -7,7 +7,7 @@ class Albums
   end
 
   def show_album(album_id)
-    puts "Show album details #{album_id}"
+    store.load_album_details(album_id)
     $document.at('#album-details-container').show
   end
 

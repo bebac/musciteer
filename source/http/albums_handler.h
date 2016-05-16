@@ -8,12 +8,15 @@
 #define __http_server__albums_handler_h__
 
 // ----------------------------------------------------------------------------
-#include <http/request.h>
-#include <http/response.h>
+#include "api.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/albums.h"
 #include "../dm/album_cover.h"
+
+// ----------------------------------------------------------------------------
+#include <http/request.h>
+#include <http/response.h>
 
 // ----------------------------------------------------------------------------
 #include <streambuf>
@@ -55,6 +58,9 @@ public:
           if ( match[2].length() == 0 ) {
             get_album(match[1]);
           }
+          else if ( match[2] == "tracks" ) {
+            get_album_tracks(match[1]);
+          }
           else if ( match[2] == "cover" ) {
             get_album_cover(match[1]);
           }
@@ -83,7 +89,7 @@ protected:
     json j;
 
     albums.each([&](musicbox::album& album) {
-      j.push_back(album_to_json(album));
+      j.push_back(to_json(album));
       return true;
     });
 
@@ -103,7 +109,35 @@ private:
 
     if ( !album.id().empty() )
     {
-      json j = album_to_json(album);
+      json j = to_json(album);
+
+      auto payload = j.dump();
+
+      response << "HTTP/1.1 200 OK" << crlf
+        << "Content-Length: " << payload.length() << crlf
+        << crlf
+        << payload;
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void get_album_tracks(const std::string& id)
+  {
+    auto albums = musicbox::albums();
+
+    auto album = albums.find_by_id(id);
+
+    if ( !album.id().empty() )
+    {
+      json j;
+
+      album.tracks_each([&](const musicbox::track& track)
+      {
+        j.push_back(to_json(track));
+      });
 
       auto payload = j.dump();
 
@@ -138,24 +172,6 @@ private:
     {
       not_found();
     }
-  }
-private:
-  json album_to_json(const musicbox::album& album)
-  {
-    auto artist = album.artist();
-
-    json jalbum = {
-      { "id", album.id() },
-      { "title", album.title() },
-      { "tracks", album.track_ids() },
-      { "artist", {
-        { "id", artist.id() },
-        { "name", artist.name() } }
-      },
-      { "cover", "/api/albums/"+album.id()+"/cover" }
-    };
-
-    return jalbum;
   }
 protected:
   void method_not_allowed()

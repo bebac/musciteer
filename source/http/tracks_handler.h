@@ -8,11 +8,14 @@
 #define __http_server__track_handler_h__
 
 // ----------------------------------------------------------------------------
-#include <http/request.h>
-#include <http/response.h>
+#include "api.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/tracks.h"
+
+// ----------------------------------------------------------------------------
+#include <http/request.h>
+#include <http/response.h>
 
 // ----------------------------------------------------------------------------
 #include <streambuf>
@@ -49,7 +52,7 @@ protected:
     json j;
 
     tracks.each([&](musicbox::track& track) {
-      j.push_back(track_to_json(track));
+      j.push_back(to_json(track));
       return true;
     });
 
@@ -59,36 +62,6 @@ protected:
       << "Content-Length: " << payload.length() << crlf
       << crlf
       << payload;
-  }
-private:
-  json track_to_json(const musicbox::track& track)
-  {
-    json artists;
-
-    for ( auto& artist : track.artists() )
-    {
-      json j = {
-        { "id",   artist.id() },
-        { "name", artist.name() }
-      };
-      artists.push_back(j);
-    }
-
-    const auto& album = track.album();
-
-    json jalbum = {
-      { "id",    album.id() },
-      { "title", album.title() },
-    };
-
-    json t = {
-      { "id",    track.id() },
-      { "title", track.title() },
-      { "artists", artists },
-      { "album", jalbum }
-    };
-
-    return t;
   }
 protected:
   void method_not_allowed()

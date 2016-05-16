@@ -53,7 +53,7 @@ namespace musicbox
     json jalbum = {
       { "id", album.id() },
       { "title", album.title() },
-      { "tracks", album.track_ids() },
+      //{ "tracks", album.track_ids() },
       { "artist", {
         { "id", artist.id() },
         { "name", artist.name() } }

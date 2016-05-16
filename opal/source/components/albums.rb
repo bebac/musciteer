@@ -7,13 +7,15 @@ class Albums
   end
 
   def show_album(album_id)
+    puts "Show album details #{album_id}"
+    $document.at('#album-details-container').show
   end
 
   def render
     div id: 'albums-container' do
       div id: 'album-thumbs' do
         store.albums.each do |album|
-          div class: 'album-thumb' do
+          div class: 'album-thumb', onclick: -> { show_album(album.id) } do
             div do
               text album.title
             end

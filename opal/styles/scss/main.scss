@@ -3,6 +3,9 @@
 @import "layout";
 @import "top";
 @import "settings";
+@import "albums";
+@import "album_details";
+@import "tracks";
 
 body
 {
@@ -16,91 +19,4 @@ body
   height: 50px;
   width: 200px;
   background: #999;
-}
-
-#track-list
-{
-  width: 100%;
-
-  @include noselect;
-
-  >ul
-  {
-    li:first-child {
-      color: #666;
-      font-weight: bold;
-    }
-
-    li:not(:first-child):hover {
-        background: #eee;
-    }
-
-    >li
-    {
-      .col1,.col2,.col3,.col4 {
-        display: inline-block;
-      }
-
-      .col1 {
-        width: 10%;
-      }
-
-      .col2 {
-        width: 30%;
-      }
-
-      .col3 {
-        width: 30%;
-      }
-
-      .col4 {
-        width: 30%;
-      }
-
-      padding: 0.33em;
-      border-bottom: 1px solid #eee;
-      color: #333;
-    }
-  }
-}
-
-#albums-container
-{
-  margin: 0 1em 1em 0;
-}
-
-#album-thumbs
-{
-  margin: 0 auto;
-  text-align: center;
-}
-
-.album-thumb
-{
-  color: #333;
-  width: 200px;
-  margin: 1.33em;
-  background-color: #eee;
-  display: inline-block;
-
-  div:nth-child(2) {
-    min-height: 200px;
-    max-height: 200px;
-    display: table;
-    vertical-align: top;
-  }
-
-  div:nth-child(1), div:nth-child(3) {
-    margin: 0.33em 0.33em 0.33em 0.33em;
-    font-size: 1em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  img {
-    max-width: 200px;
-    min-width: 200px;
-    max-height: 200px;
-  }
 }

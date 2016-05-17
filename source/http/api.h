@@ -37,8 +37,11 @@ namespace musicbox
     };
 
     json t = {
-      { "id",    track.id() },
+      { "id", track.id() },
       { "title", track.title() },
+      { "tn", track.track_number() },
+      { "dn", track.disc_number() },
+      { "duration", track.duration() },
       { "artists", artists },
       { "album", jalbum }
     };

@@ -16,5 +16,107 @@
   padding: 2em;
   margin: 0px auto;
   color: #666;
-  background-color: #fff
+  background-color: #fff;
+
+  h1, h2, hr {
+    margin-bottom: 0.33em;
+  }
+
+  h1 {
+    font-size: 2.25em;
+  }
+
+  h2 {
+    color: #888;
+    font-size: 1.5em;
+  }
+
+  .cover {
+    float: left;
+    margin-right: 20px;
+  }
+
+  .cover img {
+    max-width: 200px;
+    min-width: 200px;
+  }
+
+  .track-list
+  {
+    list-style-type: none;
+    margin-left: 220px;
+
+    li
+    {
+      padding: 0.66em;
+      //font-size: 1.15em;
+      border-bottom: 1px solid #eee;
+
+      > div {
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      .tn {
+        padding-right: 0.66em;
+      }
+
+      .title {
+        max-width: 80%;
+      }
+
+      .track-show-details {
+        padding: 0.16em 0.33em;
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      .track-details {
+        margin: 0.666em 0 0.333em 0;
+      }
+
+      .tag-edit {
+          background-color: #fff;
+      }
+
+      .track-details input {
+          padding: 0.166em 0.666em 0.166em 0.666em;
+          border: 0px solid #fff;
+          border-radius: 10px;
+          color: #666;
+          background-color: #fff;
+      }
+
+      .tags,.duration {
+        float: right;
+        margin-left: 1em;
+      }
+
+      .tag, .tag-edit {
+        padding: 0.166em 0.666em 0.166em 0.666em;
+        font-size: 0.833em;
+        border-radius: 10px;
+      }
+
+      .tag {
+        background-color: #F9FDE4;
+      }
+
+      .action-status {
+        margin-left: 0.66em;
+        color: #00f;
+      }
+    }
+
+    .disc-header {
+      color: #666;
+      font-size: 1.33em;
+      font-weight: bold;
+      background-color: #fff;
+    }
+
+    li:hover {
+      background-color: #eee;
+    }
+  }
 }

@@ -87,6 +87,7 @@ class Store
         response.json.each do |attrs|
           @album.tracks << Track.new(attrs)
         end
+        @album.tracks.sort! { |x, y| x.index <=> y.index }
         render!
       end
     end

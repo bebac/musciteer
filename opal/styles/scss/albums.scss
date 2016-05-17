@@ -1,11 +1,12 @@
 #albums-container
 {
-  margin: 0 1em 1em 0;
 }
 
 #album-thumbs
 {
   margin: 0 auto;
+  height: calc(100vh - 3em);
+  overflow-y: auto;
   text-align: center;
 }
 

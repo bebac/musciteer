@@ -120,6 +120,9 @@ build build/player/audio_output.o: cc source/player/audio_output.cpp
 build build/player/player.o: cc source/player/player.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
+build build/player/player_impl.o: cc source/player/player_impl.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include
+
 build build/main.o: cc source/main.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
@@ -127,5 +130,6 @@ build build/mboxd: ld $
   build/http_connection.o $
   build/player/audio_output.o $
   build/player/player.o $
-  build/main.o | build/libmusicbox_dm.a build/libhttp.a
+  build/player/player_impl.o $
+  build/main.o | build/libdripcore.a build/libmusicbox_dm.a build/libhttp.a build/libmsgpack.a
   libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet

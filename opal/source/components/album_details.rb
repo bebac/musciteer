@@ -19,7 +19,12 @@ class AlbumDetails
         h2 do; text album.artist; end
         hr
         ol class: 'track-list' do
+          dn = 1
           album.tracks.each do |track|
+            if track.dn > dn
+              dn = track.dn
+              li class: 'disc-header' do; text "Disc #{dn}"; end
+            end
             li do;
               div class: 'tn' do
                 text "%02d" % [ track.tn ]

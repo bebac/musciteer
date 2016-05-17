@@ -50,21 +50,20 @@ class websocket_handler : public http::websocket_handler_base
 
   void on_connect() override
   {
-    std::cout << "websocket connected" << std::endl;
+    auto player = musicbox::player();
 
-    // Start send task.
-    task_->spawn<websocket_send_task>(*this, message_ch_);
+    start_send_task();
 
-    musicbox::player().subscribe(message_ch_);
+    player.subscribe(message_ch_);
   }
 
   void on_close() override
   {
-    std::cout << "websocket closed" << std::endl;
+    auto player = musicbox::player();
 
-    musicbox::player().unsubscribe(message_ch_);
+    player.unsubscribe(message_ch_);
 
-    message_ch_.send(message{}, task_);
+    stop_send_task();
   }
 
   void on_message(const std::string& message) override
@@ -73,17 +72,19 @@ class websocket_handler : public http::websocket_handler_base
 
     if ( j.count("event") )
     {
+      auto player = musicbox::player();
+
       if ( j["event"] == "audio_device_list_sync" )
       {
-        musicbox::player().audio_device_list(message_ch_);
+        player.audio_device_list(message_ch_);
       }
       else if ( j["event"] == "audio_device" )
       {
-        musicbox::player().audio_device(j["data"].get<std::string>());
+        player.audio_device(j["data"].get<std::string>());
       }
       else if ( j["event"] == "play" )
       {
-        musicbox::player().play(j["data"].get<std::string>());
+        player.play(j["data"].get<std::string>());
       }
     }
 
@@ -93,6 +94,16 @@ public:
   void set_task(dripcore::task* task)
   {
     task_ = task;
+  }
+private:
+  void start_send_task()
+  {
+    task_->spawn<websocket_send_task>(*this, message_ch_);
+  }
+private:
+  void stop_send_task()
+  {
+    message_ch_.send(message{}, task_);
   }
 private:
   message_channel message_ch_;

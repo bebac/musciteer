@@ -1,6 +1,13 @@
 .ninja_deps
 .ninja_log
 
+.mboxd
+
 opal/.sass-cache/
 
+public/assets/application.css*
+public/assets/application.js
+public/index.html
+
+lib/json/nlohmann
 build/

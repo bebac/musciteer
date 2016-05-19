@@ -8,12 +8,10 @@
 #define __player__player_h__
 
 // ----------------------------------------------------------------------------
-#include "player_impl.h"
+#include "player_task.h"
 
 // ----------------------------------------------------------------------------
-#include <memory>
 #include <string>
-#include <vector>
 #include <cassert>
 
 // ----------------------------------------------------------------------------
@@ -22,50 +20,61 @@ namespace musicbox
   class player
   {
   public:
-    using instance_ptr = std::shared_ptr<player_impl>;
-  public:
     player()
     {
-      assert(instance_);
     }
   public:
     void subscribe(message_channel ch)
     {
-      assert(instance_);
-      instance_->subscribe(ch);
+      message m(message::subscribe_id, 0);
+
+      m.subscribe.channel = ch;
+
+      message_ch_.send(std::move(m));
     }
   public:
     void unsubscribe(message_channel ch)
     {
-      assert(instance_);
-      instance_->unsubscribe(ch);
+      message m(message::unsubscribe_id, 0);
+
+      m.subscribe.channel = ch;
+
+      message_ch_.send(std::move(m));
     }
   public:
     void audio_device_list(message_channel reply_ch)
     {
-      assert(instance_);
-      instance_->audio_device_list(reply_ch);
+      message m(message::device_list_req_id, 0);
+
+      m.device_list_req.reply = reply_ch;
+
+      message_ch_.send(std::move(m));
     }
   public:
     void audio_device(const std::string& device_name)
     {
-      assert(instance_);
-      instance_->audio_device(device_name);
+      message m(message::device_id, 0);
+
+      m.device.device_name = device_name;
+
+      message_ch_.send(std::move(m));
     }
   public:
     void play(const std::string& id)
     {
-      assert(instance_);
-      instance_->play(id);
+      message m(message::play_req_id, 0);
+
+      m.play_req.id = id;
+
+      message_ch_.send(std::move(m));
     }
   public:
     static void start(dripcore::loop* loop)
     {
-      assert(!instance_);
-      instance_.reset(new player_impl(loop));
+      loop->spawn<player_task>(message_ch_);
     }
   private:
-    static instance_ptr instance_;
+    static message_channel message_ch_;
   };
 }
 

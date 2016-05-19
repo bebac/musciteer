@@ -121,9 +121,9 @@ namespace musicbox
   {
     using milliseconds = audio_output_alsa::milliseconds;
   public:
-    player_task_flac(const play_request& request, audio_output_alsa& audio_output)
+    player_task_flac(const std::string& uri, unsigned stream_id, audio_output_alsa& audio_output)
       :
-      decoder_(request.uri, request.stream_id, audio_output)
+      decoder_(uri, stream_id, audio_output)
     {
     }
   private:

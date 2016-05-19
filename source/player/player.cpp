@@ -10,7 +10,7 @@
 namespace musicbox
 {
   /////
-  // Instantiate the one and only player.
+  // Instantiate player message channel.
 
-  player::instance_ptr player::instance_;
+  message_channel player::message_ch_ = message_channel();
 }

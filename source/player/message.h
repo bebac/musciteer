@@ -18,12 +18,6 @@
 #include <dripcore/task.h>
 
 // ----------------------------------------------------------------------------
-//#include <msgpack/istream.h>
-//#include <msgpack/ostream.h>
-//#include <msgpack/array.h>
-//#include <msgpack/map.h>
-
-// ----------------------------------------------------------------------------
 class message;
 
 // ----------------------------------------------------------------------------
@@ -41,17 +35,6 @@ public:
     error_code = std::move(other.error_code);
     error_message = std::move(other.error_message);
   }
-#if 0
-public:
-  void write(msgpack::ostream& os)
-  {
-    msgpack::map map{2};
-
-    os << map
-      << "error_code"  << error_code
-      << "error_message" << error_message;
-  }
-#endif
 public:
   int error_code;
   std::string error_message;
@@ -66,7 +49,11 @@ public:
   }
   audio_output_notification_message(audio_output_notification_message&& other)
   {
-    channel = std::move(other.channel);
+    *this = std::move(other);
+  }
+  audio_output_notification_message& operator=(audio_output_notification_message&& rhs)
+  {
+    channel = std::move(rhs.channel);
   }
 public:
   message_channel channel;
@@ -91,28 +78,18 @@ public:
   }
   audio_output_device_list_request(audio_output_device_list_request&& other)
   {
-    current = std::move(other.current);
-    reply = std::move(other.reply);
+    *this = std::move(other);
   }
-#if 0
-public:
-  void read(msgpack::istream& is)
+  audio_output_device_list_request& operator=(audio_output_device_list_request&& rhs)
   {
+    current = std::move(rhs.current);
+    reply = std::move(rhs.reply);
+    return *this;
   }
-#endif
 public:
   std::string current;
   message_channel reply;
 };
-
-#if 0
-// ----------------------------------------------------------------------------
-inline msgpack::istream& operator>>(msgpack::istream& is, audio_output_device_list_request& value)
-{
-  value.read(is);
-  return is;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 class audio_output_device_list_response
@@ -126,19 +103,24 @@ public:
     device_names = std::move(other.device_names);
     current = std::move(other.current);
   }
-#if 0
-public:
-  void write(msgpack::ostream& os)
-  {
-    msgpack::map map{1};
-
-    os << map
-      << "devices" << device_names;
-  }
-#endif
 public:
   std::vector<std::string> device_names;
   std::string current;
+};
+
+// ----------------------------------------------------------------------------
+class audio_output_device
+{
+public:
+  audio_output_device() : device_name()
+  {
+  }
+  audio_output_device(audio_output_device&& other)
+  {
+    device_name = std::move(other.device_name);
+  }
+public:
+  std::string device_name;
 };
 
 // ----------------------------------------------------------------------------
@@ -153,48 +135,10 @@ public:
     device_name = std::move(other.device_name);
     reply = std::move(other.reply);
   }
-#if 0
-public:
-  void read(msgpack::istream& is)
-  {
-    msgpack::map map;
-
-    if ( is >> map )
-    {
-      for ( size_t i=0; i<map.size(); i++ )
-      {
-        std::string key;
-
-        if ( is >> key )
-        {
-          if ( key == "device_name") {
-            is >> device_name;
-          }
-          else {
-            // ignore unknown keys.
-          }
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-  }
-#endif
 public:
   std::string device_name;
   message_channel reply;
 };
-
-#if 0
-// ----------------------------------------------------------------------------
-inline msgpack::istream& operator>>(msgpack::istream& is, audio_output_open_request& value)
-{
-  value.read(is);
-  return is;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 using audio_output_open_response = audio_output_response;
@@ -210,24 +154,9 @@ public:
   {
     reply = std::move(other.reply);
   }
-#if 0
-public:
-  void read(msgpack::istream& is)
-  {
-  }
-#endif
 public:
   message_channel reply;
 };
-
-#if 0
-// ----------------------------------------------------------------------------
-inline msgpack::istream& operator>>(msgpack::istream& is, audio_output_close_request& value)
-{
-  value.read(is);
-  return is;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 using audio_output_close_response = audio_output_response;
@@ -236,62 +165,16 @@ using audio_output_close_response = audio_output_response;
 class play_request
 {
 public:
-  play_request() : uri(), stream_id(0)
+  play_request() : id()
   {
   }
   play_request(play_request&& other)
   {
-    uri = std::move(other.uri);
-    stream_id = std::move(other.stream_id);
-    reply = std::move(other.reply);
+    id = std::move(other.id);
   }
-#if 0
 public:
-  void read(msgpack::istream& is)
-  {
-    msgpack::map map;
-
-    if ( is >> map )
-    {
-      for ( size_t i=0; i<map.size(); i++ )
-      {
-        std::string key;
-
-        if ( is >> key )
-        {
-          if ( key == "uri") {
-            is >> uri;
-          }
-          else if ( key == "stream_id" )
-          {
-            is >> stream_id;
-          }
-          else {
-            // ignore unknown keys.
-          }
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-  }
-#endif
-public:
-  std::string uri;
-  unsigned stream_id;
-  message_channel reply;
+  std::string id;
 };
-
-#if 0
-// ----------------------------------------------------------------------------
-inline msgpack::istream& operator>>(msgpack::istream& is, play_request& value)
-{
-  value.read(is);
-  return is;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 class audio_output_stream_begin
@@ -355,16 +238,6 @@ public:
   {
     stream_id = std::move(other.stream_id);
   }
-#if 0
-public:
-  void write(msgpack::ostream& os)
-  {
-    msgpack::map map{1};
-
-    os << map
-      << "stream_id" << stream_id;
-  }
-#endif
 public:
   unsigned stream_id;
 };
@@ -380,16 +253,6 @@ public:
   {
     stream_id = std::move(other.stream_id);
   }
-#if 0
-public:
-  void write(msgpack::ostream& os)
-  {
-    msgpack::map map{1};
-
-    os << map
-      << "stream_id" << stream_id;
-  }
-#endif
 public:
   unsigned stream_id;
 };
@@ -407,18 +270,6 @@ public:
     duration = std::move(other.duration);
     length = std::move(other.length);
   }
-#if 0
-public:
-  void write(msgpack::ostream& os)
-  {
-    msgpack::map map{3};
-
-    os << map
-      << "stream_id" << stream_id
-      << "duration" << duration
-      << "length" << length;
-  }
-#endif
 public:
   unsigned stream_id;
   unsigned duration;
@@ -434,19 +285,20 @@ public:
     undefined_id = 0,
     device_list_req_id = 1,
     device_list_res_id = 2,
-    open_req_id = 3,
-    open_res_id = 4,
-    close_req_id = 5,
-    close_res_id = 6,
-    play_req_id = 7,
-    stream_begin_id = 8,
-    stream_end_id = 9,
-    stream_buffer_id = 10,
-    stream_begin_notify_id = 11,
-    stream_end_notify_id = 12,
-    stream_progress_notify_id = 13,
-    subscribe_id = 14,
-    unsubscribe_id = 15,
+    device_id = 3,
+    open_req_id = 4,
+    open_res_id = 5,
+    close_req_id = 6,
+    close_res_id = 7,
+    play_req_id = 8,
+    stream_begin_id = 9,
+    stream_end_id = 10,
+    stream_buffer_id = 11,
+    stream_begin_notify_id = 12,
+    stream_end_notify_id = 13,
+    stream_progress_notify_id = 14,
+    subscribe_id = 15,
+    unsubscribe_id = 16,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -461,6 +313,9 @@ public:
         break;
       case device_list_res_id:
         new (&device_list_res) audio_output_device_list_response();
+        break;
+      case device_id:
+        new (&device) audio_output_device();
         break;
       case open_req_id:
         new (&open_req) audio_output_open_request();
@@ -513,6 +368,9 @@ public:
         break;
       case device_list_res_id:
         new (&device_list_res) audio_output_device_list_response(std::move(other.device_list_res));
+        break;
+      case device_id:
+        new (&device) audio_output_device(std::move(other.device));
         break;
       case open_req_id:
         new (&open_req) audio_output_open_request(std::move(other.open_req));
@@ -568,6 +426,9 @@ public:
       case device_list_res_id:
         device_list_res.~audio_output_device_list_response();
         break;
+      case device_id:
+        device.~audio_output_device();
+        break;
       case open_req_id:
         open_req.~audio_output_open_request();
         break;
@@ -615,6 +476,7 @@ public:
   {
     audio_output_device_list_request device_list_req;
     audio_output_device_list_response device_list_res;
+    audio_output_device device;
     audio_output_open_request open_req;
     audio_output_open_response open_res;
     audio_output_close_request close_req;

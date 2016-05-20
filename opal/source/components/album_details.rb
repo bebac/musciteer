@@ -9,6 +9,10 @@ class AlbumDetails
     store.album_details
   end
 
+  def queue_track(track_id)
+    store.queue(track_id)
+  end
+
   def render
     div do
       if album
@@ -25,7 +29,7 @@ class AlbumDetails
               dn = track.dn
               li class: 'disc-header' do; text "Disc #{dn}"; end
             end
-            li do;
+            li onclick: -> { queue_track(track.id) } do;
               div class: 'tn' do
                 text "%02d" % [ track.tn ]
               end

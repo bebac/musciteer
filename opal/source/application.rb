@@ -101,6 +101,10 @@ class Store
     message_channel_send({ event: :play, data: id })
   end
 
+  def queue(id)
+    message_channel_send({ event: :queue, data: id })
+  end
+
   private
 
   def message_queue

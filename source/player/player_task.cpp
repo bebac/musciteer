@@ -22,6 +22,12 @@ namespace musicbox
   player_task::player_task(message_channel message_ch)
     : state_(stopped), message_ch_(message_ch)
   {
+    audio_output_subscribe(message_ch_);
+  }
+
+  player_task::~player_task()
+  {
+    audio_output_unsubscribe(message_ch_);
   }
 
   void player_task::main()
@@ -66,25 +72,26 @@ namespace musicbox
       case message::play_req_id:
         handle(m.play_req);
         break;
+      case message::queue_req_id:
+        handle(m.queue_req);
+        break;
+      case message::stream_begin_notify_id:
+        handle(m.stream_begin_notify);
+        break;
+      case message::stream_end_notify_id:
+        handle(m.stream_end_notify);
+        break;
     }
   }
 
   void player_task::handle(subscribe& m)
   {
-    message am(message::subscribe_id, 0);
-
-    am.subscribe = std::move(m);
-
-    audio_output_.send(std::move(am));
+    audio_output_subscribe(m.channel);
   }
 
   void player_task::handle(unsubscribe& m)
   {
-    message am(message::unsubscribe_id, 0);
-
-    am.unsubscribe = std::move(m);
-
-    audio_output_.send(std::move(am));
+    audio_output_unsubscribe(m.channel);
   }
 
   void player_task::handle(device_list_request& m, unsigned ref)
@@ -112,8 +119,6 @@ namespace musicbox
     {
       case stopped:
       {
-        open_audio_output();
-
         auto tracks = musicbox::tracks();
 
         auto track = tracks.find_by_id(m.id);
@@ -121,9 +126,9 @@ namespace musicbox
 
         if ( sources.size() > 0 )
         {
-          auto filename = sources[0].uri();
-
-          spawn<player_task_flac>(filename, 1, audio_output_);
+          audio_output_open();
+          spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+          state_ = playing;
         }
         break;
       }
@@ -134,7 +139,102 @@ namespace musicbox
     }
   }
 
-  void player_task::open_audio_output()
+  void player_task::handle(queue_request& m)
+  {
+    auto tracks = musicbox::tracks();
+
+    auto track = tracks.find_by_id(m.id);
+
+    if ( !track.id().empty() )
+    {
+      play_q_.push(track);
+    }
+    else
+    {
+      // ERROR!
+      return;
+    }
+
+    switch ( state_ )
+    {
+      case stopped:
+      {
+        auto track = play_q_.front();
+        auto sources = track.sources();
+
+        if ( sources.size() > 0 )
+        {
+          audio_output_open();
+          spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+          state_ = playing;
+        }
+
+        play_q_.pop();
+        break;
+      }
+      case playing:
+        break;
+      case paused:
+        break;
+    }
+  }
+
+  void player_task::handle(stream_begin_notify& m)
+  {
+    std::cout << "got stream_begin_notify" << std::endl;
+  }
+
+  void player_task::handle(stream_end_notify& m)
+  {
+    switch ( state_ )
+    {
+      case stopped:
+        std::cout << "got stream end while player_task state==stopped!" << std::endl;
+        break;
+      case playing:
+      {
+        if ( !play_q_.empty() )
+        {
+          auto track = play_q_.front();
+          auto sources = track.sources();
+
+          if ( sources.size() > 0 )
+          {
+            spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+          }
+
+          play_q_.pop();
+        }
+        else
+        {
+          state_ = stopped;
+        }
+        break;
+      }
+      case paused:
+        break;
+    }
+  }
+
+  void player_task::audio_output_subscribe(message_channel& ch)
+  {
+    message m(message::subscribe_id, 0);
+
+    m.subscribe.channel = ch;
+
+    audio_output_.send(std::move(m));
+  }
+
+  void player_task::audio_output_unsubscribe(message_channel& ch)
+  {
+    message m(message::unsubscribe_id, 0);
+
+    m.subscribe.channel = ch;
+
+    audio_output_.send(std::move(m));
+  }
+
+  void player_task::audio_output_open()
   {
     message_channel ch;
     message m(message::open_req_id, 0);

@@ -29,8 +29,8 @@ public:
   using stream_begin_notify =  audio_output_stream_begin_notification;
   using stream_end_notify =  audio_output_stream_end_notification;
   using stream_progress_notify =  audio_output_stream_progress_notification;
-  using subscribe = audio_output_subscribe;
-  using unsubscribe = audio_output_unsubscribe;
+  using subscribe = audio_output_subscribe_message;
+  using unsubscribe = audio_output_unsubscribe_message;
 public:
   using time_point = std::chrono::steady_clock::time_point;
   using milliseconds = std::chrono::milliseconds;

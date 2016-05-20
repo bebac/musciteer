@@ -60,12 +60,12 @@ public:
 };
 
 // ----------------------------------------------------------------------------
-class audio_output_subscribe : public audio_output_notification_message
+class audio_output_subscribe_message : public audio_output_notification_message
 {
 };
 
 // ----------------------------------------------------------------------------
-class audio_output_unsubscribe : public audio_output_notification_message
+class audio_output_unsubscribe_message : public audio_output_notification_message
 {
 };
 
@@ -169,6 +169,21 @@ public:
   {
   }
   play_request(play_request&& other)
+  {
+    id = std::move(other.id);
+  }
+public:
+  std::string id;
+};
+
+// ----------------------------------------------------------------------------
+class queue_request
+{
+public:
+  queue_request() : id()
+  {
+  }
+  queue_request(queue_request&& other)
   {
     id = std::move(other.id);
   }
@@ -291,14 +306,15 @@ public:
     close_req_id = 6,
     close_res_id = 7,
     play_req_id = 8,
-    stream_begin_id = 9,
-    stream_end_id = 10,
-    stream_buffer_id = 11,
-    stream_begin_notify_id = 12,
-    stream_end_notify_id = 13,
-    stream_progress_notify_id = 14,
-    subscribe_id = 15,
-    unsubscribe_id = 16,
+    queue_req_id = 9,
+    stream_begin_id = 10,
+    stream_end_id = 11,
+    stream_buffer_id = 12,
+    stream_begin_notify_id = 13,
+    stream_end_notify_id = 14,
+    stream_progress_notify_id = 15,
+    subscribe_id = 16,
+    unsubscribe_id = 17,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -332,6 +348,9 @@ public:
       case play_req_id:
         new (&play_req) play_request();
         break;
+      case queue_req_id:
+        new (&queue_req) queue_request();
+        break;
       case stream_begin_id:
         new (&stream_begin) audio_output_stream_begin();
         break;
@@ -351,10 +370,10 @@ public:
         new (&stream_progress_notify) audio_output_stream_progress_notification();
         break;
       case subscribe_id:
-        new (&subscribe) audio_output_subscribe();
+        new (&subscribe) audio_output_subscribe_message();
         break;
       case unsubscribe_id:
-        new (&unsubscribe) audio_output_unsubscribe();
+        new (&unsubscribe) audio_output_unsubscribe_message();
         break;
     }
   }
@@ -387,6 +406,9 @@ public:
       case play_req_id:
         new (&play_req) play_request(std::move(other.play_req));
         break;
+      case queue_req_id:
+        new (&queue_req) queue_request(std::move(other.queue_req));
+        break;
       case stream_begin_id:
         new (&stream_begin) audio_output_stream_begin(std::move(other.stream_begin));
         break;
@@ -406,10 +428,10 @@ public:
         new (&stream_progress_notify) audio_output_stream_progress_notification(std::move(other.stream_progress_notify));
         break;
       case subscribe_id:
-        new (&subscribe) audio_output_subscribe(std::move(other.subscribe));
+        new (&subscribe) audio_output_subscribe_message(std::move(other.subscribe));
         break;
       case unsubscribe_id:
-        new (&unsubscribe) audio_output_unsubscribe(std::move(other.unsubscribe));
+        new (&unsubscribe) audio_output_unsubscribe_message(std::move(other.unsubscribe));
         break;
     }
     type = other.type;
@@ -444,6 +466,9 @@ public:
       case play_req_id:
         play_req.~play_request();
         break;
+      case queue_req_id:
+        queue_req.~queue_request();
+        break;
       case stream_begin_id:
         stream_begin.~audio_output_stream_begin();
         break;
@@ -463,10 +488,10 @@ public:
         stream_progress_notify.~audio_output_stream_progress_notification();
         break;
       case subscribe_id:
-        subscribe.~audio_output_subscribe();
+        subscribe.~audio_output_subscribe_message();
         break;
       case unsubscribe_id:
-        unsubscribe.~audio_output_unsubscribe();
+        unsubscribe.~audio_output_unsubscribe_message();
         break;
     }
   }
@@ -482,14 +507,15 @@ public:
     audio_output_close_request close_req;
     audio_output_close_response close_res;
     play_request play_req;
+    queue_request queue_req;
     audio_output_stream_begin stream_begin;
     audio_output_stream_end stream_end;
     audio_output_stream_buffer stream_buffer;
     audio_output_stream_begin_notification stream_begin_notify;
     audio_output_stream_end_notification stream_end_notify;
     audio_output_stream_progress_notification stream_progress_notify;
-    audio_output_subscribe subscribe;
-    audio_output_unsubscribe unsubscribe;
+    audio_output_subscribe_message subscribe;
+    audio_output_unsubscribe_message unsubscribe;
   };
   //long long ref;
   unsigned ref;

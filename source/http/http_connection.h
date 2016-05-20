@@ -86,6 +86,10 @@ class websocket_handler : public http::websocket_handler_base
       {
         player.play(j["data"].get<std::string>());
       }
+      else if ( j["event"] == "queue" )
+      {
+        player.queue(j["data"].get<std::string>());
+      }
     }
 
     std::cout << "websocket message=\"" << j << "\"" << std::endl;

@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __player__player_impl_h__
-#define __player__player_impl_h__
+#ifndef __player__player_task_h__
+#define __player__player_task_h__
 
 // ----------------------------------------------------------------------------
 #include "audio_output.h"
@@ -13,15 +13,20 @@
 // ----------------------------------------------------------------------------
 #include <string>
 #include <cassert>
+#include <queue>
 
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
+  class track;
+
   class player_task : public dripcore::task
   {
-    using subscribe = audio_output_subscribe;
-    using unsubscribe = audio_output_unsubscribe;
+    using subscribe = audio_output_subscribe_message;
+    using unsubscribe = audio_output_unsubscribe_message;
     using device_list_request = audio_output_device_list_request;
+    using stream_begin_notify =  audio_output_stream_begin_notification;
+    using stream_end_notify =  audio_output_stream_end_notification;
   private:
     enum state
     {
@@ -31,6 +36,8 @@ namespace musicbox
     };
   public:
     player_task(message_channel message_ch);
+  public:
+    ~player_task();
   public:
     void main() override;
   private:
@@ -43,8 +50,13 @@ namespace musicbox
     void handle(device_list_request& m, unsigned ref);
     void handle(audio_output_device& m);
     void handle(play_request& m);
+    void handle(queue_request& m);
+    void handle(stream_begin_notify& m);
+    void handle(stream_end_notify& m);
   private:
-    void open_audio_output();
+    void audio_output_subscribe(message_channel&);
+    void audio_output_unsubscribe(message_channel&);
+    void audio_output_open();
   private:
     state state_;
   private:
@@ -52,6 +64,8 @@ namespace musicbox
   private:
     std::string audio_output_device_;
     audio_output_alsa audio_output_;
+  private:
+    std::queue<musicbox::track> play_q_;
   private:
     static constexpr const char* audio_output_device_key = "__output_device__";
   };

@@ -69,6 +69,15 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
+    void queue(const std::string& id)
+    {
+      message m(message::queue_req_id, 0);
+
+      m.queue_req.id = id;
+
+      message_ch_.send(std::move(m));
+    }
+  public:
     static void start(dripcore::loop* loop)
     {
       loop->spawn<player_task>(message_ch_);

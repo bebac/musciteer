@@ -11,6 +11,9 @@
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
+#include "../dm/track.h"
+
+// ----------------------------------------------------------------------------
 #include <string>
 #include <cassert>
 #include <queue>
@@ -18,8 +21,6 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  class track;
-
   class player_task : public dripcore::task
   {
     using subscribe = audio_output_subscribe_message;
@@ -49,11 +50,13 @@ namespace musicbox
     void handle(unsubscribe& m);
     void handle(device_list_request& m, unsigned ref);
     void handle(audio_output_device& m);
+    void handle(stream_data_request& m);
     void handle(play_request& m);
     void handle(queue_request& m);
     void handle(stream_begin_notify& m);
     void handle(stream_end_notify& m);
   private:
+    void play(const std::string& uri);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
     void audio_output_open();
@@ -65,9 +68,15 @@ namespace musicbox
     std::string audio_output_device_;
     audio_output_alsa audio_output_;
   private:
+    std::set<message_channel> observers_;
+  private:
     std::queue<musicbox::track> play_q_;
   private:
+    unsigned playing_id_;
+    musicbox::track playing_track_;
+  private:
     static constexpr const char* audio_output_device_key = "__output_device__";
+    static constexpr const char* stream_id_key = "__stream_id__";
   };
 }
 

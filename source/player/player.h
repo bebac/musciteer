@@ -60,6 +60,16 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
+    void stream_data(unsigned stream_id, message_channel reply_ch)
+    {
+      message m(message::stream_data_req_id, 0);
+
+      m.stream_data_req.stream_id = stream_id;
+      m.stream_data_req.reply = reply_ch;
+
+      message_ch_.send(std::move(m));
+    }
+  public:
     void play(const std::string& id)
     {
       message m(message::play_req_id, 0);

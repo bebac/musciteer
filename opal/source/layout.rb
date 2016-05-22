@@ -26,6 +26,10 @@ class Layout
       component Settings
     end
 
+    div id: 'notification-overlay' do
+      component Notification
+    end
+
     div id: 'album-details-container', onclick: method(:toggle_album_details) do
       div id: 'album-details' do
         component AlbumDetails

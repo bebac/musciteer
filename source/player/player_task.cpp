@@ -69,6 +69,9 @@ namespace musicbox
       case message::device_id:
         handle(m.device);
         break;
+      case message::stream_data_req_id:
+        handle(m.stream_data_req);
+        break;
       case message::play_req_id:
         handle(m.play_req);
         break;
@@ -86,11 +89,13 @@ namespace musicbox
 
   void player_task::handle(subscribe& m)
   {
+    observers_.insert(m.channel);
     audio_output_subscribe(m.channel);
   }
 
   void player_task::handle(unsubscribe& m)
   {
+    observers_.erase(m.channel);
     audio_output_unsubscribe(m.channel);
   }
 
@@ -113,6 +118,23 @@ namespace musicbox
     kvstore.set(audio_output_device_key, audio_output_device_);
   }
 
+  void player_task::handle(stream_data_request& m)
+  {
+    message r(message::stream_data_res_id);
+
+    if ( playing_id_ == m.stream_id )
+    {
+      r.stream_data_res.stream_id = playing_id_;
+      r.stream_data_res.track = std::make_shared<musicbox::track>(playing_track_);
+    }
+    else
+    {
+      r.stream_data_res.stream_id = -1;
+    }
+
+    m.reply.send(std::move(r));
+  }
+
   void player_task::handle(play_request& m)
   {
     switch ( state_ )
@@ -121,13 +143,14 @@ namespace musicbox
       {
         auto tracks = musicbox::tracks();
 
-        auto track = tracks.find_by_id(m.id);
-        auto sources = track.sources();
+        playing_track_ = tracks.find_by_id(m.id);
+
+        auto sources = playing_track_.sources();
 
         if ( sources.size() > 0 )
         {
           audio_output_open();
-          spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+          play(sources[0].uri());
           state_ = playing;
         }
         break;
@@ -159,13 +182,14 @@ namespace musicbox
     {
       case stopped:
       {
-        auto track = play_q_.front();
-        auto sources = track.sources();
+        playing_track_ = play_q_.front();
+
+        auto sources = playing_track_.sources();
 
         if ( sources.size() > 0 )
         {
           audio_output_open();
-          spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+          play(sources[0].uri());
           state_ = playing;
         }
 
@@ -173,7 +197,18 @@ namespace musicbox
         break;
       }
       case playing:
+      {
+        for ( auto observer : observers_ )
+        {
+          message n(message::queue_update_id);
+
+          n.queue_update.queue_size = play_q_.size();
+          n.queue_update.track = std::make_shared<musicbox::track>(track);
+
+          observer.send(std::move(n));
+        }
         break;
+      }
       case paused:
         break;
     }
@@ -181,7 +216,6 @@ namespace musicbox
 
   void player_task::handle(stream_begin_notify& m)
   {
-    std::cout << "got stream_begin_notify" << std::endl;
   }
 
   void player_task::handle(stream_end_notify& m)
@@ -195,18 +229,20 @@ namespace musicbox
       {
         if ( !play_q_.empty() )
         {
-          auto track = play_q_.front();
-          auto sources = track.sources();
+          playing_track_ = play_q_.front();
+
+          auto sources = playing_track_.sources();
 
           if ( sources.size() > 0 )
           {
-            spawn<player_task_flac>(sources[0].uri(), 1, audio_output_);
+            play(sources[0].uri());
           }
 
           play_q_.pop();
         }
         else
         {
+          playing_id_ = -1;
           state_ = stopped;
         }
         break;
@@ -214,6 +250,15 @@ namespace musicbox
       case paused:
         break;
     }
+  }
+
+  void player_task::play(const std::string& uri)
+  {
+    auto kvstore = musicbox::kvstore();
+
+    playing_id_ = kvstore.increment(stream_id_key, 1, 1);
+
+    spawn<player_task_flac>(uri, playing_id_, audio_output_);
   }
 
   void player_task::audio_output_subscribe(message_channel& ch)

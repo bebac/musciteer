@@ -22,6 +22,10 @@ class Store
     message_channel_start
   end
 
+  def notifications
+    @notifications ||= []
+  end
+
   def audio_device_list_sync
     message_channel_send({ :event => :audio_device_list_sync })
   end
@@ -38,6 +42,15 @@ class Store
     @audio_device_list ||= []
   end
 
+  def stream_data(stream_id)
+    if @stream_id and @stream_id == stream_id
+      @stream_data
+    else
+      message_channel_send({ :event => :stream_data_sync, :data => stream_id })
+      nil
+    end
+  end
+
   def load_tracks
     Browser::HTTP.get("/api/tracks") do |request|
       request.on :success do |response|
@@ -52,13 +65,6 @@ class Store
   def tracks
     @tracks ||= []
   end
-
-  #def tracks
-  #  [
-  #    Track.new(:id => 1, :title => "I Told You So", :artists => "Carrie Underwood", :album => "I Told You So"),
-  #    Track.new(:id => 2, :title => "Somebody Like You", :artists => "Keith Urban", :album => "Days Go By")
-  #  ]
-  #end
 
   def load_albums
     Browser::HTTP.get("/api/albums") do |request|
@@ -126,11 +132,22 @@ class Store
   end
 
   def message_channel_recv(message)
-    #p "Received #{message}"
     case message['event']
     when "audio_device_list"
       @audio_device = message["data"][0]
       @audio_device_list = message['data'][1]
+      render!
+    when "queue_update"
+      notifications << QueueUpdate.new(message['data'])
+      $document.at('#notification-overlay').show
+      render!
+    when "stream_begin"
+      notifications << StreamBegin.new(message['data'])
+      $document.at('#notification-overlay').show
+      render!
+    when "stream_data"
+      @stream_id = message['data']['stream_id']
+      @stream_data = Track.new(message['data']['track'])
       render!
     end
   end

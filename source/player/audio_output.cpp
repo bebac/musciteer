@@ -142,8 +142,6 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
 {
   message r(message::open_res_id, ref);
 
-  std::cerr << "received open request device_name=" << m.device_name << std::endl;
-
   switch ( state_ )
   {
     case state_closed:

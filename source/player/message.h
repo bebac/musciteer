@@ -14,6 +14,9 @@
 #include "audio_buffer.h"
 
 // ----------------------------------------------------------------------------
+#include "../dm/track.h"
+
+// ----------------------------------------------------------------------------
 #include <dripcore/channel.h>
 #include <dripcore/task.h>
 
@@ -292,6 +295,57 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class queue_update_notification
+{
+public:
+  queue_update_notification()
+  {
+  }
+  queue_update_notification(queue_update_notification&& other)
+  {
+    queue_size = std::move(other.queue_size);
+    track = std::move(other.track);
+  }
+public:
+  unsigned queue_size;
+  std::shared_ptr<musicbox::track> track;
+};
+
+// ----------------------------------------------------------------------------
+class stream_data_request
+{
+public:
+  stream_data_request() : stream_id()
+  {
+  }
+  stream_data_request(stream_data_request&& other)
+  {
+    stream_id = std::move(other.stream_id);
+    reply = std::move(other.reply);
+  }
+public:
+  unsigned stream_id;
+  message_channel reply;
+};
+
+// ----------------------------------------------------------------------------
+class stream_data_response
+{
+public:
+  stream_data_response() : stream_id()
+  {
+  }
+  stream_data_response(stream_data_response&& other)
+  {
+    stream_id = std::move(other.stream_id);
+    track = std::move(other.track);
+  }
+public:
+  unsigned stream_id;
+  std::shared_ptr<musicbox::track> track;
+};
+
+// ----------------------------------------------------------------------------
 class message
 {
 public:
@@ -315,6 +369,9 @@ public:
     stream_progress_notify_id = 15,
     subscribe_id = 16,
     unsubscribe_id = 17,
+    queue_update_id = 18,
+    stream_data_req_id = 19,
+    stream_data_res_id = 20,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -375,6 +432,15 @@ public:
       case unsubscribe_id:
         new (&unsubscribe) audio_output_unsubscribe_message();
         break;
+      case queue_update_id:
+        new (&queue_update) queue_update_notification();
+        break;
+      case stream_data_req_id:
+        new (&stream_data_req) stream_data_request();
+        break;
+      case stream_data_res_id:
+        new (&stream_data_res) stream_data_response();
+        break;
     }
   }
 public:
@@ -432,6 +498,15 @@ public:
         break;
       case unsubscribe_id:
         new (&unsubscribe) audio_output_unsubscribe_message(std::move(other.unsubscribe));
+        break;
+      case queue_update_id:
+        new (&queue_update) queue_update_notification(std::move(other.queue_update));
+        break;
+      case stream_data_req_id:
+        new (&stream_data_req) stream_data_request(std::move(other.stream_data_req));
+        break;
+      case stream_data_res_id:
+        new (&stream_data_res) stream_data_response(std::move(other.stream_data_res));
         break;
     }
     type = other.type;
@@ -493,6 +568,15 @@ public:
       case unsubscribe_id:
         unsubscribe.~audio_output_unsubscribe_message();
         break;
+      case queue_update_id:
+        queue_update.~queue_update_notification();
+        break;
+      case stream_data_req_id:
+        stream_data_req.~stream_data_request();
+        break;
+      case stream_data_res_id:
+        stream_data_res.~stream_data_response();
+        break;
     }
   }
 public:
@@ -516,6 +600,9 @@ public:
     audio_output_stream_progress_notification stream_progress_notify;
     audio_output_subscribe_message subscribe;
     audio_output_unsubscribe_message unsubscribe;
+    queue_update_notification queue_update;
+    stream_data_request stream_data_req;
+    stream_data_response stream_data_res;
   };
   //long long ref;
   unsigned ref;

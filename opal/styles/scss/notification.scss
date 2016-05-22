@@ -1,0 +1,69 @@
+$notification-color: #E8E4D9;
+$notification-h2-color: $notification-color;
+$notification-h3-color: #8E897E;
+
+#notification-overlay {
+  color: #000;
+  position: fixed;
+  right: 1.5em;
+  top: 1.5em;
+  //overflow: auto;
+  width: 25%;
+  height: 5em;
+  display: none;
+  background:rgba(35,35,35,0.9);
+  //border: 4px solid rgba(255,239,193,0.2);
+  border-radius: .33em;
+  z-index: 1000;
+}
+
+#notification-container
+{
+  color: $notification-color;
+
+  #notification
+  {
+    white-space: nowrap;
+
+    >:nth-child(1)
+    {
+      display: inline-block;
+      position: absolute;
+      width: 2em;
+      padding: 1em;
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      h1 {
+        display: inline-block;
+      }
+
+    }
+
+    >:nth-child(2)
+    {
+      display: inline-block;
+      position:absolute;
+      left: 4em;
+      max-width: calc(100% - 5em);
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      h2, h3 {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      h2 {
+        color: $notification-h2-color;
+      }
+
+      h3 {
+        color: $notification-h3-color;
+      }
+    }
+  }
+}

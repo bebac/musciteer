@@ -82,6 +82,10 @@ class websocket_handler : public http::websocket_handler_base
       {
         player.audio_device(j["data"].get<std::string>());
       }
+      else if ( j["event"] == "stream_data_sync" )
+      {
+        player.stream_data(j["data"].get<unsigned>(), message_ch_);
+      }
       else if ( j["event"] == "play" )
       {
         player.play(j["data"].get<std::string>());

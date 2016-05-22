@@ -11,6 +11,7 @@
 #include "tracks_handler.h"
 #include "albums_handler.h"
 #include "static_file_handler.h"
+#include "api.h"
 
 // ----------------------------------------------------------------------------
 #include <dripcore/socket.h>
@@ -47,7 +48,9 @@ void websocket_send_task::main()
       {
         json event = {
           { "event", "stream_begin"},
-          { "data",  { "stream_id", msg.stream_begin_notify.stream_id } }
+          { "data",  {
+            { "stream_id", msg.stream_begin_notify.stream_id } }
+          }
         };
 
         handler_.send_message(event.dump());
@@ -57,7 +60,9 @@ void websocket_send_task::main()
       {
         json event = {
           { "event", "stream_end"},
-          { "data",  { "stream_id", msg.stream_begin_notify.stream_id } }
+          { "data",  {
+            { "stream_id", msg.stream_begin_notify.stream_id } }
+          }
         };
 
         handler_.send_message(event.dump());
@@ -74,6 +79,30 @@ void websocket_send_task::main()
           }
         };
 
+        handler_.send_message(event.dump());
+        break;
+      }
+      case message::queue_update_id:
+      {
+        json event = {
+          { "event", "queue_update"},
+          { "data",  {
+            { "queue_size", msg.queue_update.queue_size },
+            { "track", musicbox::to_json(*msg.queue_update.track) } }
+          }
+        };
+        handler_.send_message(event.dump());
+        break;
+      }
+      case message::stream_data_res_id:
+      {
+        json event = {
+          { "event", "stream_data"},
+          { "data",  {
+            { "stream_id", msg.stream_data_res.stream_id },
+            { "track", musicbox::to_json(*msg.stream_data_res.track) } }
+          }
+        };
         handler_.send_message(event.dump());
         break;
       }
@@ -169,7 +198,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
 
   std::smatch match;
 
-  std::cout << "dispatch uri " << uri << std::endl;
+  //std::cout << "dispatch uri " << uri << std::endl;
 
   if ( uri == "/" || uri == "/albums" || uri == "/tracks" )
   {

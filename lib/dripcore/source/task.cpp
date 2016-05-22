@@ -70,35 +70,33 @@ namespace dripcore
     swapcontext(&callee_, &caller_);
   }
 
-#if 1
   void task::wait_readable(int fd)
   {
     // Setup event descriptor.
     ed_.fd = fd;
-    ed_.rd = [&]() {
-      resume_();
-    };
+    ed_.rd = [&]() { resume_(); };
+    ed_.wr = nullptr;
+
     // Activate event.
     loop_->mod(&ed_);
+
     // Switch back to the caller.
     swapcontext(&callee_, &caller_);
   }
-#endif
 
-#if 1
   void task::wait_writable(int fd)
   {
     // Setup event descriptor.
     ed_.fd = fd;
-    ed_.wr = [&]() {
-      resume_();
-    };
+    ed_.rd = nullptr;
+    ed_.wr = [&]() { resume_(); };
+
     // Activate event.
     loop_->mod(&ed_);
+
     // Switch back to the caller.
     swapcontext(&callee_, &caller_);
   }
-#endif
 
   void task::call(int arg0, int arg1)
   {

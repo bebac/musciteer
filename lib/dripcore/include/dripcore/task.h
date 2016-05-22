@@ -147,7 +147,6 @@ namespace dripcore
 #endif
   public:
     void yield(bool resume=false);
-#if 1
   public:
     template <typename T>
     void wait_readable(const T& eventable)
@@ -164,7 +163,6 @@ namespace dripcore
     }
   public:
     void wait_writable(int fd);
-#endif
   private:
     static void call(int arg0, int arg1);
   private:

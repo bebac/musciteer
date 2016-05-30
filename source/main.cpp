@@ -7,6 +7,7 @@
 //
 //
 // ----------------------------------------------------------------------------
+#include "player/sources.h"
 #include "player/player.h"
 
 // ----------------------------------------------------------------------------
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
   dripcore::loop loop;
 
   musicbox::kvstore::start(".mboxd");
+  musicbox::sources::start(&loop);
   musicbox::player::start(&loop);
 
   auto on_connection = [&](dripcore::socket socket) {

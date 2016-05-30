@@ -10,6 +10,7 @@
 // ----------------------------------------------------------------------------
 #include "message.h"
 #include "audio_buffer.h"
+#include "audio_output.h"
 
 // ----------------------------------------------------------------------------
 #include <dripcore/task.h>
@@ -24,7 +25,7 @@ namespace musicbox
   {
     using milliseconds = audio_output_alsa::milliseconds;
   public:
-    flac_decoder(const std::string& filename, unsigned stream_id, audio_output_alsa& audio_output)
+    flac_decoder(const std::string& filename, unsigned stream_id, std::shared_ptr<audio_output_alsa> audio_output)
       : FLAC::Decoder::File(), stream_id_(stream_id), audio_output_(audio_output)
     {
       auto res = FLAC::Decoder::File::init(filename.c_str());
@@ -56,7 +57,7 @@ namespace musicbox
       message m(message::stream_end_id);
 
       m.stream_end.reply = done;
-      audio_output_.send(std::move(m));
+      audio_output_->send(std::move(m));
 
       done.recv(task_);
     }
@@ -76,7 +77,7 @@ namespace musicbox
       message m(message::stream_buffer_id);
 
       m.stream_buffer.buffer = std::move(buf);
-      audio_output_.send(std::move(m));
+      audio_output_->send(std::move(m));
 
       if ( task_->stopping() || task_->done() ) {
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
@@ -101,7 +102,7 @@ namespace musicbox
       m.stream_begin.sample_rate = sample_rate;
       m.stream_begin.length = std::chrono::duration_cast<milliseconds>(length);
       m.stream_begin.completed_buffer_ch = buffer_ch_;
-      audio_output_.send(std::move(m));
+      audio_output_->send(std::move(m));
     }
   protected:
     void error_callback (::FLAC__StreamDecoderErrorStatus status)
@@ -110,7 +111,7 @@ namespace musicbox
     }
   private:
     dripcore::task* task_;
-    audio_output_alsa& audio_output_;
+    std::shared_ptr<audio_output_alsa> audio_output_;
   private:
     unsigned stream_id_;
     unsigned bits_per_sample_;
@@ -119,11 +120,10 @@ namespace musicbox
 
   class player_task_flac : public dripcore::task
   {
-    using milliseconds = audio_output_alsa::milliseconds;
   public:
-    player_task_flac(const std::string& uri, unsigned stream_id, audio_output_alsa& audio_output)
+    player_task_flac(std::shared_ptr<player_session> session)
       :
-      decoder_(uri, stream_id, audio_output)
+      decoder_(session->track()->sources()[0].uri(), session->id(), session->audio_output())
     {
     }
   private:

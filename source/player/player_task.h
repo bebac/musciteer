@@ -8,10 +8,13 @@
 #define __player__player_task_h__
 
 // ----------------------------------------------------------------------------
-#include "audio_output.h"
+#include "message.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/track.h"
+
+// ----------------------------------------------------------------------------
+#include <dripcore/task.h>
 
 // ----------------------------------------------------------------------------
 #include <string>
@@ -19,8 +22,13 @@
 #include <queue>
 
 // ----------------------------------------------------------------------------
+class audio_output_alsa;
+
+// ----------------------------------------------------------------------------
 namespace musicbox
 {
+  class player_session;
+
   class player_task : public dripcore::task
   {
     using subscribe = audio_output_subscribe_message;
@@ -56,7 +64,8 @@ namespace musicbox
     void handle(stream_begin_notify& m);
     void handle(stream_end_notify& m);
   private:
-    void play(const std::string& uri);
+    void become_playing(const musicbox::track& track);
+    void queue_update_notify(const musicbox::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
     void audio_output_open();
@@ -65,18 +74,16 @@ namespace musicbox
   private:
     message_channel message_ch_;
   private:
+    std::shared_ptr<audio_output_alsa> audio_output_;
     std::string audio_output_device_;
-    audio_output_alsa audio_output_;
   private:
     std::set<message_channel> observers_;
   private:
     std::queue<musicbox::track> play_q_;
   private:
-    unsigned playing_id_;
-    musicbox::track playing_track_;
+    std::shared_ptr<player_session> session_;
   private:
     static constexpr const char* audio_output_device_key = "__output_device__";
-    static constexpr const char* stream_id_key = "__stream_id__";
   };
 }
 

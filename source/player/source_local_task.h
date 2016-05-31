@@ -9,7 +9,10 @@
 
 // ----------------------------------------------------------------------------
 #include "player_session.h"
-#include "player_task_flac.h"
+
+// ----------------------------------------------------------------------------
+#include <dripcore/task.h>
+#include <dripcore/channel.h>
 
 // ----------------------------------------------------------------------------
 namespace musicbox
@@ -19,23 +22,9 @@ namespace musicbox
   class source_local_task : public dripcore::task
   {
   public:
-    source_local_task(session_channel channel) : ch_(channel)
-    {
-    }
+    source_local_task(session_channel channel);
   private:
-    void main() final
-    {
-      while ( true )
-      {
-        auto msg = ch_.recv(this);
-
-        if ( !msg ) {
-          break;
-        }
-
-        spawn<player_task_flac>(msg);
-      }
-    }
+    void main() final;
   private:
     session_channel ch_;
   };

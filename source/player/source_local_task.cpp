@@ -4,16 +4,10 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __player__player_task_flac_h__
-#define __player__player_task_flac_h__
-
-// ----------------------------------------------------------------------------
+#include "source_local_task.h"
 #include "message.h"
 #include "audio_buffer.h"
 #include "audio_output.h"
-
-// ----------------------------------------------------------------------------
-#include <dripcore/task.h>
 
 // ----------------------------------------------------------------------------
 #include <FLAC++/decoder.h>
@@ -21,12 +15,18 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
+  /////
+  // FLAC player.
+
   class flac_decoder : public FLAC::Decoder::File
   {
     using milliseconds = audio_output_alsa::milliseconds;
   public:
     flac_decoder(const std::string& filename, unsigned stream_id, std::shared_ptr<audio_output_alsa> audio_output)
-      : FLAC::Decoder::File(), stream_id_(stream_id), audio_output_(audio_output)
+      :
+      FLAC::Decoder::File(),
+      stream_id_(stream_id),
+      audio_output_(audio_output)
     {
       auto res = FLAC::Decoder::File::init(filename.c_str());
 
@@ -118,23 +118,35 @@ namespace musicbox
     dripcore::channel<audio_buffer> buffer_ch_;
   };
 
-  class player_task_flac : public dripcore::task
-  {
-  public:
-    player_task_flac(std::shared_ptr<player_session> session)
-      :
-      decoder_(session->track()->sources()[0].uri(), session->id(), session->audio_output())
-    {
-    }
-  private:
-    void main()
-    {
-      decoder_.play(this);
-    }
-  private:
-    flac_decoder decoder_;
-  };
-}
+  /////
+  // source_local_task implementation.
 
-// ----------------------------------------------------------------------------
-#endif
+  source_local_task::source_local_task(session_channel channel) : ch_(channel)
+  {
+  }
+
+  void source_local_task::main()
+  {
+    while ( true )
+    {
+      auto session = ch_.recv(this);
+
+      if ( !session ) {
+        break;
+      }
+
+      auto track = session->track();
+      assert(track);
+
+      auto sources = track->sources();
+
+      flac_decoder decoder{
+        sources[0].uri(),
+        session->id(),
+        session->audio_output()
+      };
+
+      decoder.play(this);
+    }
+  }
+}

@@ -15,13 +15,18 @@ rule ld
 rule dep
   command = git clone $url $out
 
+rule libspotify
+  command = wget -qO- https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linux-x86_64-release.tar.gz | tar -xz -C lib/
+
 ###
 # Download dependencies.
+
+build lib/libspotify-12.1.51-Linux-x86_64-release: libspotify
 
 build lib/json/nlohmann: dep
   url = https://github.com/nlohmann/json.git
 
-build deps: phony lib/json/nlohmann/
+build deps: phony lib/json/nlohmann/ lib/libspotify-12.1.51-Linux-x86_64-release
 
 
 ###
@@ -126,6 +131,15 @@ build build/player/player_task.o: cc source/player/player_task.cpp
 build build/player/player_session.o: cc source/player/player_session.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
+build build/player/source_local_task.o: cc source/player/source_local_task.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include
+
+build build/player/source_spotify_task.o: cc source/player/source_spotify_task.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/libspotify-12.1.51-Linux-x86_64-release/include
+
+build build/player/source_spotify_app_key.o: cc source/player/source_spotify_app_key.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/libspotify-12.1.51-Linux-x86_64-release/include
+
 build build/main.o: cc source/main.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
@@ -138,6 +152,9 @@ build build/mboxd: ld $
   build/player/player.o $
   build/player/player_task.o $
   build/player/player_session.o $
+  build/player/source_local_task.o $
+  build/player/source_spotify_task.o $
+  build/player/source_spotify_app_key.o $
   build/player/sources.o $
   build/main.o | build/libdripcore.a build/libmusicbox_dm.a build/libhttp.a build/libmsgpack.a
-  libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet
+  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify

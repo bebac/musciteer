@@ -158,3 +158,13 @@ build build/mboxd: ld $
   build/player/sources.o $
   build/main.o | build/libdripcore.a build/libmusicbox_dm.a build/libhttp.a build/libmsgpack.a
   libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
+
+
+###
+# flac_import
+
+build build/tools.d/flac_import.o: cc source/tools/flac_import.cpp
+  includes = -Ilib/msgpack/include
+
+build build/flac_import: ld build/tools.d/flac_import.o | build/libmusicbox_dm.a build/libmsgpack.a
+  libs = -lmusicbox_dm -lFLAC++ -lmsgpack -lkyotocabinet

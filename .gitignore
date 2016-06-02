@@ -9,5 +9,8 @@ public/assets/application.css*
 public/assets/application.js
 public/index.html
 
+source/player/source_spotify_app_key.cpp
+
 lib/json/nlohmann
+lib/libspotify-12.1.51-Linux-x86_64-release
 build/

@@ -282,7 +282,7 @@ namespace musicbox
 
         std::string name = c.get_field_name();
 
-        for ( auto i=0; i<name.length(); ++i ) {
+        for ( size_t i=0; i<name.length(); ++i ) {
           name[i] = std::toupper(name[i]);
         }
 

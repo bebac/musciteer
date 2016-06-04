@@ -55,6 +55,7 @@ namespace musicbox
         {
           // TODO: error.
           std::cout << "kvstore get error" << std::endl;
+          return false;
         }
       }
       else
@@ -139,7 +140,7 @@ namespace musicbox
     bool set(const std::string& key, T value)
     {
       assert(instance_);
-      instance_->set(key, std::forward<T>(value));
+      return instance_->set(key, std::forward<T>(value));
     }
   public:
     void each(

@@ -57,6 +57,7 @@ public:
   audio_output_notification_message& operator=(audio_output_notification_message&& rhs)
   {
     channel = std::move(rhs.channel);
+    return *this;
   }
 public:
   message_channel channel;

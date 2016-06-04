@@ -109,7 +109,7 @@ namespace http
         // TODO: Check masking
 
         message.reserve(header.payload_length());
-        for ( auto i=0; i<header.payload_length(); ++i )
+        for ( size_t i=0; i<header.payload_length(); ++i )
         {
           message.push_back(payload.get() ^ header.masking_key(i));
         }

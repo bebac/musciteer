@@ -59,7 +59,7 @@ namespace musicbox
   public:
     bool is_track()
     {
-      sp_link_type(link_) == SP_LINKTYPE_TRACK;
+      return sp_link_type(link_) == SP_LINKTYPE_TRACK;
     }
   public:
     sp_track* as_track()
@@ -190,6 +190,8 @@ namespace musicbox
 
       switch ( msg )
       {
+        case atom::quit:
+          break;
         case atom::process_events:
         {
           int next_timeout;

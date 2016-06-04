@@ -165,6 +165,9 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
     case state_open:
       r.open_res.error_code = 0;
       break;
+    case state_playing:
+      r.open_res.error_code = 0;
+      break;
   }
 
   m.reply.send(std::move(r));
@@ -250,6 +253,9 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
       }
       break;
     }
+    case state_playing:
+      // TODO: ERROR!
+      break;
   }
 }
 

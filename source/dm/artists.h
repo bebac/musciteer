@@ -86,8 +86,8 @@ namespace musicbox
   private:
     kvstore kvstore_;
   private:
-    static constexpr const uint64_t key_min = 33763927760;
-    static constexpr const uint64_t key_max = 33778704095;
+    static constexpr const int64_t key_min = 33763927760;
+    static constexpr const int64_t key_max = 33778704095;
   };
 }
 

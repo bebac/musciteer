@@ -25,8 +25,8 @@ namespace musicbox
     flac_decoder(const std::string& filename, unsigned stream_id, std::shared_ptr<audio_output_alsa> audio_output)
       :
       FLAC::Decoder::File(),
-      stream_id_(stream_id),
-      audio_output_(audio_output)
+      audio_output_(audio_output),
+      stream_id_(stream_id)
     {
       auto res = FLAC::Decoder::File::init(filename.c_str());
 

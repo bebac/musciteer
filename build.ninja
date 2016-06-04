@@ -1,5 +1,5 @@
 #cxxflags = -Os -flto -std=c++11 -DNDEBUG
-cxxflags = -g -std=c++11
+cxxflags = -g -std=c++11 -Wall
 
 rule cc
   depfile = $out.d

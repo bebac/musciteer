@@ -55,8 +55,11 @@ namespace dripcore
         swapcontext(&caller_, &callee_);
         break;
       case task_state::done:
-        loop_->del(this);
         break;
+    }
+
+    if ( state_ == task_state::done ) {
+      loop_->del(this);
     }
   }
 

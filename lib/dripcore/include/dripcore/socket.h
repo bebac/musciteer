@@ -67,7 +67,9 @@ namespace dripcore
     void connect(const struct sockaddr *addr, socklen_t addrlen)
     {
       if ( ::connect(fd_, (struct sockaddr *)addr, addrlen) < 0 ) {
-        throw socket_error(errno);
+        if ( last_error() != EINPROGRESS ) {
+          throw socket_error(errno);
+        }
       }
     }
   public:

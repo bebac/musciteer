@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //
-//     Filename   : dripcore/socket_streambuf.h
+//     Filename   : dripcore/streambuf.h
 //
 //     Author     : Benny Bach <benny.bach@gmail.com>
 //                  Copyright (C) 2015
@@ -9,14 +9,16 @@
 //
 //
 // ----------------------------------------------------------------------------
-#ifndef __dripcore__socket_streambuf_h__
-#define __dripcore__socket_streambuf_h__
+#ifndef __dripcore__streambuf_h__
+#define __dripcore__streambuf_h__
 
 // ----------------------------------------------------------------------------
+#include <dripcore/io.h>
 #include <dripcore/task.h>
 
 // ----------------------------------------------------------------------------
 #include <streambuf>
+#include <system_error>
 
 // ----------------------------------------------------------------------------
 namespace dripcore
@@ -25,23 +27,23 @@ namespace dripcore
   {
   };
 
-  class socket_streambuf : public std::basic_streambuf<char>
+  class streambuf : public std::basic_streambuf<char>
   {
   public:
-    socket_streambuf(socket& socket, task& task, bool throw_on_eof = false)
+    streambuf(io& io, task& task, bool throw_on_eof = false)
       :
-      socket_(socket),
+      io_(io),
       task_(task),
       throw_on_eof_(throw_on_eof)
     {
       init_put_area();
       init_get_area();
-      task_.attach_eventable(socket_);
+      task_.attach_eventable(io_);
     }
   public:
-    virtual ~socket_streambuf()
+    virtual ~streambuf()
     {
-      task_.detach_eventable(socket_);
+      task_.detach_eventable(io_);
     }
   private:
     void init_get_area()
@@ -89,15 +91,15 @@ namespace dripcore
 
       do
       {
-        res = socket_.recv(ibuf_.data(), ibuf_.size(), 0);
+        res = io_.recv(ibuf_.data(), ibuf_.size(), 0);
 
         if ( res < 0 )
         {
-          if ( socket_.not_ready() ) {
-            task_.wait_readable(socket_);
+          if ( errno == EWOULDBLOCK || errno == EAGAIN ) {
+            task_.wait_readable(io_);
           }
           else {
-            throw socket_error(errno);
+            throw std::system_error(errno, std::system_category());
           }
         }
         else if ( res > 0 )
@@ -125,15 +127,15 @@ namespace dripcore
 
       do
       {
-        auto res = socket_.send(ptr, len, 0);
+        auto res = io_.send(ptr, len, 0);
 
         if ( res < 0 )
         {
-          if ( socket_.not_ready() ) {
-            task_.wait_writable(socket_);
+          if ( errno == EWOULDBLOCK || errno == EAGAIN ) {
+            task_.wait_writable(io_);
           }
           else {
-            throw socket_error(errno);
+            throw std::system_error(errno, std::system_category());
           }
         }
         else
@@ -150,7 +152,7 @@ namespace dripcore
     std::array<char, 4096> obuf_;
     std::array<char, 4096> ibuf_;
   private:
-    socket& socket_;
+    io& io_;
     task& task_;
     bool throw_on_eof_;
   };

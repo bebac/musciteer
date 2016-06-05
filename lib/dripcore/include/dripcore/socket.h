@@ -13,6 +13,7 @@
 #define __dripcore__socket_h__
 
 // ----------------------------------------------------------------------------
+#include "io.h"
 #include "socket_error.h"
 
 // ----------------------------------------------------------------------------
@@ -27,7 +28,7 @@
 // ----------------------------------------------------------------------------
 namespace dripcore
 {
-  class socket
+  class socket : public io
   {
   public:
     socket(int fd) : fd_(fd)
@@ -93,12 +94,12 @@ namespace dripcore
       return std::move(cli);
     }
   public:
-    ssize_t recv(void *buf, size_t len, int flags=0)
+    ssize_t recv(void *buf, size_t len, int flags=0) override
     {
       return ::recv(fd_, buf, len, flags|MSG_NOSIGNAL);
     }
   public:
-    ssize_t send(const void *buf, size_t len, int flags=0)
+    ssize_t send(const void *buf, size_t len, int flags=0) override
     {
       return ::send(fd_, buf, len, flags|MSG_NOSIGNAL);
     }
@@ -135,7 +136,7 @@ namespace dripcore
   public:
     int last_error() const { return errno; }
   public:
-    int native_handle() const
+    int native_handle() const override
     {
       return fd_;
     }

@@ -15,7 +15,7 @@
 
 // ----------------------------------------------------------------------------
 #include <dripcore/socket.h>
-#include <dripcore/socket_streambuf.h>
+#include <dripcore/streambuf.h>
 
 // ----------------------------------------------------------------------------
 #include <regex>
@@ -127,7 +127,7 @@ http_connection::~http_connection()
 // ----------------------------------------------------------------------------
 void http_connection::main()
 {
-  std::unique_ptr<dripcore::socket_streambuf> sbuf(new dripcore::socket_streambuf(socket_, *this));
+  std::unique_ptr<dripcore::streambuf> sbuf(new dripcore::streambuf(socket_, *this));
 
   try
   {

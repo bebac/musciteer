@@ -93,6 +93,7 @@ namespace http
       is.get() == 'T' && is.get() == 'P' ) )
     {
       std::cout << "syntax error, expected HTTP next=" << is.peek() << std::endl;
+      is.setstate(std::ios_base::failbit);
     }
 
     if ( is.get() == '/' )
@@ -183,6 +184,7 @@ namespace http
         {
           method = http::method::trace;
         }
+        break;
       case 'C':
         if (
           is.get() == 'O' && is.get() == 'N' && is.get() == 'N' &&
@@ -191,6 +193,11 @@ namespace http
           method = http::method::connect;
         }
         break;
+    }
+
+    if ( is.get() != ' ' )
+    {
+      // ERROR?
     }
 
     return is;

@@ -69,6 +69,9 @@ build build/http.d/common.o: cc lib/http/source/common.cpp
 build build/http.d/request.o: cc lib/http/source/request.cpp
   includes = -Ilib/http/include
 
+build build/http.d/response.o: cc lib/http/source/response.cpp
+  includes = -Ilib/http/include
+
 build build/http.d/websocket_handler_base.o: cc lib/http/source/handlers/websocket_handler_base.cpp
   includes = -Ilib/http/include
 
@@ -76,6 +79,7 @@ build build/libhttp.a: ar $
   build/http.d/base64.o $
   build/http.d/common.o $
   build/http.d/request.o $
+  build/http.d/response.o $
   build/http.d/websocket_handler_base.o
 
 
@@ -158,6 +162,29 @@ build build/mboxd: ld $
   build/player/sources.o $
   build/main.o | build/libdripcore.a build/libmusicbox_dm.a build/libhttp.a build/libmsgpack.a
   libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
+
+
+###
+# Tests
+
+build build/test.d/main.o: cc test/main.cpp
+  includes = -Ilib/http/include
+
+build build/test.d/test_http_common.o: cc test/test_http_common.cpp
+  includes = -Ilib/http/include
+
+build build/test.d/test_http_request.o: cc test/test_http_request.cpp
+  includes = -Ilib/http/include
+
+build build/test.d/test_http_response.o: cc test/test_http_response.cpp
+  includes = -Ilib/http/include
+
+build build/test: ld $
+  build/test.d/test_http_common.o $
+  build/test.d/test_http_request.o $
+  build/test.d/test_http_response.o $
+  build/test.d/main.o | build/libhttp.a
+  libs = -lhttp
 
 
 ###

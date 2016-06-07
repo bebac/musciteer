@@ -72,6 +72,8 @@ namespace http
       ios_ << std::forward<T>(value);
       return ios_;
     }
+  public:
+    std::basic_streambuf<char>* rdbuf();
   protected:
     http::version version_;
     http::status status_;

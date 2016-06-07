@@ -98,4 +98,9 @@ namespace http
   {
     is >> version_ >> status_ >> headers_;
   }
+
+  std::basic_streambuf<char>* response::rdbuf()
+  {
+    return ios_.rdbuf();
+  }
 }

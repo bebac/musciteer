@@ -39,7 +39,7 @@ TEST_CASE("Write http response")
 }
 
 // ----------------------------------------------------------------------------
-TEST_CASE("Read http response")
+TEST_CASE("Read http response (ok)")
 {
   std::istringstream is(
     "HTTP/1.1 200 OK\r\n"
@@ -69,4 +69,22 @@ TEST_CASE("Read http response")
 
   CHECK(header_found);
   CHECK(header_value == "0");
+}
+
+// ----------------------------------------------------------------------------
+TEST_CASE("Read http response (bad request)")
+{
+  std::istringstream is(
+    "HTTP/1.1 400 Bad Request\r\n"
+    "\r\n"
+  );
+
+  http::response response(is.rdbuf());
+
+  response >> response;
+
+  CHECK(response.version() == http::version::v1_1);
+  CHECK(response.status_code() == 400u);
+  CHECK(!response.ok());
+  CHECK(response.status_message() == "Bad Request");
 }

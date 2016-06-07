@@ -33,13 +33,13 @@ namespace http
   {
     is >> code_;
 
-    if ( is.peek() != ' ' ) {
+    if ( is.get() != ' ' ) {
       is.setstate(std::ios_base::failbit);
     }
 
-    is >> message_;
+    std::getline(is, message_, '\r');
 
-    if ( !(is.get() == '\r' && is.get() == '\n') ) {
+    if ( is.get() != '\n' ) {
       is.setstate(std::ios_base::failbit);
     }
   }

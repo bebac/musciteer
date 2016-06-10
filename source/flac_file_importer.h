@@ -120,7 +120,7 @@ namespace musicbox
       // If not found by disc id, try by album artist and album title or
       // artist and album title if there was no album artist tag.
 
-      if ( album_.id().empty() )
+      if ( album_.id_is_null() )
       {
         if ( !tag_album_artist.empty() )
         {
@@ -134,7 +134,7 @@ namespace musicbox
 
       // If album artist was not found, create new artist.
 
-      if ( album_artist_.id().empty() )
+      if ( album_artist_.id_is_null() )
       {
         if ( !tag_album_artist.empty() ) {
           album_artist_ = artists_.create_artist(tag_album_artist);
@@ -146,7 +146,7 @@ namespace musicbox
 
       // If album was not found, create new album.
 
-      if ( album_.id().empty() )
+      if ( album_.id_is_null() )
       {
         album_ = albums_.create_album();
 
@@ -173,7 +173,7 @@ namespace musicbox
 
       // If artist was not found, create new artist.
 
-      if ( artist_.id().empty() )
+      if ( artist_.id_is_null() )
       {
         artist_ = artists_.create_artist(tag_artist);
       }
@@ -183,7 +183,7 @@ namespace musicbox
 
       resolve_track_by_disc_and_track_number(tag_dn, tag_tn);
 
-      if ( track_.id().empty() )
+      if ( track_.id_is_null() )
       {
         track_ = tracks_.create_track();
       }
@@ -232,7 +232,7 @@ namespace musicbox
         return true;
       });
 
-      if ( album_artist_.id().empty() )
+      if ( album_artist_.id_is_null() )
         return;
 
       album_artist_.albums_each([&](const musicbox::album& rec)
@@ -248,7 +248,7 @@ namespace musicbox
   private:
     void resolve_track_by_disc_and_track_number(unsigned dn, unsigned tn)
     {
-      assert(!album_.id().empty());
+      assert(!album_.id_is_null());
 
       album_.tracks_each([&](const musicbox::track& rec)
       {

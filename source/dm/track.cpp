@@ -18,6 +18,11 @@ namespace musicbox
   {
   }
 
+  bool track::id_is_null()
+  {
+    return id_.empty();
+  }
+
   const std::string& track::id() const
   {
     return id_;

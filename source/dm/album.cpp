@@ -16,6 +16,11 @@ namespace musicbox
   {
   }
 
+  bool album::id_is_null()
+  {
+    return id_.empty();
+  }
+
   const std::string& album::id() const
   {
     return id_;

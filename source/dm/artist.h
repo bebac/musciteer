@@ -30,6 +30,8 @@ namespace musicbox
   public:
     artist();
   public:
+    bool id_is_null();
+  public:
     const std::string& id() const;
     const std::string& name() const;
   public:

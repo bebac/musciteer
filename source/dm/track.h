@@ -34,6 +34,8 @@ namespace musicbox
   public:
     track();
   public:
+    bool id_is_null();
+  public:
     const std::string& id() const;
     const std::string& title() const;
     unsigned track_number() const;

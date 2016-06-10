@@ -32,6 +32,8 @@ namespace musicbox
   public:
     album();
   public:
+    bool id_is_null();
+  public:
     const std::string& id() const;
     const std::string& title() const;
     const track_id_list& track_ids() const;

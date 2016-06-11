@@ -75,18 +75,36 @@ namespace musicbox
 
   class spotify_session : public dripcore::task
   {
+  public:
     enum class atom
     {
       quit,
+      play_session,
+      end_session,
       process_events,
       logged_in,
       metadata_updated,
       track_loaded
     };
   public:
-    spotify_session();
+    struct message
+    {
+      atom id;
+      std::shared_ptr<player_session> session;
+    };
+  public:
+    spotify_session(dripcore::channel<message> ch);
   private:
     void main() final;
+  private:
+    void init_audio_buffer_channel();
+  private:
+    void play_session(std::shared_ptr<player_session>);
+    void end_session();
+    void process_events();
+    void logged_in();
+    void metadata_updated();
+    void track_loaded();
   private:
     static void logged_in_cb(sp_session *session, sp_error error);
     static void logged_out_cb(sp_session *session);
@@ -109,13 +127,20 @@ namespace musicbox
   private:
     sp_session* session_;
   private:
-    dripcore::channel<atom> ch_;
+    dripcore::channel<message> ch_;
+  private:
+    sp_track* track_;
+    bool track_loaded_;
+  private:
+    std::shared_ptr<player_session> player_session_;
+    dripcore::channel<audio_buffer> buffer_ch_;
   };
 
   /////
   // spotify_session implementation.
 
-  spotify_session::spotify_session()
+  spotify_session::spotify_session(dripcore::channel<message> ch)
+    : session_(nullptr), ch_(ch), track_(nullptr), track_loaded_(false)
   {
     sp_session_callbacks callbacks = {
       &logged_in_cb,
@@ -180,42 +205,167 @@ namespace musicbox
 
   void spotify_session::main()
   {
+    init_audio_buffer_channel();
+
     while ( true )
     {
       auto msg = ch_.recv(this);
 
-      if ( msg == atom::quit ) {
+      if ( msg.id == atom::quit ) {
         break;
       }
 
-      switch ( msg )
+      switch ( msg.id )
       {
         case atom::quit:
           break;
+        case atom::play_session:
+          play_session(msg.session);
+          break;
+        case atom::end_session:
+          end_session();
+          break;
         case atom::process_events:
-        {
-          int next_timeout;
-          do
-          {
-            sp_session_process_events(session_, &next_timeout);
-          } while (next_timeout == 0);
+          process_events();
           break;
-        }
         case atom::logged_in:
-        {
-          std::cout << "spotify session logged in" << std::endl;
+          logged_in();
           break;
-        }
         case atom::metadata_updated:
-        {
-          std::cout << "spotify session metadata updated" << std::endl;
+          metadata_updated();
           break;
-        }
         case atom::track_loaded:
-        {
-          std::cout << "track loaded" << std::endl;
+          if ( !track_loaded_ )
+          {
+            track_loaded();
+            track_loaded_ = true;
+          }
           break;
-        }
+      }
+    }
+  }
+
+  void spotify_session::init_audio_buffer_channel()
+  {
+    for ( size_t i=0; i<10; ++i )
+    {
+      buffer_ch_.send(audio_buffer{}, this);
+    }
+  }
+
+  void spotify_session::play_session(std::shared_ptr<player_session> ps)
+  {
+    assert(!player_session_);
+
+    player_session_ = ps;
+
+    auto track = player_session_->track();
+    assert(track);
+
+    auto source = track->sources_get("spotify");
+
+    spotify_link link(source.uri());
+
+    if ( link.is_track() )
+    {
+      sp_track_add_ref(track_ = link.as_track());
+
+      if (sp_track_error(track_) == SP_ERROR_OK) {
+        ch_.send(message{atom::track_loaded});
+      }
+    }
+    else
+    {
+      // TODO: Unsupported uri.
+    }
+  }
+
+  void spotify_session::end_session()
+  {
+    if ( player_session_ )
+    {
+      sp_session_player_unload(session_);
+
+      auto audio_output = player_session_->audio_output();
+      assert(audio_output);
+
+      message_channel done;
+      ::message m(::message::stream_end_id);
+
+      m.stream_end.reply = done;
+      audio_output->send(std::move(m));
+
+      done.recv(this);
+
+      if ( track_ )
+      {
+        sp_track_release(track_);
+        track_ = 0;
+        track_loaded_ = false;
+      }
+
+      player_session_.reset();
+    }
+    else
+    {
+      std::cerr << "spotify session - player_session_ is null" << std::endl;
+    }
+  }
+
+  void spotify_session::process_events()
+  {
+    int next_timeout;
+    do
+    {
+      sp_session_process_events(session_, &next_timeout);
+    }
+    while (next_timeout == 0);
+  }
+
+  void spotify_session::logged_in()
+  {
+    //std::cout << "spotify session logged in" << std::endl;
+  }
+
+  void spotify_session::metadata_updated()
+  {
+    if (sp_track_error(track_) == SP_ERROR_OK) {
+      ch_.send(message{atom::track_loaded});
+    }
+  }
+
+  void spotify_session::track_loaded()
+  {
+    sp_availability avail = sp_track_get_availability(session_, track_);
+
+    if ( avail != SP_TRACK_AVAILABILITY_AVAILABLE )
+    {
+      std::cerr << "spotify session - track not available" << std::endl;
+    }
+    else
+    {
+      sp_error err;
+
+      if ( (err=sp_session_player_load(session_, track_)) != SP_ERROR_OK ) {
+        std::cerr << "sp_session_player_load error " << err << std::endl;
+      }
+
+      auto track = player_session_->track();
+      assert(track);
+
+      auto audio_output = player_session_->audio_output();
+      assert(audio_output);
+
+      ::message m(::message::stream_begin_id);
+
+      m.stream_begin.stream_id = player_session_->id();
+      m.stream_begin.sample_rate = 44100;
+      m.stream_begin.length = std::chrono::milliseconds(track->duration());
+      m.stream_begin.completed_buffer_ch = buffer_ch_;
+      audio_output->send(std::move(m));
+
+      if ( (err=sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
+        std::cerr << "sp_session_player_play error " << err << std::endl;
       }
     }
   }
@@ -226,7 +376,7 @@ namespace musicbox
   void spotify_session::logged_in_cb(sp_session *session, sp_error error)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(atom::logged_in);
+    self->ch_.send(message{atom::logged_in});
   }
 
   void spotify_session::logged_out_cb(sp_session *session)
@@ -236,49 +386,70 @@ namespace musicbox
   void spotify_session::metadata_updated_cb(sp_session *session)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(atom::metadata_updated);
+    self->ch_.send(message{atom::metadata_updated});
   }
 
   void spotify_session::connection_error_cb(sp_session *session, sp_error error)
   {
-    std::cout << "spotify session connection error!" << sp_error_message(error) << std::endl;
+    std::cerr << "spotify session connection error!" << sp_error_message(error) << std::endl;
   }
 
   void spotify_session::message_to_user_cb(sp_session *session, const char* message)
   {
-    std::cout << "spotify session message to user " << message << std::endl;
+    std::cerr << "spotify session message to user " << message << std::endl;
   }
 
   void spotify_session::notify_main_thread_cb(sp_session *session)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(atom::process_events);
+    self->ch_.send(message{atom::process_events});
   }
 
   int spotify_session::music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
   {
+    auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
+
+    if ( self->player_session_ )
+    {
+      auto audio_output = self->player_session_->audio_output();
+      assert(audio_output);
+
+      // There is a risk that we can block here which is not so good according to
+      // docs. Hope it will go if we have enough buffers in the pipe.
+      auto buf = self->buffer_ch_.recv();
+
+      buf.clear();
+      buf.write_s16_le_i(frames, num_frames);
+
+      ::message m(::message::stream_buffer_id);
+
+      m.stream_buffer.buffer = std::move(buf);
+      audio_output->send(std::move(m));
+    }
+
     //std::cerr << "spotify_session::music_delivery num_frames=" << num_frames << std::endl;
     return num_frames;
   }
 
   void spotify_session::play_token_lost_cb(sp_session *session)
   {
-    std::cout << "spotify session token lost" << std::endl;
+    std::cerr << "spotify session token lost" << std::endl;
   }
 
   void spotify_session::log_message_cb(sp_session *session, const char* data)
   {
-    std::cout << "spotify session log " << data << std::endl;
+    //std::cout << "spotify session log " << data << std::endl;
   }
 
   void spotify_session::end_of_track_cb(sp_session *session)
   {
-    std::cout << "spotify session end-of-track" << std::endl;
+    auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
+    self->ch_.send(message{atom::end_session});
   }
 
   void spotify_session::stream_error_cb(sp_session *session, sp_error error)
   {
-    std::cout << "spotify session stream error!" << sp_error_message(error) << std::endl;
+    std::cerr << "spotify session stream error!" << sp_error_message(error) << std::endl;
   }
 
   void spotify_session::user_info_updated_cb(sp_session *session)
@@ -324,7 +495,9 @@ namespace musicbox
 
   void source_spotify_task::main()
   {
-    spawn<spotify_session>();
+    dripcore::channel<spotify_session::message> spotify_session_ch;
+
+    spawn<spotify_session>(spotify_session_ch);
 
     while ( true )
     {
@@ -334,10 +507,7 @@ namespace musicbox
         break;
       }
 
-      auto track = session->track();
-      assert(track);
-
-      auto sources = track->sources();
+      spotify_session_ch.send(spotify_session::message{spotify_session::atom::play_session, session});
     }
   }
 }

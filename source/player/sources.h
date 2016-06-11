@@ -21,7 +21,29 @@ namespace musicbox
   public:
     void play(std::shared_ptr<player_session> session)
     {
-      local_session_ch_.send(std::move(session));
+      auto track = session->track();
+      assert(track);
+
+      auto sources = track->sources();
+
+      if ( sources.size() > 0 )
+      {
+        auto& source = sources[0];
+
+        if ( source.name() == "local" ) {
+          local_session_ch_.send(std::move(session));
+        }
+        else if ( source.name() == "spotify" ) {
+          //spotify_session_ch_.send(std::move(session));
+        }
+        else {
+          // TODO: Error!
+        }
+      }
+      else
+      {
+        // TODO: Error!
+      }
     }
   public:
     static void start(dripcore::loop* loop)

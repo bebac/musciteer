@@ -67,6 +67,17 @@ namespace musicbox
     return res;
   }
 
+  const track_source& track::sources_get(const std::string& name)
+  {
+    for ( auto& s : sources_ )
+    {
+      if ( s.name() == name ) {
+        return s;
+      }
+    }
+    throw std::runtime_error("track source not found");
+  }
+
   track::source_list track::sources() const
   {
     return sources_;

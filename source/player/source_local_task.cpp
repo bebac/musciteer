@@ -138,10 +138,10 @@ namespace musicbox
       auto track = session->track();
       assert(track);
 
-      auto sources = track->sources();
+      auto source = track->sources_get("local");
 
       flac_decoder decoder{
-        sources[0].uri(),
+        source.uri(),
         session->id(),
         session->audio_output()
       };

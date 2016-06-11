@@ -43,6 +43,7 @@ namespace musicbox
     unsigned duration() const;
     musicbox::album album() const;
     std::vector<musicbox::artist> artists() const;
+    const track_source& sources_get(const std::string& name);
     source_list sources() const;
   public:
     void id(const std::string&);

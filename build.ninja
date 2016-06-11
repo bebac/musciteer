@@ -1,5 +1,5 @@
-#cxxflags = -Os -flto -std=c++11 -DNDEBUG
-cxxflags = -g -std=c++11 -Wall
+cxxflags = -Os -flto -std=c++11 -DNDEBUG
+#cxxflags = -g -std=c++11 -Wall
 
 rule cc
   depfile = $out.d
@@ -9,8 +9,8 @@ rule ar
   command = gcc-ar -r $out $in
 
 rule ld
-#  command = g++ -flto -pthread -Lbuild -o $out $in $libs
-  command = g++ -pthread -Lbuild -o $out $in $libs
+  command = g++ -flto -pthread -Lbuild -o $out $in $libs
+#  command = g++ -pthread -Lbuild -o $out $in $libs
 
 rule dep
   command = git clone $url $out
@@ -195,3 +195,12 @@ build build/tools.d/flac_import.o: cc source/tools/flac_import.cpp
 
 build build/flac_import: ld build/tools.d/flac_import.o | build/libmusicbox_dm.a build/libmsgpack.a
   libs = -lmusicbox_dm -lFLAC++ -lmsgpack -lkyotocabinet
+
+###
+# spotify_import
+
+build build/tools.d/spotify_import.o: cc source/tools/spotify_import.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
+
+build build/spotify_import: ld build/tools.d/spotify_import.o | build/libmusicbox_dm.a build/libmsgpack.a build/libhttp.a
+  libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lkyotocabinet -lanl -lssl -lcrypto

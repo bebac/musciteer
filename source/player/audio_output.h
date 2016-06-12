@@ -1,14 +1,11 @@
 // ----------------------------------------------------------------------------
 //
 //     Author     : Benny Bach <benny.bach@gmail.com>
-//                  Copyright (C) 2015
-//
-// --- Description: -----------------------------------------------------------
-//
+//                  Copyright (C) 2016
 //
 // ----------------------------------------------------------------------------
-#ifndef __msgpack__audio_output_h__
-#define __msgpack__audio_output_h__
+#ifndef __player__audio_output_h__
+#define __player__audio_output_h__
 
 // ----------------------------------------------------------------------------
 #include "message.h"

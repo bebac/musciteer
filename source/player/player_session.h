@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------------------
 //
 //     Author     : Benny Bach <benny.bach@gmail.com>
-//                  Copyright (C) 2015
+//                  Copyright (C) 2016
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__player_session_h__
-#define __musicbox__player_session_h__
+#ifndef __player__player_session_h__
+#define __player__player_session_h__
 
 // ----------------------------------------------------------------------------
 #include "../dm/track.h"

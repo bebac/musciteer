@@ -22,6 +22,21 @@ class Store
     message_channel_start
   end
 
+  def settings_shown?
+    @settings_shown
+  end
+
+  def settings_toggle
+    if @settings_shown
+      $document.at('#settings-overlay').hide
+      @settings_shown = false
+    else
+      $document.at('#settings-overlay').show
+      @settings_shown = true
+    end
+    render!
+  end
+
   def notifications
     @notifications ||= []
   end
@@ -40,6 +55,44 @@ class Store
 
   def audio_device_list
     @audio_device_list ||= []
+  end
+
+  def directories
+    Browser::HTTP.get("/api/sources/local/directories") do |request|
+      request.synchronous!
+      request.on :success do |response|
+        @directories = response.json
+      end
+    end
+    @directories
+  end
+
+  def directories_set(index, value)
+    if value.empty?
+      @directories.delete_at(index)
+    else
+      @directories[index] = value
+    end
+    post_directories
+    render!
+  end
+
+  def directories_add(value)
+    if not value.empty?
+      @directories << value
+    end
+    post_directories
+    render!
+  end
+
+  def post_directories
+    Browser::HTTP.post("/api/sources/local/directories", data=@directories.to_json) do |request|
+      request.synchronous!
+      request.content_type("application/json")
+      request.on :success do |response|
+        #@directories = response.json
+      end
+    end
   end
 
   def stream_data(stream_id)

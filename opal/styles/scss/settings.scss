@@ -32,34 +32,13 @@
     padding-left: 1.5em;
   }
 
-  select
-  {
-    font-size: 1em;
-    padding: 0.33em;
-    background: #fff;
-    border: none;
-    style: none;
-    border-radius: 5px;
-    outline: none;
-    width: 20em;
-    border: 1px solid #ddd;
-  }
-
   #settings-header
   {
     position: relative;
     height: 3em;
     border-bottom: 1px solid #ccc;
 
-    > h1
-    {
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    > div
+    > div, h1
     {
       position: absolute;
       width: 100%;
@@ -71,33 +50,52 @@
   .settings-item
   {
     display: table;
+    padding: 1em;
     table-layout: fixed;
     width: 100%;
 
-    > div {
+    >div {
       display: table-cell;
       padding: 0.5em;
     }
 
-    div:nth-child(1) {
+    >:nth-child(1) {
       width: 25%;
       text-align: right;
       border-right: 1px solid #ddd;
     }
 
-    div:nth-child(2) {
-      /*text-align: center;*/
-      select {
+    >:nth-child(2)
+    {
+      div {
         width: 100%;
+      }
+
+      select, input {
+        font-size: 1em;
+        padding: 0.3em;
+        width: 100%;
+        border-radius: 3px;
+        border: 1px solid #ddd;
+        outline: none;
+      }
+
+      select
+      {
+        background: #fff;
+        style: none;
+
+      }
+
+      input {
+        @include boxsizing;
+        margin: 0.1em;
       }
     }
 
-    div:nth-child(3) {
-      /*text-align: center;*/
+    >:nth-child(3) {
       width: 25%;
     }
-
-    padding: 1em;
   }
 
   color: #666;

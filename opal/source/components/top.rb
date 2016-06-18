@@ -6,8 +6,7 @@ class Top
   end
 
   def toggle_settings(evt)
-    puts "toggle settings #{evt.target.id}"
-    $document.at('#settings-overlay').show
+    store.settings_toggle
   end
 
   def render

@@ -3,7 +3,7 @@ class Layout
 
   def toggle_settings(evt)
     if evt.target.id == 'settings-overlay'
-      $document.at('#settings-overlay').hide
+      store.settings_toggle
     end
   end
 

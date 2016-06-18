@@ -10,6 +10,7 @@
 #include "http_connection.h"
 #include "tracks_handler.h"
 #include "albums_handler.h"
+#include "sources_handler.h"
 #include "static_file_handler.h"
 #include "api.h"
 
@@ -194,6 +195,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
 
   std::regex track_re("^/api/tracks(/.*)?");
   std::regex albums_re("^/api/albums(/.*)?");
+  std::regex sources_re("^/api/sources(/.*)?");
   std::regex assets_re("^/(assets/.+)");
 
   std::smatch match;
@@ -221,6 +223,19 @@ void http_connection::dispatch(http::request& request, http::response& response)
   else if ( std::regex_match(uri, match, albums_re) )
   {
     albums_handler handler(request, response);
+
+    if ( match.size() == 2 )
+    {
+      handler.call(match[1]);
+    }
+    else
+    {
+      // ERROR!
+    }
+  }
+  else if ( std::regex_match(uri, match, sources_re) )
+  {
+    sources_handler handler(request, response);
 
     if ( match.size() == 2 )
     {

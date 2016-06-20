@@ -95,6 +95,17 @@ void websocket_send_task::main()
         handler_.send_message(event.dump());
         break;
       }
+      case message::player_state_id:
+      {
+        json event = {
+          { "event", "player_state"},
+          { "data",  {
+            { "state", msg.player_state.state } }
+          }
+        };
+        handler_.send_message(event.dump());
+        break;
+      }
       case message::stream_data_res_id:
       {
         json event = {

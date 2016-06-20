@@ -65,6 +65,8 @@ namespace musicbox
     void handle(stream_end_notify& m);
   private:
     void become_playing(const musicbox::track& track);
+    void become_stopped();
+    void player_state_notify(unsigned state);
     void queue_update_notify(const musicbox::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);

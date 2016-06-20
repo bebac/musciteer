@@ -310,6 +310,21 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class player_state_notification
+{
+public:
+  player_state_notification()
+  {
+  }
+  player_state_notification(player_state_notification&& other)
+  {
+    state = std::move(other.state);
+  }
+public:
+  unsigned state;
+};
+
+// ----------------------------------------------------------------------------
 class stream_data_request
 {
 public:
@@ -368,8 +383,9 @@ public:
     subscribe_id = 16,
     unsubscribe_id = 17,
     queue_update_id = 18,
-    stream_data_req_id = 19,
-    stream_data_res_id = 20,
+    player_state_id = 19,
+    stream_data_req_id = 20,
+    stream_data_res_id = 21,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -432,6 +448,9 @@ public:
         break;
       case queue_update_id:
         new (&queue_update) queue_update_notification();
+        break;
+      case player_state_id:
+        new (&player_state) player_state_notification();
         break;
       case stream_data_req_id:
         new (&stream_data_req) stream_data_request();
@@ -499,6 +518,9 @@ public:
         break;
       case queue_update_id:
         new (&queue_update) queue_update_notification(std::move(other.queue_update));
+        break;
+      case player_state_id:
+        new (&player_state) player_state_notification(std::move(other.player_state));
         break;
       case stream_data_req_id:
         new (&stream_data_req) stream_data_request(std::move(other.stream_data_req));
@@ -569,6 +591,9 @@ public:
       case queue_update_id:
         queue_update.~queue_update_notification();
         break;
+      case player_state_id:
+        player_state.~player_state_notification();
+        break;
       case stream_data_req_id:
         stream_data_req.~stream_data_request();
         break;
@@ -599,6 +624,7 @@ public:
     audio_output_subscribe_message subscribe;
     audio_output_unsubscribe_message unsubscribe;
     queue_update_notification queue_update;
+    player_state_notification player_state;
     stream_data_request stream_data_req;
     stream_data_response stream_data_res;
   };

@@ -89,6 +89,7 @@ namespace musicbox
   {
     observers_.insert(m.channel);
     audio_output_subscribe(m.channel);
+    player_state_notify(state_);
   }
 
   void player_task::handle(unsubscribe& m)
@@ -207,8 +208,7 @@ namespace musicbox
         }
         else
         {
-          session_.reset();
-          state_ = stopped;
+          become_stopped();
         }
         break;
       }
@@ -228,6 +228,29 @@ namespace musicbox
     session_->play(audio_output_);
 
     state_ = playing;
+
+    player_state_notify(state_);
+  }
+
+  void player_task::become_stopped()
+  {
+    session_.reset();
+
+    state_ = stopped;
+
+    player_state_notify(state_);
+  }
+
+  void player_task::player_state_notify(unsigned state)
+  {
+    for ( auto observer : observers_ )
+    {
+      message n(message::player_state_id);
+
+      n.player_state.state = state;
+
+      observer.send(std::move(n));
+    }
   }
 
   void player_task::queue_update_notify(const musicbox::track& track)

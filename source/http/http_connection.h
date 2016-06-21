@@ -73,24 +73,36 @@ class websocket_handler : public http::websocket_handler_base
     if ( j.count("event") )
     {
       auto player = musicbox::player();
+      auto event = j["event"];
 
-      if ( j["event"] == "audio_device_list_sync" )
+      if ( event == "audio_device_list_sync" )
       {
         player.audio_device_list(message_ch_);
       }
-      else if ( j["event"] == "audio_device" )
+      else if ( event == "audio_device" )
       {
         player.audio_device(j["data"].get<std::string>());
       }
-      else if ( j["event"] == "stream_data_sync" )
+      else if ( event == "stream_data_sync" )
       {
         player.stream_data(j["data"].get<unsigned>(), message_ch_);
       }
-      else if ( j["event"] == "play" )
+      else if ( event == "play" )
       {
-        player.play(j["data"].get<std::string>());
+        auto data = j["data"];
+
+        if ( data.is_null() ) {
+          player.play();
+        }
+        else {
+          player.play(data.get<std::string>());
+        }
       }
-      else if ( j["event"] == "queue" )
+      else if ( event == "stop" )
+      {
+        player.stop();
+      }
+      else if ( event == "queue" )
       {
         player.queue(j["data"].get<std::string>());
       }

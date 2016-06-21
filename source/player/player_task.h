@@ -60,6 +60,7 @@ namespace musicbox
     void handle(audio_output_device& m);
     void handle(stream_data_request& m);
     void handle(play_request& m);
+    void handle(stop_request& m);
     void handle(queue_request& m);
     void handle(stream_begin_notify& m);
     void handle(stream_end_notify& m);

@@ -14,10 +14,6 @@
     top: 50%;
     transform: translateY(-50%);
 
-    >div {
-      display: inline-block;
-    }
-
     // Change display to center virtically.
     img {
       display: block;
@@ -39,5 +35,12 @@
   #settings-toggle {
     float: right;
     padding-right: 1em;
+  }
+
+  #player-toggle {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+
   }
 }

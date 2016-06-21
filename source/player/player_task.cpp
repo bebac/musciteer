@@ -73,6 +73,9 @@ namespace musicbox
       case message::play_req_id:
         handle(m.play_req);
         break;
+      case message::stop_req_id:
+        handle(m.stop_req);
+        break;
       case message::queue_req_id:
         handle(m.queue_req);
         break;
@@ -140,10 +143,17 @@ namespace musicbox
     {
       case stopped:
       {
-        auto tracks = musicbox::tracks();
+        if ( m.id.empty() )
+        {
+          std::cout << "play with no id not supported yet" << std::endl;
+        }
+        else
+        {
+          auto tracks = musicbox::tracks();
 
-        assert(!session_);
-        become_playing(tracks.find_by_id(m.id));
+          assert(!session_);
+          become_playing(tracks.find_by_id(m.id));
+        }
         break;
       }
       case playing:
@@ -151,6 +161,11 @@ namespace musicbox
       case paused:
         break;
     }
+  }
+
+  void player_task::handle(stop_request& m)
+  {
+    std::cout << "player got stop request" << std::endl;
   }
 
   void player_task::handle(queue_request& m)

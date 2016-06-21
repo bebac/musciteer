@@ -178,6 +178,18 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class stop_request
+{
+public:
+  stop_request()
+  {
+  }
+  stop_request(stop_request&& other)
+  {
+  }
+};
+
+// ----------------------------------------------------------------------------
 class queue_request
 {
 public:
@@ -373,19 +385,20 @@ public:
     close_req_id = 6,
     close_res_id = 7,
     play_req_id = 8,
-    queue_req_id = 9,
-    stream_begin_id = 10,
-    stream_end_id = 11,
-    stream_buffer_id = 12,
-    stream_begin_notify_id = 13,
-    stream_end_notify_id = 14,
-    stream_progress_notify_id = 15,
-    subscribe_id = 16,
-    unsubscribe_id = 17,
-    queue_update_id = 18,
-    player_state_id = 19,
-    stream_data_req_id = 20,
-    stream_data_res_id = 21,
+    stop_req_id = 9,
+    queue_req_id = 10,
+    stream_begin_id = 11,
+    stream_end_id = 12,
+    stream_buffer_id = 13,
+    stream_begin_notify_id = 14,
+    stream_end_notify_id = 15,
+    stream_progress_notify_id = 16,
+    subscribe_id = 17,
+    unsubscribe_id = 18,
+    queue_update_id = 19,
+    player_state_id = 20,
+    stream_data_req_id = 21,
+    stream_data_res_id = 22,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -418,6 +431,9 @@ public:
         break;
       case play_req_id:
         new (&play_req) play_request();
+        break;
+      case stop_req_id:
+        new (&stop_req) stop_request();
         break;
       case queue_req_id:
         new (&queue_req) queue_request();
@@ -488,6 +504,9 @@ public:
         break;
       case play_req_id:
         new (&play_req) play_request(std::move(other.play_req));
+        break;
+      case stop_req_id:
+        new (&stop_req) stop_request(std::move(other.stop_req));
         break;
       case queue_req_id:
         new (&queue_req) queue_request(std::move(other.queue_req));
@@ -561,6 +580,9 @@ public:
       case play_req_id:
         play_req.~play_request();
         break;
+      case stop_req_id:
+        stop_req.~stop_request();
+        break;
       case queue_req_id:
         queue_req.~queue_request();
         break;
@@ -614,6 +636,7 @@ public:
     audio_output_close_request close_req;
     audio_output_close_response close_res;
     play_request play_req;
+    stop_request stop_req;
     queue_request queue_req;
     audio_output_stream_begin stream_begin;
     audio_output_stream_end stream_end;

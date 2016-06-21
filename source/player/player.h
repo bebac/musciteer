@@ -70,11 +70,18 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
-    void play(const std::string& id)
+    void play(const std::string& id = std::string{})
     {
       message m(message::play_req_id, 0);
 
       m.play_req.id = id;
+
+      message_ch_.send(std::move(m));
+    }
+  public:
+    void stop()
+    {
+      message m(message::stop_req_id, 0);
 
       message_ch_.send(std::move(m));
     }

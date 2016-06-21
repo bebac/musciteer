@@ -22,6 +22,14 @@ class Store
     message_channel_start
   end
 
+  def notifications
+    @notifications ||= []
+  end
+
+  def player_state
+    @player_state ||= :stopped
+  end
+
   def settings_shown?
     @settings_shown
   end
@@ -35,10 +43,6 @@ class Store
       @settings_shown = true
     end
     render!
-  end
-
-  def notifications
-    @notifications ||= []
   end
 
   def audio_device_list_sync
@@ -160,6 +164,14 @@ class Store
     message_channel_send({ event: :play, data: id })
   end
 
+  def player_play
+    message_channel_send({ event: :play, data: nil })
+  end
+
+  def player_stop
+    message_channel_send({ event: :stop, data: nil })
+  end
+
   def queue(id)
     message_channel_send({ event: :queue, data: id })
   end
@@ -189,6 +201,14 @@ class Store
     when "audio_device_list"
       @audio_device = message["data"][0]
       @audio_device_list = message['data'][1]
+      render!
+    when "player_state"
+      case message['data']['state']
+      when 0
+        @player_state = :stopped
+      when 1
+        @player_state = :playing
+      end
       render!
     when "queue_update"
       notifications << QueueUpdate.new(message['data'])

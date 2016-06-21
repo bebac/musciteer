@@ -30,11 +30,13 @@
   #menu-toggle {
     float: left;
     padding-left: 1em;
+    z-index: 100;
   }
 
   #settings-toggle {
     float: right;
     padding-right: 1em;
+    z-index: 100;
   }
 
   #player-toggle {

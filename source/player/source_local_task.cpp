@@ -119,6 +119,35 @@ namespace musicbox
   };
 
   /////
+  // Flac decode task.
+
+  class flac_decoder_task : public dripcore::task
+  {
+  public:
+    flac_decoder_task(std::shared_ptr<player_session> session) : session_(session)
+    {
+    }
+  private:
+    void main() override
+    {
+      auto track = session_->track();
+      assert(track);
+
+      auto source = track->sources_get("local");
+
+      flac_decoder decoder{
+        source.uri(),
+        session_->id(),
+        session_->audio_output()
+      };
+
+      decoder.play(this);
+    }
+  private:
+    std::shared_ptr<player_session> session_;
+  };
+
+  /////
   // source_local_task implementation.
 
   source_local_task::source_local_task(session_channel channel) : ch_(channel)
@@ -135,18 +164,25 @@ namespace musicbox
         break;
       }
 
-      auto track = session->track();
-      assert(track);
+      // Start decoder task.
+      auto decoder_task = spawn<flac_decoder_task>(session);
 
-      auto source = track->sources_get("local");
+      // Process session control messages until session done.
+      auto ctrl = player_session::control::undefined;
+      do
+      {
+        ctrl = session->recv(this);
 
-      flac_decoder decoder{
-        source.uri(),
-        session->id(),
-        session->audio_output()
-      };
+        if ( ctrl == player_session::control::stop )
+        {
+          std::shared_ptr<task> task_ptr = decoder_task.lock();
 
-      decoder.play(this);
+          if ( task_ptr ) {
+            task_ptr->stop();
+          }
+        }
+      }
+      while( ctrl != player_session::control::done );
     }
   }
 }

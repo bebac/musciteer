@@ -158,6 +158,8 @@ namespace musicbox
       }
       case playing:
         break;
+      case stopping:
+        break;
       case paused:
         break;
     }
@@ -165,7 +167,20 @@ namespace musicbox
 
   void player_task::handle(stop_request& m)
   {
-    std::cout << "player got stop request" << std::endl;
+    switch ( state_ )
+    {
+      case stopped:
+        break;
+      case playing:
+        assert(session_);
+        session_->stop();
+        state_ = stopping;
+        break;
+      case stopping:
+        break;
+      case paused:
+        break;
+    }
   }
 
   void player_task::handle(queue_request& m)
@@ -198,6 +213,8 @@ namespace musicbox
         queue_update_notify(track);
         break;
       }
+      case stopping:
+        break;
       case paused:
         break;
     }
@@ -216,6 +233,8 @@ namespace musicbox
         break;
       case playing:
       {
+        session_->done();
+
         if ( !play_q_.empty() )
         {
           become_playing(play_q_.front());
@@ -227,6 +246,9 @@ namespace musicbox
         }
         break;
       }
+      case stopping:
+        become_stopped();
+        break;
       case paused:
         break;
     }
@@ -249,6 +271,7 @@ namespace musicbox
 
   void player_task::become_stopped()
   {
+    session_->done();
     session_.reset();
 
     state_ = stopped;

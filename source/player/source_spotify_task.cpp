@@ -507,7 +507,21 @@ namespace musicbox
         break;
       }
 
+      // Request spotify session to play session.
       spotify_session_ch.send(spotify_session::message{spotify_session::atom::play_session, session});
+
+      // Process session control messages until session done.
+      auto ctrl = player_session::control::undefined;
+      do
+      {
+        ctrl = session->recv(this);
+
+        if ( ctrl == player_session::control::stop )
+        {
+          spotify_session_ch.send(spotify_session::message{spotify_session::atom::end_session, session});
+        }
+      }
+      while( ctrl != player_session::control::done );
     }
   }
 }

@@ -41,6 +41,7 @@ namespace musicbox
     {
       stopped,
       playing,
+      stopping,
       paused
     };
   public:

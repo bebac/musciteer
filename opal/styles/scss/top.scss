@@ -1,8 +1,10 @@
+$background-color: #F1EFEC;
+
 .top
 {
   position: relative;
   height: 3em;
-  background: #F1EFEC;
+  background: $background-color;
   border-bottom: 1px solid #ccc;
 
   @include noselect;
@@ -44,5 +46,23 @@
     margin: 0 auto;
     text-align: center;
 
+    button {
+      background: darken($background-color, 0%);
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding: 5px 15px;
+      outline: none;
+      font-weight: bold;
+      color: #666;
+    }
+
+    button:hover {
+      background: darken($background-color, 4%);
+    }
+
+    button:active {
+      border: none;
+      background: darken($background-color, 8%);
+    }
   }
 }

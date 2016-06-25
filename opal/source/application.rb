@@ -62,13 +62,17 @@ class Store
   end
 
   def directories
-    Browser::HTTP.get("/api/sources/local/directories") do |request|
-      request.synchronous!
-      request.on :success do |response|
-        @directories = response.json
+    unless @directories
+      Browser::HTTP.get("/api/sources/local/directories") do |request|
+        request.on :success do |response|
+          @directories = response.json
+          render!
+        end
       end
+      []
+    else#
+      @directories
     end
-    @directories
   end
 
   def directories_set(index, value)
@@ -78,7 +82,6 @@ class Store
       @directories[index] = value
     end
     post_directories
-    render!
   end
 
   def directories_add(value)
@@ -86,16 +89,33 @@ class Store
       @directories << value
     end
     post_directories
-    render!
   end
 
   def post_directories
     Browser::HTTP.post("/api/sources/local/directories", data=@directories.to_json) do |request|
-      request.synchronous!
       request.content_type("application/json")
       request.on :success do |response|
         #@directories = response.json
+        render!
       end
+    end
+  end
+
+  def source_local_scanning?
+    @scanning ||= false
+  end
+
+  def source_local_scan
+    unless source_local_scanning?
+      Browser::HTTP.post("/api/sources/local/scan") do |request|
+        request.on :success do |response|
+          puts "scanning done"
+          @scanning = false
+          render!
+        end
+      end
+      @scanning = true
+      render!
     end
   end
 

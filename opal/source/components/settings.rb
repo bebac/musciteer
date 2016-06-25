@@ -48,7 +48,6 @@ class Settings
             text "Directories"
           end
           div do
-            puts store.directories
             store.directories.each_with_index do |directory, i|
               div do
                 input value: directory, onchange: -> (e) { store.directories_set(i, e.target.value) }
@@ -56,6 +55,18 @@ class Settings
             end
             div do
               input value: "", onchange: -> (e) { store.directories_add(e.target.value) }
+            end
+            div do
+              div do
+                button onclick: -> { store.source_local_scan } do
+                  div do
+                    text "scan"
+                    if store.source_local_scanning?
+                      div class: 'scanning' do; div; end
+                    end
+                  end
+                end
+              end
             end
           end
           div do

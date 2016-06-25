@@ -134,7 +134,7 @@ namespace musicbox
     }
     else
     {
-      std::cout << "source found!" << std::endl;
+      *it = source;
     }
   }
 

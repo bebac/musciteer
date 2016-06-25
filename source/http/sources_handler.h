@@ -12,6 +12,8 @@
 
 // ----------------------------------------------------------------------------
 #include "../dm/source_local.h"
+#include "../file_system.h"
+#include "../flac_file_importer.h"
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
@@ -25,8 +27,8 @@
 class sources_handler
 {
 public:
-  sources_handler(http::request& request, http::response& response)
-    : request(request), response(response), route_re_("^/?([^/]*)?/?([^/]*)?")
+  sources_handler(http::request& request, http::response& response, dripcore::task* task)
+    : request(request), response(response), task_(task), route_re_("^/?([^/]*)?/?([^/]*)?")
   {
   }
 public:
@@ -59,6 +61,17 @@ public:
           else if ( request.method() == http::method::post )
           {
             post_sources_local_directories();
+          }
+          else
+          {
+            method_not_allowed();
+          }
+        }
+        else if ( match[1] == "local" && match[2] == "scan" )
+        {
+          if ( request.method() == http::method::post )
+          {
+            post_sources_local_scan();
           }
           else
           {
@@ -131,6 +144,33 @@ protected:
       << crlf;
   }
 protected:
+  void post_sources_local_scan()
+  {
+    musicbox::source_local source_local{};
+
+    for ( auto& dirname : source_local.directories() )
+    {
+      auto dir = file_system::directory{dirname};
+
+      dir.each_file([&](const std::string& filename)
+      {
+        if ( file_system::extension(filename) == "flac" )
+        {
+          std::cout << filename << std::endl;
+          musicbox::flac_file_importer importer(filename);
+
+          importer.run();
+
+          task_->yield(true);
+        }
+      });
+    }
+
+    response << "HTTP/1.1 200 OK" << crlf
+      << "Content-Length: 0" << crlf
+      << crlf;
+  }
+protected:
   void method_not_allowed()
   {
     response << "HTTP/1.1 405 Method Not Allowed" << crlf
@@ -147,6 +187,7 @@ protected:
 protected:
   http::request& request;
   http::response& response;
+  dripcore::task* task_;
 private:
   std::regex route_re_;
 private:

@@ -246,7 +246,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
   }
   else if ( std::regex_match(uri, match, sources_re) )
   {
-    sources_handler handler(request, response);
+    sources_handler handler(request, response, this);
 
     if ( match.size() == 2 )
     {

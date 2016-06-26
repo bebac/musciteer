@@ -10,6 +10,9 @@
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
+#include "../dm/source_spotify.h"
+
+// ----------------------------------------------------------------------------
 #include <libspotify/api.h>
 
 // ----------------------------------------------------------------------------
@@ -200,7 +203,12 @@ namespace musicbox
       throw spotify_error(error);
     }
 
-    sp_session_login(session_, "xxxxxxxx", "xxxxxxxx", 0, 0);
+    musicbox::source_spotify source_spotify{};
+
+    auto& username = source_spotify.username();
+    auto& password = source_spotify.password();
+
+    sp_session_login(session_, username.c_str(), password.c_str(), 0, 0);
   }
 
   void spotify_session::main()
@@ -503,7 +511,9 @@ namespace musicbox
     {
       auto session = ch_.recv(this);
 
-      if ( !session ) {
+      if ( !session )
+      {
+        spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit, session});
         break;
       }
 

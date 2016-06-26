@@ -12,6 +12,9 @@
 
 // ----------------------------------------------------------------------------
 #include "../dm/source_local.h"
+#include "../dm/source_spotify.h"
+
+// ----------------------------------------------------------------------------
 #include "../file_system.h"
 #include "../flac_file_importer.h"
 
@@ -72,6 +75,21 @@ public:
           if ( request.method() == http::method::post )
           {
             post_sources_local_scan();
+          }
+          else
+          {
+            method_not_allowed();
+          }
+        }
+        else if ( match[1] == "spotify" && match[2] == "settings" )
+        {
+          if ( request.method() == http::method::get )
+          {
+            get_sources_spotify_settings();
+          }
+          else if ( request.method() == http::method::post )
+          {
+            post_sources_spotify_settings();
           }
           else
           {
@@ -165,6 +183,69 @@ protected:
         }
       });
     }
+
+    response << "HTTP/1.1 200 OK" << crlf
+      << "Content-Length: 0" << crlf
+      << crlf;
+  }
+protected:
+  void get_sources_spotify_settings()
+  {
+    musicbox::source_spotify source_spotify{};
+
+    json j;
+
+    j["username"] = source_spotify.username();
+    // Maybe we should'nt send the password.
+    //j["password"] = source_spotify.password();
+
+    auto payload = j.dump();
+
+    response << "HTTP/1.1 200 OK" << crlf
+      << "Content-Length: " << payload.length() << crlf
+      << crlf
+      << payload;
+  }
+protected:
+  void post_sources_spotify_settings()
+  {
+    std::string content_type;
+    std::string content_length_s;
+    std::string content;
+
+    if ( !request.get_header("content-type", content_type) ) {
+      throw std::runtime_error("no content-type header");
+    }
+
+    if ( !request.get_header("content-length", content_length_s) ) {
+      throw std::runtime_error("no content-length header");
+    }
+
+    auto pos = std::size_t{0};
+    auto len = std::stoul(content_length_s, &pos);
+    auto buf = request.rdbuf();
+
+    for ( size_t i=0; i<len; ++i) {
+      content += buf->sbumpc();
+    }
+
+    json j = json::parse(content);
+
+    if ( !j.is_object() ) {
+      throw std::runtime_error("source spotify settings must be an object");
+    }
+
+    musicbox::source_spotify source_spotify{};
+
+    if ( j["username"].is_string() ) {
+      source_spotify.username(j["username"]);
+    }
+
+    if ( j["password"].is_string() ) {
+      source_spotify.password(j["password"]);
+    }
+
+    source_spotify.save();
 
     response << "HTTP/1.1 200 OK" << crlf
       << "Content-Length: 0" << crlf

@@ -10,5 +10,5 @@
 namespace musicbox
 {
   session_channel sources::local_session_ch_ = session_channel();
-  //session_channel sources::spotify_session_ch_ = session_channel();
+  session_channel sources::spotify_session_ch_ = session_channel();
 }

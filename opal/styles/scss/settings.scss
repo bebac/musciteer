@@ -22,6 +22,15 @@ $background-color: #F1EFEC;
   right: 0;
   background: $background-color;
 
+  >:nth-child(n+3)
+  {
+    border-top: 1px solid darken($background-color, 4%);
+  }
+
+  section {
+    margin-top: 1em;
+  }
+
   h1
   {
     font-size: 1.5em;
@@ -32,6 +41,8 @@ $background-color: #F1EFEC;
   {
     font-size: 1em;
     padding-left: 1.5em;
+    padding-top: 1em;
+    padding-bottom: 0.66em;
   }
 
   #settings-header
@@ -51,20 +62,28 @@ $background-color: #F1EFEC;
 
   .settings-item
   {
+    padding-bottom: 0.66em;
+  }
+
+  .settings-sub-item
+  {
+  }
+
+  .settings-item, .settings-sub-item
+  {
     display: table;
-    padding: 1em;
     table-layout: fixed;
     width: 100%;
 
     >div {
       display: table-cell;
-      padding: 0.5em;
+      padding: 0 0.5em;
     }
 
     >:nth-child(1) {
       width: 25%;
       text-align: right;
-      border-right: 1px solid #ddd;
+      border-right: 1px solid darken($background-color, 4%);
     }
 
     >:nth-child(2)

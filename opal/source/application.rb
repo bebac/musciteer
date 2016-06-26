@@ -101,6 +101,28 @@ class Store
     end
   end
 
+  def spotify_settings
+    @spotify_settings ||= SpotifySettings.new
+  end
+
+  def spotify_settings_sync
+    Browser::HTTP.get("/api/sources/spotify/settings") do |request|
+      request.on :success do |response|
+        @spotify_settings = SpotifySettings.new(response.json)
+        render!
+      end
+    end
+  end
+
+  def spotify_settings_save
+    Browser::HTTP.post("/api/sources/spotify/settings", data=@spotify_settings.to_json) do |request|
+      request.content_type("application/json")
+      request.on :success do |response|
+        render!
+      end
+    end
+  end
+
   def source_local_scanning?
     @scanning ||= false
   end

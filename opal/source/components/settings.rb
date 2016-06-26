@@ -3,6 +3,7 @@ class Settings
 
   def init
     store.audio_device_list_sync
+    store.spotify_settings_sync
   end
 
   def render
@@ -24,9 +25,12 @@ class Settings
 
       # Audio ouput.
       section do
+        h2 do
+          text "Audio"
+        end
         div class: 'settings-item' do
           div do
-            text "Audio output"
+            text "Output Device"
           end
           div do
             select class: 'setting', onchange: -> (e) { store.set_audio_output_device(e.target.value) } do
@@ -41,8 +45,11 @@ class Settings
         end
       end
 
-      # Directories.
+      # Local source.
       section do
+        h2 do
+          text "Local Source"
+        end
         div class: 'settings-item' do
           div do
             text "Directories"
@@ -64,6 +71,45 @@ class Settings
                     if store.source_local_scanning?
                       div class: 'scanning' do; div; end
                     end
+                  end
+                end
+              end
+            end
+          end
+          div do
+          end
+        end
+      end
+
+      # Spotify source.
+      section do
+        h2 do
+          text "Spotify Source"
+        end
+        div class: 'settings-sub-item' do
+          div do
+            text "Username"
+          end
+          div do
+            input value: store.spotify_settings.username, onchange: -> (e) { store.spotify_settings.username = e.target.value }
+          end
+          div do
+          end
+        end
+        div class: 'settings-sub-item' do
+          div do
+            text "Password"
+          end
+          div do
+            input type: 'password', value: "", onchange: -> (e) { store.spotify_settings.password = e.target.value }
+            div do
+              div do
+                button onclick: -> { store.spotify_settings_save } do
+                  div do
+                    text "activate"
+                    #if store.?
+                    div class: '' do; div; end
+                    #end
                   end
                 end
               end

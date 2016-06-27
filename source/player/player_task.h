@@ -19,7 +19,7 @@
 // ----------------------------------------------------------------------------
 #include <string>
 #include <cassert>
-#include <queue>
+#include <deque>
 
 // ----------------------------------------------------------------------------
 class audio_output_alsa;
@@ -83,7 +83,7 @@ namespace musicbox
   private:
     std::set<message_channel> observers_;
   private:
-    std::queue<musicbox::track> play_q_;
+    std::deque<musicbox::track> play_q_;
   private:
     std::shared_ptr<player_session> session_;
   private:

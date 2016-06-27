@@ -189,11 +189,7 @@ namespace musicbox
 
     auto track = tracks.find_by_id(m.id);
 
-    if ( !track.id().empty() )
-    {
-      play_q_.push(track);
-    }
-    else
+    if ( track.id().empty() )
     {
       // ERROR!
       return;
@@ -204,12 +200,14 @@ namespace musicbox
       case stopped:
       {
         assert(!session_);
+        play_q_.push_front(track);
         become_playing(play_q_.front());
-        play_q_.pop();
+        play_q_.pop_front();
         break;
       }
       case playing:
       {
+        play_q_.push_back(track);
         queue_update_notify(track);
         break;
       }
@@ -238,7 +236,7 @@ namespace musicbox
         if ( !play_q_.empty() )
         {
           become_playing(play_q_.front());
-          play_q_.pop();
+          play_q_.pop_front();
         }
         else
         {

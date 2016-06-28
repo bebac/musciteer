@@ -22,9 +22,9 @@
 // ----------------------------------------------------------------------------
 void print_tracks()
 {
-  auto tracks = musicbox::tracks();
+  auto tracks = musicbox::dm::tracks();
 
-  tracks.each([](musicbox::track& track)
+  tracks.each([](musicbox::dm::track& track)
   {
     std::cout << "---" << std::endl;
     std::cout << "track id       : " << track.id() << std::endl;

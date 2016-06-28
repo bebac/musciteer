@@ -278,7 +278,7 @@ namespace http
 }
 
 // ----------------------------------------------------------------------------
-void print_track(const musicbox::track& track)
+void print_track(const musicbox::dm::track& track)
 {
   std::cout << "---" << std::endl;
   std::cout << "track id       : " << track.id() << std::endl;
@@ -370,15 +370,15 @@ private:
       throw std::runtime_error("album id is empty");
     }
 
-    auto track = musicbox::track{};
-    auto track_source = musicbox::track_source{"spotify", track_json["uri"]};
+    auto track = musicbox::dm::track{};
+    auto track_source = musicbox::dm::track_source{"spotify", track_json["uri"]};
 
     std::string track_title = track_json["name"];
     unsigned track_tn = track_json["track_number"];
     unsigned track_dn = track_json["disc_number"];
     unsigned track_duration = track_json["duration_ms"];
 
-    album.tracks_each([&](const musicbox::track& rec)
+    album.tracks_each([&](const musicbox::dm::track& rec)
     {
       if ( rec.disc_number() == track_dn && rec.track_number() == track_tn )
       {
@@ -403,11 +403,11 @@ private:
 
       for ( auto artist_json : artists_json )
       {
-        auto track_artist = musicbox::artist{};
+        auto track_artist = musicbox::dm::artist{};
 
         std::string track_artist_name = artist_json["name"];
 
-        artists_.each([&](const musicbox::artist& rec)
+        artists_.each([&](const musicbox::dm::artist& rec)
         {
           if ( rec.name() == track_artist_name )
           {
@@ -445,9 +445,9 @@ private:
     tracks_.save(track);
   }
 private:
-  musicbox::artist resolve_album_artist(const json& album_json)
+  musicbox::dm::artist resolve_album_artist(const json& album_json)
   {
-    auto album_artist = musicbox::artist{};
+    auto album_artist = musicbox::dm::artist{};
 
     if ( !album_json.is_object() ) {
       throw std::runtime_error("album json not an object");
@@ -467,7 +467,7 @@ private:
 
     std::string artist_name = artist_json["name"];
 
-    artists_.each([&](const musicbox::artist& rec)
+    artists_.each([&](const musicbox::dm::artist& rec)
     {
       if ( rec.name() == artist_name )
       {
@@ -488,14 +488,14 @@ private:
     return album_artist;
   }
 private:
-  musicbox::album resolve_album(musicbox::artist& artist, const json& album_json)
+  musicbox::dm::album resolve_album(musicbox::dm::artist& artist, const json& album_json)
   {
-    auto album = musicbox::album{};
+    auto album = musicbox::dm::album{};
 
     std::string album_title = album_json["name"];
     std::string album_alt_id = album_json["uri"];
 
-    artist.albums_each([&](const musicbox::album& rec)
+    artist.albums_each([&](const musicbox::dm::album& rec)
     {
       if ( rec.title() == album_title )
       {
@@ -570,9 +570,9 @@ private:
     return j;
   }
 private:
-  musicbox::album_cover http_get_image(const std::string& url)
+  musicbox::dm::album_cover http_get_image(const std::string& url)
   {
-    auto cover = musicbox::album_cover();
+    auto cover = musicbox::dm::album_cover();
 
     http_client_.get(url, [&](http::response& response)
     {
@@ -607,9 +607,9 @@ private:
 private:
   std::string url_;
 private:
-  musicbox::artists artists_;
-  musicbox::albums albums_;
-  musicbox::tracks tracks_;
+  musicbox::dm::artists artists_;
+  musicbox::dm::albums albums_;
+  musicbox::dm::tracks tracks_;
 };
 
 // ----------------------------------------------------------------------------

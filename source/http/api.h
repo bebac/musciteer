@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  json to_json(const musicbox::track& track)
+  json to_json(const musicbox::dm::track& track)
   {
     json artists;
 
@@ -49,7 +49,7 @@ namespace musicbox
     return t;
   }
 
-  json to_json(const musicbox::album& album)
+  json to_json(const musicbox::dm::album& album)
   {
     auto artist = album.artist();
 

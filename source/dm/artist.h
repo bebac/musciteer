@@ -22,44 +22,47 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  class album;
-
-  class artist
+  namespace dm
   {
-    using album_id_list = std::set<std::string>;
-  public:
-    artist();
-  public:
-    bool id_is_null();
-  public:
-    const std::string& id() const;
-    const std::string& name() const;
-  public:
-    void id(const std::string& id);
-    void name(const std::string& name);
-  public:
-    void albums_add(const musicbox::album& album);
-    void albums_del(const musicbox::album& album);
-    void albums_each(std::function<void(const musicbox::album& album)>);
-  public:
-    void read(msgpack::istream& is);
-    void write(msgpack::ostream& os) const;
-  private:
-    std::string id_;
-    std::string name_;
-    album_id_list album_ids_;
-  };
+    class album;
 
-  inline msgpack::istream& operator>>(msgpack::istream& is, artist& value)
-  {
-    value.read(is);
-    return is;
-  }
+    class artist
+    {
+      using album_id_list = std::set<std::string>;
+    public:
+      artist();
+    public:
+      bool id_is_null();
+    public:
+      const std::string& id() const;
+      const std::string& name() const;
+    public:
+      void id(const std::string& id);
+      void name(const std::string& name);
+    public:
+      void albums_add(const dm::album& album);
+      void albums_del(const dm::album& album);
+      void albums_each(std::function<void(const dm::album& album)>);
+    public:
+      void read(msgpack::istream& is);
+      void write(msgpack::ostream& os) const;
+    private:
+      std::string id_;
+      std::string name_;
+      album_id_list album_ids_;
+    };
 
-  inline msgpack::ostream& operator<<(msgpack::ostream& os, const artist& value)
-  {
-    value.write(os);
-    return os;
+    inline msgpack::istream& operator>>(msgpack::istream& is, artist& value)
+    {
+      value.read(is);
+      return is;
+    }
+
+    inline msgpack::ostream& operator<<(msgpack::ostream& os, const artist& value)
+    {
+      value.write(os);
+      return os;
+    }
   }
 }
 

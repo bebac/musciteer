@@ -47,12 +47,12 @@ public:
 protected:
   void get_all_tracks(const std::string& path)
   {
-    auto tracks = musicbox::tracks();
+    auto tracks = musicbox::dm::tracks();
 
     json j;
 
-    tracks.each([&](musicbox::track& track) {
-      j.push_back(to_json(track));
+    tracks.each([&](musicbox::dm::track& track) {
+      j.push_back(musicbox::to_json(track));
       return true;
     });
 

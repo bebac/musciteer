@@ -111,7 +111,7 @@ public:
 protected:
   void get_sources_local_directories()
   {
-    musicbox::source_local source_local{};
+    musicbox::dm::source_local source_local{};
 
     json j;
 
@@ -153,7 +153,7 @@ protected:
       throw std::runtime_error("source local directories must be an array");
     }
 
-    musicbox::source_local source_local{};
+    musicbox::dm::source_local source_local{};
 
     source_local.directories(j.get<std::vector<std::string>>());
 
@@ -164,7 +164,7 @@ protected:
 protected:
   void post_sources_local_scan()
   {
-    musicbox::source_local source_local{};
+    musicbox::dm::source_local source_local{};
 
     for ( auto& dirname : source_local.directories() )
     {
@@ -191,13 +191,13 @@ protected:
 protected:
   void get_sources_spotify_settings()
   {
-    musicbox::source_spotify source_spotify{};
+    musicbox::dm::source_spotify settings{};
 
     json j;
 
-    j["username"] = source_spotify.username();
+    j["username"] = settings.username();
     // Maybe we should'nt send the password.
-    //j["password"] = source_spotify.password();
+    //j["password"] = settings.password();
 
     auto payload = j.dump();
 
@@ -235,17 +235,17 @@ protected:
       throw std::runtime_error("source spotify settings must be an object");
     }
 
-    musicbox::source_spotify source_spotify{};
+    musicbox::dm::source_spotify settings{};
 
     if ( j["username"].is_string() ) {
-      source_spotify.username(j["username"]);
+      settings.username(j["username"]);
     }
 
     if ( j["password"].is_string() ) {
-      source_spotify.password(j["password"]);
+      settings.password(j["password"]);
     }
 
-    source_spotify.save();
+    settings.save();
 
     response << "HTTP/1.1 200 OK" << crlf
       << "Content-Length: 0" << crlf

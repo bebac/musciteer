@@ -318,7 +318,7 @@ public:
   }
 public:
   unsigned queue_size;
-  std::shared_ptr<musicbox::track> track;
+  std::shared_ptr<musicbox::dm::track> track;
 };
 
 // ----------------------------------------------------------------------------
@@ -367,7 +367,7 @@ public:
   }
 public:
   unsigned stream_id;
-  std::shared_ptr<musicbox::track> track;
+  std::shared_ptr<musicbox::dm::track> track;
 };
 
 // ----------------------------------------------------------------------------

@@ -66,10 +66,10 @@ namespace musicbox
     void handle(stream_begin_notify& m);
     void handle(stream_end_notify& m);
   private:
-    void become_playing(const musicbox::track& track);
+    void become_playing(const musicbox::dm::track& track);
     void become_stopped();
     void player_state_notify(unsigned state);
-    void queue_update_notify(const musicbox::track& track);
+    void queue_update_notify(const musicbox::dm::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
     void audio_output_open();
@@ -83,7 +83,7 @@ namespace musicbox
   private:
     std::set<message_channel> observers_;
   private:
-    std::deque<musicbox::track> play_q_;
+    std::deque<musicbox::dm::track> play_q_;
   private:
     std::shared_ptr<player_session> session_;
   private:

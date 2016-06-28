@@ -203,10 +203,10 @@ namespace musicbox
       throw spotify_error(error);
     }
 
-    musicbox::source_spotify source_spotify{};
+    musicbox::dm::source_spotify settings{};
 
-    auto& username = source_spotify.username();
-    auto& password = source_spotify.password();
+    auto& username = settings.username();
+    auto& password = settings.password();
 
     sp_session_login(session_, username.c_str(), password.c_str(), 0, 0);
   }

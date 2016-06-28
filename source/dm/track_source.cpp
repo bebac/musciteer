@@ -9,76 +9,79 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  track_source::track_source() : name_(), uri_()
+  namespace dm
   {
-  }
-
-  track_source::track_source(const std::string& name, const std::string& uri)
-    : name_(name), uri_(uri)
-  {
-  }
-
-  const std::string& track_source::name() const
-  {
-    return name_;
-  }
-
-  const std::string& track_source::uri() const
-  {
-    return uri_;
-  }
-
-  void track_source::name(const std::string& name)
-  {
-    name_ = name;
-  }
-
-  void track_source::uri(const std::string& uri)
-  {
-    uri_ = uri;
-  }
-
-  void track_source::read(msgpack::istream& is)
-  {
-    msgpack::map map;
-
-    if ( is >> map )
+    track_source::track_source() : name_(), uri_()
     {
-      for ( size_t i=0; i<map.size(); i++ )
-      {
-        unsigned key;
+    }
 
-        if ( is >> key )
+    track_source::track_source(const std::string& name, const std::string& uri)
+      : name_(name), uri_(uri)
+    {
+    }
+
+    const std::string& track_source::name() const
+    {
+      return name_;
+    }
+
+    const std::string& track_source::uri() const
+    {
+      return uri_;
+    }
+
+    void track_source::name(const std::string& name)
+    {
+      name_ = name;
+    }
+
+    void track_source::uri(const std::string& uri)
+    {
+      uri_ = uri;
+    }
+
+    void track_source::read(msgpack::istream& is)
+    {
+      msgpack::map map;
+
+      if ( is >> map )
+      {
+        for ( size_t i=0; i<map.size(); i++ )
         {
-          switch ( key )
+          unsigned key;
+
+          if ( is >> key )
           {
-            case 1: is >> name_; break;
-            case 2: is >> uri_; break;
-            default:
-              //is >> msgpack::skip;
-              break;
+            switch ( key )
+            {
+              case 1: is >> name_; break;
+              case 2: is >> uri_; break;
+              default:
+                //is >> msgpack::skip;
+                break;
+            }
+          }
+          else
+          {
+            // ERROR!
+            std::cout << "failed to read track_source key" << std::endl;
           }
         }
-        else
-        {
-          // ERROR!
-          std::cout << "failed to read track_source key" << std::endl;
-        }
+      }
+      else
+      {
+        // ERROR!
+        std::cout << "failed to read track_source map" << std::endl;
       }
     }
-    else
+
+    void track_source::write(msgpack::ostream& os) const
     {
-      // ERROR!
-      std::cout << "failed to read track_source map" << std::endl;
+      msgpack::map map{2};
+
+      os << map
+        << 1 << name_
+        << 2 << uri_;
     }
-  }
-
-  void track_source::write(msgpack::ostream& os) const
-  {
-    msgpack::map map{2};
-
-    os << map
-      << 1 << name_
-      << 2 << uri_;
   }
 }

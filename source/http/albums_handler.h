@@ -84,12 +84,12 @@ public:
 protected:
   void get_albums(const std::string& path)
   {
-    auto albums = musicbox::albums();
+    auto albums = musicbox::dm::albums();
 
     json j;
 
-    albums.each([&](musicbox::album& album) {
-      j.push_back(to_json(album));
+    albums.each([&](musicbox::dm::album& album) {
+      j.push_back(musicbox::to_json(album));
       return true;
     });
 
@@ -103,13 +103,13 @@ protected:
 private:
   void get_album(const std::string& id)
   {
-    auto albums = musicbox::albums();
+    auto albums = musicbox::dm::albums();
 
     auto album = albums.find_by_id(id);
 
     if ( !album.id().empty() )
     {
-      json j = to_json(album);
+      json j = musicbox::to_json(album);
 
       auto payload = j.dump();
 
@@ -126,7 +126,7 @@ private:
 private:
   void get_album_tracks(const std::string& id)
   {
-    auto albums = musicbox::albums();
+    auto albums = musicbox::dm::albums();
 
     auto album = albums.find_by_id(id);
 
@@ -134,9 +134,9 @@ private:
     {
       json j;
 
-      album.tracks_each([&](const musicbox::track& track)
+      album.tracks_each([&](const musicbox::dm::track& track)
       {
-        j.push_back(to_json(track));
+        j.push_back(musicbox::to_json(track));
       });
 
       auto payload = j.dump();
@@ -156,7 +156,7 @@ private:
   {
     auto kvstore = musicbox::kvstore();
 
-    musicbox::album_cover cover;
+    musicbox::dm::album_cover cover;
 
     if ( kvstore.get(id+"/cover", cover) )
     {

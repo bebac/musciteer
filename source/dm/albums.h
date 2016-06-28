@@ -17,76 +17,79 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  class albums
+  namespace dm
   {
-  public:
-    albums() : kvstore_(musicbox::kvstore())
+    class albums
     {
-    }
-  public:
-    album find_by_id(const std::string& id)
-    {
-      auto album = musicbox::album();
+    public:
+      albums() : kvstore_(musicbox::kvstore())
+      {
+      }
+    public:
+      album find_by_id(const std::string& id)
+      {
+        auto album = dm::album();
 
-      kvstore_.get(id, album);
+        kvstore_.get(id, album);
 
-      return album;
-    }
-  public:
-    void save(const musicbox::album& album)
-    {
-      kvstore_.set(album.id(), album);
-    }
-  public:
-    void each(std::function<bool(musicbox::album& album)> value_cb)
-    {
-      kvstore_.each(
-        [](const std::string& key) -> bool
-        {
-          if ( key.length() == 6 && key[0] == 'a' && key[1] == 'l' ) {
+        return album;
+      }
+    public:
+      void save(const dm::album& album)
+      {
+        kvstore_.set(album.id(), album);
+      }
+    public:
+      void each(std::function<bool(dm::album& album)> value_cb)
+      {
+        kvstore_.each(
+          [](const std::string& key) -> bool
+          {
+            if ( key.length() == 6 && key[0] == 'a' && key[1] == 'l' ) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          },
+          [&](msgpack::istream& is) -> bool
+          {
+            dm::album album;
+
+            if ( is >> album )
+            {
+              value_cb(album);
+            }
+            else
+            {
+              // ERROR!
+            }
             return true;
           }
-          else {
-            return false;
-          }
-        },
-        [&](msgpack::istream& is) -> bool
-        {
-          musicbox::album album;
-
-          if ( is >> album )
-          {
-            value_cb(album);
-          }
-          else
-          {
-            // ERROR!
-          }
-          return true;
-        }
-      );
-    }
-  public:
-    album create_album()
-    {
-      musicbox::album album;
-
-      auto id = kvstore_.increment("__album_next__", 1, key_min);
-
-      if ( id > key_max )
-      {
-        throw std::runtime_error("album key space exhausted!");
+        );
       }
+    public:
+      album create_album()
+      {
+        dm::album album;
 
-      album.id(base62_encode(id));
-      return album;
-    }
-  private:
-    kvstore kvstore_;
-  private:
-    static constexpr const int64_t key_min = 33675269744;
-    static constexpr const int64_t key_max = 33690046079;
-  };
+        auto id = kvstore_.increment("__album_next__", 1, key_min);
+
+        if ( id > key_max )
+        {
+          throw std::runtime_error("album key space exhausted!");
+        }
+
+        album.id(base62_encode(id));
+        return album;
+      }
+    private:
+      kvstore kvstore_;
+    private:
+      static constexpr const int64_t key_min = 33675269744;
+      static constexpr const int64_t key_max = 33690046079;
+    };
+  }
 }
 
 // ----------------------------------------------------------------------------

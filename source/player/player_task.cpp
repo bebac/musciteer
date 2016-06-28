@@ -149,7 +149,7 @@ namespace musicbox
         }
         else
         {
-          auto tracks = musicbox::tracks();
+          auto tracks = musicbox::dm::tracks();
 
           assert(!session_);
           become_playing(tracks.find_by_id(m.id));
@@ -185,7 +185,7 @@ namespace musicbox
 
   void player_task::handle(queue_request& m)
   {
-    auto tracks = musicbox::tracks();
+    auto tracks = musicbox::dm::tracks();
 
     auto track = tracks.find_by_id(m.id);
 
@@ -252,7 +252,7 @@ namespace musicbox
     }
   }
 
-  void player_task::become_playing(const musicbox::track& track)
+  void player_task::become_playing(const musicbox::dm::track& track)
   {
     if ( state_ == stopped ) {
       audio_output_open();
@@ -289,14 +289,14 @@ namespace musicbox
     }
   }
 
-  void player_task::queue_update_notify(const musicbox::track& track)
+  void player_task::queue_update_notify(const musicbox::dm::track& track)
   {
     for ( auto observer : observers_ )
     {
       message n(message::queue_update_id);
 
       n.queue_update.queue_size = play_q_.size();
-      n.queue_update.track = std::make_shared<musicbox::track>(track);
+      n.queue_update.track = std::make_shared<musicbox::dm::track>(track);
 
       observer.send(std::move(n));
     }

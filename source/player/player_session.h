@@ -50,7 +50,7 @@ namespace musicbox
       return id_;
     }
   public:
-    std::shared_ptr<musicbox::track> track() const
+    std::shared_ptr<musicbox::dm::track> track() const
     {
       return track_;
     }
@@ -60,9 +60,9 @@ namespace musicbox
       return audio_output_;
     }
   public:
-    void track(const musicbox::track& track)
+    void track(const musicbox::dm::track& track)
     {
-      track_.reset(new musicbox::track(track));
+      track_.reset(new musicbox::dm::track(track));
     }
   public:
     void audio_output(std::shared_ptr<audio_output_alsa> audio_output)
@@ -88,13 +88,17 @@ namespace musicbox
     void play(std::shared_ptr<audio_output_alsa> audio_output);
   private:
     unsigned id_;
-    std::shared_ptr<musicbox::track> track_;
+    std::shared_ptr<musicbox::dm::track> track_;
     std::shared_ptr<audio_output_alsa> audio_output_;
     dripcore::channel<control> control_ch_;
   private:
     static constexpr const char* stream_id_key = "__session_id__";
   };
+
+  using session_channel = dripcore::channel<std::shared_ptr<player_session>>;
 }
+
+
 
 // ----------------------------------------------------------------------------
 #endif

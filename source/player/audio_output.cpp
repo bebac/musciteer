@@ -148,6 +148,8 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
     {
       assert(handle_ == nullptr);
 
+      std::cout << "audio_output open device:" << m.device_name << std::endl;
+
       int err = snd_pcm_open(&handle_, m.device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
 
       if ( err == 0 )

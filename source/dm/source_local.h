@@ -13,37 +13,40 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  class source_local
+  namespace dm
   {
-    using directory_list = std::vector<std::string>;
-  public:
-    source_local() : kvstore_(musicbox::kvstore())
+    class source_local
     {
-    }
-  public:
-    directory_list directories()
-    {
-      directory_list value;
+      using directory_list = std::vector<std::string>;
+    public:
+      source_local() : kvstore_(musicbox::kvstore())
+      {
+      }
+    public:
+      directory_list directories()
+      {
+        directory_list value;
 
-      if ( kvstore_.get(source_local_directories_key, value) )
-      {
-        return value;
+        if ( kvstore_.get(source_local_directories_key, value) )
+        {
+          return value;
+        }
+        else
+        {
+          return value;
+        }
       }
-      else
+    public:
+      void directories(directory_list&& value)
       {
-        return value;
+        kvstore_.set(source_local_directories_key, value);
       }
-    }
-  public:
-    void directories(directory_list&& value)
-    {
-      kvstore_.set(source_local_directories_key, value);
-    }
-  private:
-    kvstore kvstore_;
-  private:
-    static constexpr const char* source_local_directories_key = "__source_local_directories__";
-  };
+    private:
+      kvstore kvstore_;
+    private:
+      static constexpr const char* source_local_directories_key = "__source_local_directories__";
+    };
+  }
 }
 
 // ----------------------------------------------------------------------------

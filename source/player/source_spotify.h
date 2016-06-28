@@ -4,29 +4,27 @@
 //                  Copyright (C) 2016
 //
 // ----------------------------------------------------------------------------
-#ifndef __player__source_local_task_h__
-#define __player__source_local_task_h__
+#ifndef __player__source_spotify_h__
+#define __player__source_spotify_h__
 
 // ----------------------------------------------------------------------------
-#include "player_session.h"
+#include "source.h"
+#include "source_spotify_task.h"
 
 // ----------------------------------------------------------------------------
-#include <dripcore/task.h>
-#include <dripcore/channel.h>
+#include <dripcore/loop.h>
 
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  using session_channel = dripcore::channel<std::shared_ptr<player_session>>;
-
-  class source_local_task : public dripcore::task
+  class source_spotify : public source
   {
+    using source::source;
   public:
-    source_local_task(session_channel channel);
-  private:
-    void main() final;
-  private:
-    session_channel ch_;
+    void start() override
+    {
+      spawn<source_spotify_task>(session_ch_);
+    }
   };
 }
 

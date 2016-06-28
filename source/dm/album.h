@@ -22,56 +22,59 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  class track;
-  class artist;
-
-  class album
+  namespace dm
   {
-    using track_id_list = std::set<std::string>;
-    using alt_id_list = std::set<std::string>;
-  public:
-    album();
-  public:
-    bool id_is_null();
-  public:
-    const std::string& id() const;
-    const std::string& title() const;
-    const track_id_list& track_ids() const;
-  public:
-    musicbox::artist artist() const;
-  public:
-    bool alt_ids_find(const std::string& alt_id) const;
-  public:
-    void id(const std::string&);
-    void title(const std::string&);
-  public:
-    void tracks_add(const musicbox::track&);
-    void tracks_each(std::function<void(const musicbox::track& track)>) const;
-  public:
-    void artist(const musicbox::artist&);
-  public:
-    void alt_ids_add(const std::string& alt_id);
-  public:
-    void read(msgpack::istream&);
-    void write(msgpack::ostream&) const;
-  private:
-    std::string id_;
-    std::string title_;
-    track_id_list track_ids_;
-    std::string artist_id_;
-    alt_id_list alt_ids_;
-  };
+    class track;
+    class artist;
 
-  inline msgpack::istream& operator>>(msgpack::istream& is, album& value)
-  {
-    value.read(is);
-    return is;
-  }
+    class album
+    {
+      using track_id_list = std::set<std::string>;
+      using alt_id_list = std::set<std::string>;
+    public:
+      album();
+    public:
+      bool id_is_null();
+    public:
+      const std::string& id() const;
+      const std::string& title() const;
+      const track_id_list& track_ids() const;
+    public:
+      dm::artist artist() const;
+    public:
+      bool alt_ids_find(const std::string& alt_id) const;
+    public:
+      void id(const std::string&);
+      void title(const std::string&);
+    public:
+      void tracks_add(const dm::track&);
+      void tracks_each(std::function<void(const dm::track& track)>) const;
+    public:
+      void artist(const dm::artist&);
+    public:
+      void alt_ids_add(const std::string& alt_id);
+    public:
+      void read(msgpack::istream&);
+      void write(msgpack::ostream&) const;
+    private:
+      std::string id_;
+      std::string title_;
+      track_id_list track_ids_;
+      std::string artist_id_;
+      alt_id_list alt_ids_;
+    };
 
-  inline msgpack::ostream& operator<<(msgpack::ostream& os, const album& value)
-  {
-    value.write(os);
-    return os;
+    inline msgpack::istream& operator>>(msgpack::istream& is, album& value)
+    {
+      value.read(is);
+      return is;
+    }
+
+    inline msgpack::ostream& operator<<(msgpack::ostream& os, const album& value)
+    {
+      value.write(os);
+      return os;
+    }
   }
 }
 

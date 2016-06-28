@@ -19,107 +19,110 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
-  struct source_spotify_data
+  namespace dm
   {
-  public:
-    void read(msgpack::istream& is)
+    struct source_spotify_data
     {
-      msgpack::map map;
-
-      if ( is >> map )
+    public:
+      void read(msgpack::istream& is)
       {
-        for ( size_t i=0; i<map.size(); i++ )
-        {
-          unsigned key;
+        msgpack::map map;
 
-          if ( is >> key )
+        if ( is >> map )
+        {
+          for ( size_t i=0; i<map.size(); i++ )
           {
-            switch ( key )
+            unsigned key;
+
+            if ( is >> key )
             {
-              case 1: is >> username; break;
-              case 2: is >> password; break;
-              default:
-                //is >> msgpack::skip;
-                break;
+              switch ( key )
+              {
+                case 1: is >> username; break;
+                case 2: is >> password; break;
+                default:
+                  //is >> msgpack::skip;
+                  break;
+              }
+            }
+            else
+            {
+              // ERROR!
+              std::cout << "failed to read spotify source key" << std::endl;
             }
           }
-          else
-          {
-            // ERROR!
-            std::cout << "failed to read spotify source key" << std::endl;
-          }
+        }
+        else
+        {
+          // ERROR!
+          std::cout << "failed to read spotify source map" << std::endl;
         }
       }
-      else
+    public:
+      void write(msgpack::ostream& os) const
       {
-        // ERROR!
-        std::cout << "failed to read spotify source map" << std::endl;
+        msgpack::map map{2};
+
+        os << map
+          << 1 << username
+          << 2 << password;
       }
-    }
-  public:
-    void write(msgpack::ostream& os) const
-    {
-      msgpack::map map{2};
+    public:
+      std::string username;
+      std::string password;
+    };
 
-      os << map
-        << 1 << username
-        << 2 << password;
-    }
-  public:
-    std::string username;
-    std::string password;
-  };
+    class source_spotify
+    {
+    public:
+      source_spotify() : kvstore_(musicbox::kvstore())
+      {
+        kvstore_.get(source_spotify_settings_key, data_);
+      }
+    public:
+      const std::string& username()
+      {
+        return data_.username;
+      }
+    public:
+      void username(const std::string& username)
+      {
+        data_.username = username;
+      }
+    public:
+      const std::string& password()
+      {
+        return data_.password;
+      }
+    public:
+      void password(const std::string& password)
+      {
+        data_.password = password;
+      }
+    public:
+      void save()
+      {
+        kvstore_.set(source_spotify_settings_key, data_);
+      }
+    private:
+      kvstore kvstore_;
+    private:
+      source_spotify_data data_;
+    private:
+      static constexpr const char* source_spotify_settings_key = "__source_spotify_settings__";
+    };
 
-  class source_spotify
-  {
-  public:
-    source_spotify() : kvstore_(musicbox::kvstore())
+    inline msgpack::istream& operator>>(msgpack::istream& is, source_spotify_data& value)
     {
-      kvstore_.get(source_spotify_settings_key, data_);
+      value.read(is);
+      return is;
     }
-  public:
-    const std::string& username()
-    {
-      return data_.username;
-    }
-  public:
-    void username(const std::string& username)
-    {
-      data_.username = username;
-    }
-  public:
-    const std::string& password()
-    {
-      return data_.password;
-    }
-  public:
-    void password(const std::string& password)
-    {
-      data_.password = password;
-    }
-  public:
-    void save()
-    {
-      kvstore_.set(source_spotify_settings_key, data_);
-    }
-  private:
-    kvstore kvstore_;
-  private:
-    source_spotify_data data_;
-  private:
-    static constexpr const char* source_spotify_settings_key = "__source_spotify_settings__";
-  };
 
-  inline msgpack::istream& operator>>(msgpack::istream& is, source_spotify_data& value)
-  {
-    value.read(is);
-    return is;
-  }
-
-  inline msgpack::ostream& operator<<(msgpack::ostream& os, const source_spotify_data& value)
-  {
-    value.write(os);
-    return os;
+    inline msgpack::ostream& operator<<(msgpack::ostream& os, const source_spotify_data& value)
+    {
+      value.write(os);
+      return os;
+    }
   }
 }
 

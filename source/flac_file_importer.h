@@ -28,9 +28,9 @@ namespace musicbox
     flac_file_importer(const std::string& filename)
       :
       filename_(filename),
-      tracks_(musicbox::tracks()),
-      albums_(musicbox::albums()),
-      artists_(musicbox::artists())
+      tracks_(musicbox::dm::tracks()),
+      albums_(musicbox::dm::albums()),
+      artists_(musicbox::dm::artists())
     {
       if ( !FLAC::Metadata::get_tags(filename_.c_str(), comments_) )
       {
@@ -196,7 +196,7 @@ namespace musicbox
       track_.duration(stream_info_.get_total_samples() / stream_info_.get_sample_rate() * 1000);
       track_.album(album_);
       track_.artists_add(artist_);
-      track_.sources_add(musicbox::track_source("local", filename_));
+      track_.sources_add(musicbox::dm::track_source("local", filename_));
 
       album_.tracks_add(track_);
 
@@ -208,7 +208,7 @@ namespace musicbox
   private:
     void resolve_album_by_disc_id(const std::string& disc_id)
     {
-      albums_.each([&](const musicbox::album& rec)
+      albums_.each([&](const musicbox::dm::album& rec)
       {
         if ( rec.alt_ids_find(disc_id) )
         {
@@ -222,7 +222,7 @@ namespace musicbox
   private:
     void resolve_album_by_artist_name_and_album_title(const std::string& artist_name, const std::string& album_title)
     {
-      artists_.each([&](const musicbox::artist& rec)
+      artists_.each([&](const musicbox::dm::artist& rec)
       {
         if ( rec.name() == artist_name )
         {
@@ -235,7 +235,7 @@ namespace musicbox
       if ( album_artist_.id_is_null() )
         return;
 
-      album_artist_.albums_each([&](const musicbox::album& rec)
+      album_artist_.albums_each([&](const musicbox::dm::album& rec)
       {
         if ( rec.title() == album_title )
         {
@@ -250,7 +250,7 @@ namespace musicbox
     {
       assert(!album_.id_is_null());
 
-      album_.tracks_each([&](const musicbox::track& rec)
+      album_.tracks_each([&](const musicbox::dm::track& rec)
       {
         if ( rec.disc_number() == dn && rec.track_number() == tn )
         {
@@ -263,7 +263,7 @@ namespace musicbox
   private:
     void resolve_artist_by_name(const std::string& artist_name)
     {
-      artists_.each([&](const musicbox::artist& rec)
+      artists_.each([&](const musicbox::dm::artist& rec)
       {
         if ( rec.name() == artist_name )
         {
@@ -299,7 +299,7 @@ namespace musicbox
         get_picture(picture, FLAC__STREAM_METADATA_PICTURE_TYPE_MEDIA)
       )
       {
-        auto cover = musicbox::album_cover();
+        auto cover = musicbox::dm::album_cover();
 
         cover.mime_type(picture.get_mime_type());
         cover.data(picture.get_data(), picture.get_data_length());
@@ -327,14 +327,14 @@ namespace musicbox
   private:
     std::string filename_;
   private:
-    musicbox::tracks tracks_;
-    musicbox::albums albums_;
-    musicbox::artists artists_;
+    musicbox::dm::tracks tracks_;
+    musicbox::dm::albums albums_;
+    musicbox::dm::artists artists_;
   private:
-    musicbox::track track_;
-    musicbox::album album_;
-    musicbox::artist album_artist_;
-    musicbox::artist artist_;
+    musicbox::dm::track track_;
+    musicbox::dm::album album_;
+    musicbox::dm::artist album_artist_;
+    musicbox::dm::artist artist_;
   private:
     FLAC::Metadata::VorbisComment* comments_;
     FLAC::Metadata::StreamInfo stream_info_;

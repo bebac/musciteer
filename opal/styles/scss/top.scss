@@ -23,20 +23,22 @@ $background-color: #F1EFEC;
   }
 
   #menu-toggle, #settings-toggle  {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     >img {
       height: 1.33em;
     }
   }
 
   #menu-toggle {
-    float: left;
+    left: 0;
     padding-left: 1em;
     z-index: 100;
   }
 
   #settings-toggle {
-    float: right;
+    right: 0;
     padding-right: 1em;
     z-index: 100;
   }

@@ -86,13 +86,27 @@ namespace musicbox
       end_session,
       process_events,
       logged_in,
+      connection_error,
       metadata_updated,
       track_loaded
     };
   public:
-    struct message
+    class message
     {
+    public:
+      message(atom id) : id(id)
+      {
+      }
+      message(atom id, sp_error error) : id(id), error(error)
+      {
+      }
+      message(atom id, std::shared_ptr<player_session> session)
+        : id(id), session(session)
+      {
+      }
+    public:
       atom id;
+      sp_error error;
       std::shared_ptr<player_session> session;
     };
   public:
@@ -105,7 +119,8 @@ namespace musicbox
     void play_session(std::shared_ptr<player_session>);
     void end_session();
     void process_events();
-    void logged_in();
+    void logged_in(sp_error error);
+    void connection_error(sp_error error);
     void metadata_updated();
     void track_loaded();
   private:
@@ -237,7 +252,10 @@ namespace musicbox
           process_events();
           break;
         case atom::logged_in:
-          logged_in();
+          logged_in(msg.error);
+          break;
+        case atom::connection_error:
+          connection_error(msg.error);
           break;
         case atom::metadata_updated:
           metadata_updated();
@@ -330,9 +348,14 @@ namespace musicbox
     while (next_timeout == 0);
   }
 
-  void spotify_session::logged_in()
+  void spotify_session::logged_in(sp_error error)
   {
-    //std::cout << "spotify session logged in" << std::endl;
+    std::cerr << "spotify session logged_in: " << sp_error_message(error) << std::endl;
+  }
+
+  void spotify_session::connection_error(sp_error error)
+  {
+    std::cerr << "spotify session connection_error: " << sp_error_message(error) << std::endl;
   }
 
   void spotify_session::metadata_updated()
@@ -384,7 +407,7 @@ namespace musicbox
   void spotify_session::logged_in_cb(sp_session *session, sp_error error)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::logged_in});
+    self->ch_.send(message{atom::logged_in, error});
   }
 
   void spotify_session::logged_out_cb(sp_session *session)
@@ -399,7 +422,8 @@ namespace musicbox
 
   void spotify_session::connection_error_cb(sp_session *session, sp_error error)
   {
-    std::cerr << "spotify session connection error!" << sp_error_message(error) << std::endl;
+    auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
+    self->ch_.send(message{atom::connection_error, error});
   }
 
   void spotify_session::message_to_user_cb(sp_session *session, const char* message)

@@ -141,6 +141,10 @@ class Store
     end
   end
 
+  def stream_data!
+    @stream_data
+  end
+
   def stream_data(stream_id)
     if @stream_id and @stream_id == stream_id
       @stream_data
@@ -254,11 +258,9 @@ class Store
       render!
     when "queue_update"
       notifications << QueueUpdate.new(message['data'])
-      $document.at('#notification-overlay').show
       render!
     when "stream_begin"
       notifications << StreamBegin.new(message['data'])
-      $document.at('#notification-overlay').show
       render!
     when "stream_data"
       @stream_id = message['data']['stream_id']

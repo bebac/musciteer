@@ -36,11 +36,15 @@ class Notification
             show
           when StreamBegin
             if stream_data = store.stream_data(n.stream_id)
-              render_stream_begin(stream_data)
+              render_stream_data(stream_data)
               show
             else
               div
             end
+          end
+        else
+          if stream_data = store.stream_data!
+            render_stream_data(stream_data)
           end
         end
       end
@@ -57,7 +61,7 @@ class Notification
     end
   end
 
-  def render_stream_begin(notification)
+  def render_stream_data(notification)
     div do
       h1 do; text '>'; end
     end

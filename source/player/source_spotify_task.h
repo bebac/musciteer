@@ -9,6 +9,7 @@
 
 // ----------------------------------------------------------------------------
 #include "player_session.h"
+#include "source.h"
 
 // ----------------------------------------------------------------------------
 #include <dripcore/task.h>
@@ -22,11 +23,12 @@ namespace musicbox
   class source_spotify_task : public dripcore::task
   {
   public:
-    source_spotify_task(session_channel channel);
+    source_spotify_task(session_channel channel, done_channel done_ch);
   private:
     void main() final;
   private:
     session_channel ch_;
+    done_channel done_ch_;
   };
 }
 

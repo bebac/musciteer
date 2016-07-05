@@ -19,6 +19,9 @@
 #include "../flac_file_importer.h"
 
 // ----------------------------------------------------------------------------
+#include "../player/sources.h"
+
+// ----------------------------------------------------------------------------
 #include <http/request.h>
 #include <http/response.h>
 
@@ -246,6 +249,9 @@ protected:
     }
 
     settings.save();
+
+    auto sources = musicbox::sources();
+    sources.settings_changed("spotify");
 
     response << "HTTP/1.1 200 OK" << crlf
       << "Content-Length: 0" << crlf

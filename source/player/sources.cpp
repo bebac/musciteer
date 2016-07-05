@@ -39,27 +39,22 @@ namespace musicbox
     }
   }
 
+  void sources::settings_changed(const std::string source_name)
+  {
+    if ( source_name == "spotify" )
+    {
+      source_spotify_->restart();
+    }
+  }
+
   void sources::start(dripcore::loop* loop)
   {
     std::cerr << "starting local source" << std::endl;
     source_local_.reset(new source_local(loop));
     source_local_->start();
 
-    musicbox::dm::source_spotify spotify_settings{};
-
-    auto& username = spotify_settings.username();
-    auto& password = spotify_settings.password();
-
-    if ( !username.empty() && !password.empty() )
-    {
-      std::cerr << "starting spotify source" << std::endl;
-      source_spotify_.reset(new source_spotify(loop));
-      source_spotify_->start();
-    }
-    else
-    {
-      std::cerr << "spotify source not configured" << std::endl;
-    }
+    std::cout << "starting spotify source" << std::endl;
+    source_spotify_.reset(new source_spotify(loop));
+    source_spotify_->start();
   }
-
 }

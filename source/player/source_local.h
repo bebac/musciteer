@@ -25,6 +25,10 @@ namespace musicbox
     {
       spawn<source_local_task>(session_ch_);
     }
+  public:
+    void restart() override
+    {
+    }
   };
 }
 

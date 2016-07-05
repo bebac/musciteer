@@ -110,7 +110,7 @@ namespace musicbox
       std::shared_ptr<player_session> session;
     };
   public:
-    spotify_session(dripcore::channel<message> ch);
+    spotify_session(dripcore::channel<message> ch, done_channel done_ch);
   private:
     void main() final;
   private:
@@ -146,6 +146,7 @@ namespace musicbox
     sp_session* session_;
   private:
     dripcore::channel<message> ch_;
+    done_channel done_ch_;
   private:
     sp_track* track_;
     bool track_loaded_;
@@ -157,8 +158,8 @@ namespace musicbox
   /////
   // spotify_session implementation.
 
-  spotify_session::spotify_session(dripcore::channel<message> ch)
-    : session_(nullptr), ch_(ch), track_(nullptr), track_loaded_(false)
+  spotify_session::spotify_session(dripcore::channel<message> ch, done_channel done_ch)
+    : session_(nullptr), ch_(ch), done_ch_(done_ch), track_(nullptr), track_loaded_(false)
   {
     sp_session_callbacks callbacks = {
       &logged_in_cb,
@@ -173,12 +174,12 @@ namespace musicbox
       &end_of_track_cb,
       &stream_error_cb,
       0, //&user_info_updated_cb,
-      &start_playback_cb,
-      &stop_playback_cb,
-      &get_audio_buffer_stats_cb,
+      0, //&start_playback_cb,
+      0, //&stop_playback_cb,
+      0, //&get_audio_buffer_stats_cb,
       0, //&offline_status_updated_cb,
       0, //&offline_error_cb,
-      &credentials_blob_updated_cb
+      0, //&credentials_blob_updated_cb
     };
 
     sp_session_config config;
@@ -234,7 +235,11 @@ namespace musicbox
     {
       auto msg = ch_.recv(this);
 
-      if ( msg.id == atom::quit ) {
+      if ( msg.id == atom::quit )
+      {
+        // NOTE: segfaults sometimes!
+        // http://stackoverflow.com/questions/14350355/libspotify-destruction-procedure
+        sp_session_release(session_);
         break;
       }
 
@@ -269,6 +274,8 @@ namespace musicbox
           break;
       }
     }
+
+    done_ch_.send(true);
   }
 
   void spotify_session::init_audio_buffer_channel()
@@ -412,6 +419,7 @@ namespace musicbox
 
   void spotify_session::logged_out_cb(sp_session *session)
   {
+    std::cerr << "spotify session logged_out_cb" << std::endl;
   }
 
   void spotify_session::metadata_updated_cb(sp_session *session)
@@ -490,14 +498,14 @@ namespace musicbox
 
   void spotify_session::start_playback_cb(sp_session *session)
   {
-    // NOTE: Doesn't work without implmenting get_audio_buffer_stats_cb
+    // NOTE: Doesn't work without implementing get_audio_buffer_stats_cb
     //auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
     //self->ch_.send(atom::start_playback);
   }
 
   void spotify_session::stop_playback_cb(sp_session *session)
   {
-    // NOTE: Doesn't work without implmenting get_audio_buffer_stats_cb
+    // NOTE: Doesn't work without implementing get_audio_buffer_stats_cb
     //auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
     //self->ch_.send(atom::stop_playback);
   }
@@ -521,15 +529,17 @@ namespace musicbox
   /////
   // source_spotify_task implementation.
 
-  source_spotify_task::source_spotify_task(session_channel channel) : ch_(channel)
+  source_spotify_task::source_spotify_task(session_channel channel, done_channel done_ch)
+    : ch_(channel), done_ch_(done_ch)
   {
   }
 
   void source_spotify_task::main()
   {
     dripcore::channel<spotify_session::message> spotify_session_ch;
+    done_channel spotify_session_done_ch;
 
-    spawn<spotify_session>(spotify_session_ch);
+    auto spotify_session_task = spawn<spotify_session>(spotify_session_ch, spotify_session_done_ch);
 
     while ( true )
     {
@@ -538,6 +548,10 @@ namespace musicbox
       if ( !session )
       {
         spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit, session});
+
+        if ( !spotify_session_task.expired() )  {
+          spotify_session_done_ch.recv(this);
+        }
         break;
       }
 
@@ -557,5 +571,7 @@ namespace musicbox
       }
       while( ctrl != player_session::control::done );
     }
+
+    done_ch_.send(true);
   }
 }

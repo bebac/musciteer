@@ -17,6 +17,8 @@
 // ----------------------------------------------------------------------------
 namespace musicbox
 {
+  using done_channel = dripcore::channel<bool>;
+
   class source
   {
   public:
@@ -25,6 +27,7 @@ namespace musicbox
     }
   public:
     virtual void start() = 0;
+    virtual void restart() = 0;
   public:
     void send(std::shared_ptr<player_session> session)
     {
@@ -38,6 +41,7 @@ namespace musicbox
     }
   protected:
     session_channel session_ch_;
+    done_channel done_ch_;
   private:
     dripcore::loop* loop_;
   };

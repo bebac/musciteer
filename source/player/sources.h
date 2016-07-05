@@ -15,9 +15,6 @@
 #include "source_spotify.h"
 
 // ----------------------------------------------------------------------------
-#include "../dm/source_spotify.h"
-
-// ----------------------------------------------------------------------------
 namespace musicbox
 {
   class sources
@@ -25,6 +22,8 @@ namespace musicbox
     using source_ptr = std::shared_ptr<source>;
   public:
     void play(std::shared_ptr<player_session> session);
+  public:
+    void settings_changed(const std::string source_name);
   public:
     static void start(dripcore::loop* loop);
   private:

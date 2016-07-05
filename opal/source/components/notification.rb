@@ -2,21 +2,27 @@ class Notification
   include Inesita::Component
 
   def init
-    puts "init Notification"
-    @timer = every!(5)
-  end
-
-  def duration(secs)
-    @timer = every!(secs) do
-      store.notifications.shift
+    @timer = every!(5) do
       if store.notifications.empty?
         $document.at('#notification-overlay').hide
         @timer.stop
-      else
-        @timer.start
       end
     end
+  end
+
+  def show_overlay
+    $document.at('#notification-overlay').show
+  end
+
+  def restart_timer
+    @timer.stop
     @timer.start
+  end
+
+  def show
+    show_overlay
+    restart_timer
+    store.notifications.shift
   end
 
   def render
@@ -27,14 +33,14 @@ class Notification
           case n
           when QueueUpdate
             render_queue_update(n)
-            duration(5) if @timer.stopped?
+            show
           when StreamBegin
             if stream_data = store.stream_data(n.stream_id)
               render_stream_begin(stream_data)
+              show
             else
-              div do; end
+              div
             end
-            duration(5) if @timer.stopped?
           end
         end
       end

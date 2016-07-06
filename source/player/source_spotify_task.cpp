@@ -547,7 +547,7 @@ namespace musicbox
 
       if ( !session )
       {
-        spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit, session});
+        spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit}, this);
 
         if ( !spotify_session_task.expired() )  {
           spotify_session_done_ch.recv(this);
@@ -556,7 +556,7 @@ namespace musicbox
       }
 
       // Request spotify session to play session.
-      spotify_session_ch.send(spotify_session::message{spotify_session::atom::play_session, session});
+      spotify_session_ch.send(spotify_session::message{spotify_session::atom::play_session, session}, this);
 
       // Process session control messages until session done.
       auto ctrl = player_session::control::undefined;
@@ -566,7 +566,7 @@ namespace musicbox
 
         if ( ctrl == player_session::control::stop )
         {
-          spotify_session_ch.send(spotify_session::message{spotify_session::atom::end_session, session});
+          spotify_session_ch.send(spotify_session::message{spotify_session::atom::end_session}, this);
         }
       }
       while( ctrl != player_session::control::done );

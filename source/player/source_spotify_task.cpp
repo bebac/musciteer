@@ -8,6 +8,7 @@
 #include "message.h"
 #include "audio_buffer.h"
 #include "audio_output.h"
+#include "player.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/source_spotify.h"
@@ -153,6 +154,8 @@ namespace musicbox
   private:
     std::shared_ptr<player_session> player_session_;
     dripcore::channel<audio_buffer> buffer_ch_;
+  private:
+    static constexpr const char* name = "spotify";
   };
 
   /////
@@ -357,12 +360,24 @@ namespace musicbox
 
   void spotify_session::logged_in(sp_error error)
   {
-    std::cerr << "spotify session logged_in: " << sp_error_message(error) << std::endl;
+    auto player = musicbox::player();
+
+    player.source_notification(
+      source_notification::id::status,
+      name,
+      sp_error_message(error)
+    );
   }
 
   void spotify_session::connection_error(sp_error error)
   {
-    std::cerr << "spotify session connection_error: " << sp_error_message(error) << std::endl;
+    auto player = musicbox::player();
+
+    player.source_notification(
+      source_notification::id::error,
+      name,
+      sp_error_message(error)
+    );
   }
 
   void spotify_session::metadata_updated()

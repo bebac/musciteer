@@ -340,7 +340,7 @@ public:
 class source_notification
 {
 public:
-  enum class type
+  enum class id
   {
     status,
     error
@@ -356,7 +356,7 @@ public:
     message = std::move(other.message);
   }
 public:
-  type type;
+  id type;
   std::string source_name;
   std::string message;
 };

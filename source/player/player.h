@@ -95,6 +95,17 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
+    void source_notification(source_notification::id type, const std::string& source_name, const std::string& source_message)
+    {
+      message m(message::source_notify_id, 0);
+
+      m.source_notify.type = type;
+      m.source_notify.source_name = source_name;
+      m.source_notify.message = source_message;
+
+      message_ch_.send(std::move(m));
+    }
+  public:
     static void start(dripcore::loop* loop)
     {
       loop->spawn<player_task>(message_ch_);

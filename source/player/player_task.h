@@ -65,6 +65,7 @@ namespace musicbox
     void handle(queue_request& m);
     void handle(stream_begin_notify& m);
     void handle(stream_end_notify& m);
+    void handle(source_notification& m);
   private:
     void become_playing(const musicbox::dm::track& track);
     void become_stopped();

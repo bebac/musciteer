@@ -85,6 +85,9 @@ namespace musicbox
       case message::stream_end_notify_id:
         handle(m.stream_end_notify);
         break;
+      case message::source_notify_id:
+        handle(m.source_notify);
+        break;
     }
   }
 
@@ -250,6 +253,15 @@ namespace musicbox
       case paused:
         break;
     }
+  }
+
+  void player_task::handle(source_notification& m)
+  {
+    std::cout
+      << "got source notification"
+      << " type=" << size_t(m.type)
+      << ", source_name=" << m.source_name
+      << ", message=" << m.message << std::endl;
   }
 
   void player_task::become_playing(const musicbox::dm::track& track)

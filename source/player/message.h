@@ -337,6 +337,31 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class source_notification
+{
+public:
+  enum class type
+  {
+    status,
+    error
+  };
+public:
+  source_notification()
+  {
+  }
+  source_notification(source_notification&& other)
+  {
+    type = std::move(other.type);
+    source_name = std::move(other.source_name);
+    message = std::move(other.message);
+  }
+public:
+  type type;
+  std::string source_name;
+  std::string message;
+};
+
+// ----------------------------------------------------------------------------
 class stream_data_request
 {
 public:
@@ -376,29 +401,30 @@ class message
 public:
   enum id
   {
-    undefined_id = 0,
-    device_list_req_id = 1,
-    device_list_res_id = 2,
-    device_id = 3,
-    open_req_id = 4,
-    open_res_id = 5,
-    close_req_id = 6,
-    close_res_id = 7,
-    play_req_id = 8,
-    stop_req_id = 9,
-    queue_req_id = 10,
-    stream_begin_id = 11,
-    stream_end_id = 12,
-    stream_buffer_id = 13,
-    stream_begin_notify_id = 14,
-    stream_end_notify_id = 15,
-    stream_progress_notify_id = 16,
-    subscribe_id = 17,
-    unsubscribe_id = 18,
-    queue_update_id = 19,
-    player_state_id = 20,
-    stream_data_req_id = 21,
-    stream_data_res_id = 22,
+    undefined_id,
+    device_list_req_id,
+    device_list_res_id,
+    device_id,
+    open_req_id,
+    open_res_id,
+    close_req_id,
+    close_res_id,
+    play_req_id,
+    stop_req_id,
+    queue_req_id,
+    stream_begin_id,
+    stream_end_id,
+    stream_buffer_id,
+    stream_begin_notify_id,
+    stream_end_notify_id,
+    stream_progress_notify_id,
+    subscribe_id,
+    unsubscribe_id,
+    queue_update_id,
+    player_state_id,
+    source_notify_id,
+    stream_data_req_id,
+    stream_data_res_id,
   };
 public:
   message() : type(undefined_id), ref(0)
@@ -467,6 +493,9 @@ public:
         break;
       case player_state_id:
         new (&player_state) player_state_notification();
+        break;
+      case source_notify_id:
+        new (&source_notify) source_notification();
         break;
       case stream_data_req_id:
         new (&stream_data_req) stream_data_request();
@@ -540,6 +569,9 @@ public:
         break;
       case player_state_id:
         new (&player_state) player_state_notification(std::move(other.player_state));
+        break;
+      case source_notify_id:
+        new (&source_notify) source_notification(std::move(other.source_notify));
         break;
       case stream_data_req_id:
         new (&stream_data_req) stream_data_request(std::move(other.stream_data_req));
@@ -616,6 +648,9 @@ public:
       case player_state_id:
         player_state.~player_state_notification();
         break;
+      case source_notify_id:
+        source_notify.~source_notification();
+        break;
       case stream_data_req_id:
         stream_data_req.~stream_data_request();
         break;
@@ -648,6 +683,7 @@ public:
     audio_output_unsubscribe_message unsubscribe;
     queue_update_notification queue_update;
     player_state_notification player_state;
+    source_notification source_notify;
     stream_data_request stream_data_req;
     stream_data_response stream_data_res;
   };

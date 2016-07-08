@@ -52,6 +52,16 @@ class Settings
         end
         div class: 'settings-item' do
           div do
+            text "Status"
+          end
+          div do
+            p do; text store.source_local_status; end
+          end
+          div do
+          end
+        end
+        div class: 'settings-item' do
+          div do
             text "Directories"
           end
           div do
@@ -85,6 +95,16 @@ class Settings
       section do
         h2 do
           text "Spotify Source"
+        end
+        div class: 'settings-item' do
+          div do
+            text "Status"
+          end
+          div do
+            p do; text store.source_spotify_status; end
+          end
+          div do
+          end
         end
         div class: 'settings-sub-item' do
           div do

@@ -61,6 +61,10 @@ class Store
     @audio_device_list ||= []
   end
 
+  def source_local_status
+    @source_local_status ||= "Ok"
+  end
+
   def directories
     unless @directories
       Browser::HTTP.get("/api/sources/local/directories") do |request|
@@ -99,6 +103,10 @@ class Store
         render!
       end
     end
+  end
+
+  def source_spotify_status
+    @source_spotify_status ||= "Unknown"
   end
 
   def spotify_settings
@@ -224,6 +232,15 @@ class Store
 
   private
 
+  def handle_source_notification(data)
+    case data['source_name']
+    when 'local'
+      @source_local_status = data['message']
+    when 'spotify'
+      @source_spotify_status = data['message']
+    end
+  end
+
   def message_queue
     @mq ||= Array.new
   end
@@ -265,6 +282,9 @@ class Store
     when "stream_data"
       @stream_id = message['data']['stream_id']
       @stream_data = Track.new(message['data']['track'])
+      render!
+    when "source_notification"
+      handle_source_notification(message['data'])
       render!
     end
   end

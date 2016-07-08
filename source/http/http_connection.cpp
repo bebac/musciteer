@@ -106,6 +106,19 @@ void websocket_send_task::main()
         handler_.send_message(event.dump());
         break;
       }
+      case message::source_notify_id:
+      {
+        json event = {
+          { "event", "source_notification"},
+          { "data",  {
+            { "type", unsigned(msg.source_notify.type) },
+            { "source_name", msg.source_notify.source_name },
+            { "message", msg.source_notify.message } }
+          }
+        };
+        handler_.send_message(event.dump());
+        break;
+      }
       case message::stream_data_res_id:
       {
         json event = {

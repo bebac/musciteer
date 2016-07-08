@@ -20,6 +20,7 @@
 #include <string>
 #include <cassert>
 #include <deque>
+#include <unordered_map>
 
 // ----------------------------------------------------------------------------
 class audio_output_alsa;
@@ -87,6 +88,8 @@ namespace musicbox
     std::deque<musicbox::dm::track> play_q_;
   private:
     std::shared_ptr<player_session> session_;
+  private:
+    std::unordered_map<std::string, std::string> source_status_;
   private:
     static constexpr const char* audio_output_device_key = "__output_device__";
   };

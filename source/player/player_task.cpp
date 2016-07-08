@@ -262,6 +262,23 @@ namespace musicbox
       << " type=" << size_t(m.type)
       << ", source_name=" << m.source_name
       << ", message=" << m.message << std::endl;
+
+    // Relay source notification to observers.
+    for ( auto observer : observers_ )
+    {
+      message n(message::source_notify_id);
+
+      n.source_notify.type = m.type;
+      n.source_notify.source_name = m.source_name;
+      n.source_notify.message = m.message;
+
+      observer.send(std::move(n));
+    }
+
+    // Save source status.
+    if ( m.type == source_notification::id::status ) {
+      source_status_[m.source_name] = std::move(m.message);
+    }
   }
 
   void player_task::become_playing(const musicbox::dm::track& track)
@@ -319,6 +336,18 @@ namespace musicbox
     message m(message::subscribe_id, 0);
 
     m.subscribe.channel = ch;
+
+    // Send source status to new observer.
+    for ( const auto& s : source_status_ )
+    {
+      message n(message::source_notify_id);
+
+      n.source_notify.type = source_notification::id::status;
+      n.source_notify.source_name = s.first;
+      n.source_notify.message = s.second;
+
+      ch.send(std::move(n));
+    }
 
     audio_output_->send(std::move(m));
   }

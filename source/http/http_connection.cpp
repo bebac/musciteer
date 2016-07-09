@@ -121,13 +121,20 @@ void websocket_send_task::main()
       }
       case message::stream_data_res_id:
       {
-        json event = {
-          { "event", "stream_data"},
-          { "data",  {
+        json data;
+
+        if ( msg.stream_data_res.stream_id != -1 )
+        {
+          data = {
             { "stream_id", msg.stream_data_res.stream_id },
-            { "track", musicbox::to_json(*msg.stream_data_res.track) } }
-          }
+            { "track", musicbox::to_json(*msg.stream_data_res.track) }
+          };
+        }
+
+        json event = {
+          { "event", "stream_data" }, { "data", data }
         };
+
         handler_.send_message(event.dump());
         break;
       }

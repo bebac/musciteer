@@ -391,7 +391,7 @@ public:
     track = std::move(other.track);
   }
 public:
-  unsigned stream_id;
+  int stream_id;
   std::shared_ptr<musicbox::dm::track> track;
 };
 

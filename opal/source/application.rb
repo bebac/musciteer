@@ -280,9 +280,11 @@ class Store
       notifications << StreamBegin.new(message['data'])
       render!
     when "stream_data"
-      @stream_id = message['data']['stream_id']
-      @stream_data = Track.new(message['data']['track'])
-      render!
+      if data = message['data']
+        @stream_id = data['stream_id']
+        @stream_data = Track.new(data['track'])
+        render!
+      end
     when "source_notification"
       handle_source_notification(message['data'])
       render!

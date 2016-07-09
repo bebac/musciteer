@@ -95,6 +95,19 @@ namespace musicbox
   {
     observers_.insert(m.channel);
     audio_output_subscribe(m.channel);
+
+    // Send source status to new observer.
+    for ( const auto& s : source_status_ )
+    {
+      message n(message::source_notify_id);
+
+      n.source_notify.type = source_notification::id::status;
+      n.source_notify.source_name = s.first;
+      n.source_notify.message = s.second;
+
+      m.channel.send(std::move(n));
+    }
+
     player_state_notify(state_);
   }
 
@@ -336,18 +349,6 @@ namespace musicbox
     message m(message::subscribe_id, 0);
 
     m.subscribe.channel = ch;
-
-    // Send source status to new observer.
-    for ( const auto& s : source_status_ )
-    {
-      message n(message::source_notify_id);
-
-      n.source_notify.type = source_notification::id::status;
-      n.source_notify.source_name = s.first;
-      n.source_notify.message = s.second;
-
-      ch.send(std::move(n));
-    }
 
     audio_output_->send(std::move(m));
   }

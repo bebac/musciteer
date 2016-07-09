@@ -33,6 +33,15 @@ void audio_output_alsa::send(message&& m)
 }
 
 // ----------------------------------------------------------------------------
+void audio_output_alsa::send(audio_buffer&& buffer)
+{
+  message m(message::stream_buffer_id);
+
+  m.stream_buffer.buffer = std::move(buffer);
+  msg_ch_.send(std::move(m));
+}
+
+// ----------------------------------------------------------------------------
 void audio_output_alsa::loop()
 {
   while ( true )

@@ -476,10 +476,7 @@ namespace musicbox
       buf.clear();
       buf.write_s16_le_i(frames, num_frames);
 
-      ::message m(::message::stream_buffer_id);
-
-      m.stream_buffer.buffer = std::move(buf);
-      audio_output->send(std::move(m));
+      audio_output->send(std::move(buf));
     }
 
     //std::cerr << "spotify_session::music_delivery num_frames=" << num_frames << std::endl;

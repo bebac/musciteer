@@ -47,6 +47,7 @@ public:
   ~audio_output_alsa();
 public:
   void send(message&& m);
+  void send(audio_buffer&& buffer);
 private:
   void loop();
   void dispatch(message& m);

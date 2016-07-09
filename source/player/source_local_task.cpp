@@ -74,10 +74,7 @@ namespace musicbox
       buf.clear();
       buf.writen(buffer, frame->header.blocksize, bits_per_sample_);
 
-      message m(message::stream_buffer_id);
-
-      m.stream_buffer.buffer = std::move(buf);
-      audio_output_->send(std::move(m));
+      audio_output_->send(std::move(buf));
 
       if ( task_->stopping() || task_->done() ) {
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;

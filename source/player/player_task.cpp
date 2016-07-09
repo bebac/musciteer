@@ -192,7 +192,7 @@ namespace musicbox
 
     auto track = tracks.find_by_id(m.id);
 
-    if ( track.id().empty() )
+    if ( track.id_is_null() )
     {
       // ERROR!
       return;

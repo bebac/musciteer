@@ -12,6 +12,7 @@
 
 // ----------------------------------------------------------------------------
 #include "../dm/tracks.h"
+#include "../dm/albums.h"
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
@@ -20,32 +21,62 @@
 // ----------------------------------------------------------------------------
 #include <streambuf>
 #include <fstream>
+#include <regex>
 
 // ----------------------------------------------------------------------------
 class track_handler
 {
 public:
   track_handler(http::request& request, http::response& response)
-    : request(request), response(response)
+    : request(request), response(response), route_re_("^/?([^/]*)?/?([^/]*)?")
   {
   }
 public:
   void call(const std::string& path)
   {
-    if ( request.method() == http::method::get )
+    std::smatch match;
+
+    if ( std::regex_match(path, match, route_re_) )
     {
-      if ( path.length() == 0 || path == "/" )
+      if ( match[0].length() == 0 || (match[0] == "/" && match[1].length() == 0 ))
       {
-        get_all_tracks(path);
+        if ( request.method() == http::method::get ) {
+          get_tracks(path);
+        }
+        else {
+          method_not_allowed();
+        }
+      }
+      else if ( match[0].length() > 0 && match[1].length() > 0 )
+      {
+        if ( match[2].length() == 0 )
+        {
+          if ( request.method() == http::method::get ) {
+            get_track(match[1]);
+          }
+          else if ( request.method() == http::method::delete_ ) {
+            delete_track(match[1]);
+          }
+          else {
+            method_not_allowed();
+          }
+        }
+        else {
+          not_found();
+        }
+      }
+      else
+      {
+        not_found();
       }
     }
     else
     {
-      method_not_allowed();
+      not_found();
     }
   }
 protected:
-  void get_all_tracks(const std::string& path)
+  void get_tracks(const std::string& path)
   {
     auto tracks = musicbox::dm::tracks();
 
@@ -62,6 +93,53 @@ protected:
       << "Content-Length: " << payload.length() << crlf
       << crlf
       << payload;
+  }
+private:
+  void get_track(const std::string& id)
+  {
+    auto tracks = musicbox::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      json j = musicbox::to_json(track);
+
+      auto payload = j.dump();
+
+      response << "HTTP/1.1 200 OK" << crlf
+        << "Content-Length: " << payload.length() << crlf
+        << crlf
+        << payload;
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void delete_track(const std::string& id)
+  {
+    auto tracks = musicbox::dm::tracks();
+    auto albums = musicbox::dm::albums();
+
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      auto album = track.album();
+
+      album.tracks_del(track);
+      tracks.remove(track);
+      albums.save(album);
+
+      response << "HTTP/1.1 200 OK" << crlf
+        << "Content-Length: " << 0 << crlf
+        << crlf;
+    }
+    else
+    {
+      not_found();
+    }
   }
 protected:
   void method_not_allowed()
@@ -80,6 +158,8 @@ protected:
 protected:
   http::request& request;
   http::response& response;
+private:
+  std::regex route_re_;
 private:
   static constexpr const char* crlf = "\r\n";
 };

@@ -136,7 +136,9 @@ private:
 
       album.tracks_each([&](const musicbox::dm::track& track)
       {
-        j.push_back(musicbox::to_json(track));
+        if ( !track.id_is_null() ) {
+          j.push_back(musicbox::to_json(track));
+        }
       });
 
       auto payload = j.dump();

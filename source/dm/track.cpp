@@ -20,7 +20,7 @@ namespace musicbox
     {
     }
 
-    bool track::id_is_null()
+    bool track::id_is_null() const
     {
       return id_.empty();
     }

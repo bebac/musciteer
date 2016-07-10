@@ -64,6 +64,11 @@ namespace musicbox
       track_ids_.insert(track.id());
     }
 
+    void album::tracks_del(const dm::track& track)
+    {
+      track_ids_.erase(track.id());
+    }
+
     void album::tracks_each(std::function<void(const dm::track& track)> cb) const
     {
       auto tracks = dm::tracks();

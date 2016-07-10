@@ -302,32 +302,35 @@ void print_track(const musicbox::dm::track& track)
 class spotify_importer : public dripcore::task
 {
 public:
-  spotify_importer(const std::string& url) : http_client_(this), url_(url)
+  spotify_importer(std::vector<std::string> urls) : http_client_(this), urls_(urls)
   {
   }
 private:
   void main() override
   {
-    auto j = http_get_json(url_);
-
-    if ( j["type"] == "track" )
+    for ( const auto& url : urls_ )
     {
-      import_track(j);
-    }
-    else if ( j["type"] == "album" )
-    {
-      auto items = j["tracks"]["items"];
+      auto j = http_get_json(url);
 
-      for ( auto item : items )
+      if ( j["type"] == "track" )
       {
-        std::string url = item["href"];
-
-        import_track(url);
+        import_track(j);
       }
-    }
-    else
-    {
-      throw std::runtime_error("don't know how to import that");
+      else if ( j["type"] == "album" )
+      {
+        auto items = j["tracks"]["items"];
+
+        for ( auto item : items )
+        {
+          std::string track_url = item["href"];
+
+          import_track(track_url);
+        }
+      }
+      else
+      {
+        throw std::runtime_error("don't know how to import that");
+      }
     }
   }
 private:
@@ -364,7 +367,7 @@ private:
 
     auto album = resolve_album(album_artist, album_json);
 
-    std::cout << "album id='" << album.id() << "', title='" << album.title() << "'" << std::endl;
+    //std::cout << "album id='" << album.id() << "', title='" << album.title() << "'" << std::endl;
 
     if ( album.id_is_null() ) {
       throw std::runtime_error("album id is empty");
@@ -422,6 +425,7 @@ private:
 
         if ( track_artist.id_is_null() )
         {
+          //std::cout << "create artist (track) name=" << track_artist_name << std::endl;
           track_artist = artists_.create_artist(track_artist_name);
           artists_.save(track_artist);
         }
@@ -482,7 +486,9 @@ private:
 
     if ( album_artist.id_is_null() )
     {
+      //std::cout << "create artist (album) name=" << artist_name << std::endl;
       album_artist = artists_.create_artist(artist_name);
+      artists_.save(album_artist);
     }
 
     return album_artist;
@@ -605,7 +611,7 @@ private:
 private:
   http::client http_client_;
 private:
-  std::string url_;
+  std::vector<std::string> urls_;
 private:
   musicbox::dm::artists artists_;
   musicbox::dm::albums albums_;
@@ -643,10 +649,27 @@ int main(int argc, char *argv[])
   // Examples:
   // spotify_import /v1/albums/51ogMPThFURWcqZGxVA1uT
   // spotify_import /v1/tracks/6dben05JiKn09x31h1JgOW
+  // spotify_import -f urls.txt
 
-  std::string url = "https://api.spotify.com" + std::string(argv[1]);
+  std::vector<std::string> urls;
 
-  loop.spawn<spotify_importer>(url);
+  if ( std::string(argv[1]) == "-f" )
+  {
+    std::ifstream file(argv[2]);
+
+    while ( !file.eof() )
+    {
+      std::string path;
+      std::getline(file, path);
+      urls.push_back("https://api.spotify.com" + path);
+    }
+  }
+  else
+  {
+    urls.push_back("https://api.spotify.com" + std::string(argv[1]));
+  }
+
+  loop.spawn<spotify_importer>(std::move(urls));
   loop.run();
 
   return 0;

@@ -32,6 +32,11 @@ namespace musicbox
       }
     }
   public:
+    ~kvstore_impl()
+    {
+      db_.close();
+    }
+  public:
     int64_t increment(const std::string& key, int64_t num, int64_t orig)
     {
       return db_.increment(key, num, orig);

@@ -80,6 +80,11 @@ namespace musicbox
       return db_.set(key, buf.str());
     }
   public:
+    bool remove(const std::string& key)
+    {
+      return db_.remove(key);
+    }
+  public:
     void each(
       std::function<bool(const std::string&)> key_match,
       std::function<bool(msgpack::istream&)> value_cb
@@ -146,6 +151,12 @@ namespace musicbox
     {
       assert(instance_);
       return instance_->set(key, std::forward<T>(value));
+    }
+  public:
+    bool remove(const std::string& key)
+    {
+      assert(instance_);
+      return instance_->remove(key);
     }
   public:
     void each(

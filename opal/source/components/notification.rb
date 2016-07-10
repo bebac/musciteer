@@ -22,7 +22,7 @@ class Notification
   def show
     show_overlay
     restart_timer
-    store.notifications.shift
+    store.notifications.clear
   end
 
   def render

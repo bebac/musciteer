@@ -124,6 +124,7 @@ namespace musicbox
     void connection_error(sp_error error);
     void metadata_updated();
     void track_loaded();
+    void release_track();
   private:
     static void logged_in_cb(sp_session *session, sp_error error);
     static void logged_out_cb(sp_session *session);
@@ -271,8 +272,8 @@ namespace musicbox
         case atom::track_loaded:
           if ( !track_loaded_ )
           {
-            track_loaded();
             track_loaded_ = true;
+            track_loaded();
           }
           break;
       }
@@ -333,13 +334,7 @@ namespace musicbox
 
       done.recv(this);
 
-      if ( track_ )
-      {
-        sp_track_release(track_);
-        track_ = 0;
-        track_loaded_ = false;
-      }
-
+      release_track();
       player_session_.reset();
     }
     else
@@ -393,7 +388,16 @@ namespace musicbox
 
     if ( avail != SP_TRACK_AVAILABILITY_AVAILABLE )
     {
-      std::cerr << "spotify session - track not available" << std::endl;
+      release_track();
+      player_session_.reset();
+
+      auto player = musicbox::player();
+
+      player.source_notification(
+        source_notification::id::track_unavailable,
+        name,
+        "track unavailable"
+      );
     }
     else
     {
@@ -420,6 +424,16 @@ namespace musicbox
       if ( (err=sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
         std::cerr << "sp_session_player_play error " << err << std::endl;
       }
+    }
+  }
+
+  void spotify_session::release_track()
+  {
+    if ( track_ )
+    {
+      sp_track_release(track_);
+      track_ = 0;
+      track_loaded_ = false;
     }
   }
 

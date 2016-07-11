@@ -240,32 +240,7 @@ namespace musicbox
 
   void player_task::handle(stream_end_notify& m)
   {
-    switch ( state_ )
-    {
-      case stopped:
-        std::cout << "got stream end while player_task state==stopped!" << std::endl;
-        break;
-      case playing:
-      {
-        session_->done();
-
-        if ( !play_q_.empty() )
-        {
-          become_playing(play_q_.front());
-          play_q_.pop_front();
-        }
-        else
-        {
-          become_stopped();
-        }
-        break;
-      }
-      case stopping:
-        become_stopped();
-        break;
-      case paused:
-        break;
-    }
+    end_session();
   }
 
   void player_task::handle(source_notification& m)
@@ -288,9 +263,14 @@ namespace musicbox
       observer.send(std::move(n));
     }
 
-    // Save source status.
-    if ( m.type == source_notification::id::status ) {
+    if ( m.type == source_notification::id::status )
+    {
+      // Save source status.
       source_status_[m.source_name] = std::move(m.message);
+    }
+    else if ( m.type == source_notification::id::track_unavailable )
+    {
+      end_session();
     }
   }
 
@@ -317,6 +297,35 @@ namespace musicbox
     state_ = stopped;
 
     player_state_notify(state_);
+  }
+
+  void player_task::end_session()
+  {
+    switch ( state_ )
+    {
+      case stopped:
+        break;
+      case playing:
+      {
+        session_->done();
+
+        if ( !play_q_.empty() )
+        {
+          become_playing(play_q_.front());
+          play_q_.pop_front();
+        }
+        else
+        {
+          become_stopped();
+        }
+        break;
+      }
+      case stopping:
+        become_stopped();
+        break;
+      case paused:
+        break;
+    }
   }
 
   void player_task::player_state_notify(unsigned state)

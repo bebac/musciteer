@@ -343,7 +343,8 @@ public:
   enum class id
   {
     status,
-    error
+    error,
+    track_unavailable
   };
 public:
   source_notification()

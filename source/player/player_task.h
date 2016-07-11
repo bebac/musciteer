@@ -70,6 +70,7 @@ namespace musicbox
   private:
     void become_playing(const musicbox::dm::track& track);
     void become_stopped();
+    void end_session();
     void player_state_notify(unsigned state);
     void queue_update_notify(const musicbox::dm::track& track);
     void audio_output_subscribe(message_channel&);

@@ -35,5 +35,9 @@ class Layout
         component AlbumDetails
       end
     end
+
+    div id: 'connection-lost-overlay' do
+      component ConnectionLost
+    end
   end
 end

@@ -4,6 +4,7 @@ require 'browser/socket'
 require 'browser/http'
 require 'browser/location'
 require 'browser/interval'
+require 'browser/delay'
 require 'browser/effects'
 require 'json'
 require 'inesita'
@@ -296,7 +297,15 @@ class Store
     @channel = Browser::Socket.new ws_url do |ws|
     #@channel = Browser::Socket.new "ws://#{$document.location.host}" do # Does not work!!!
       ws.on :open do
+        $document.at('#connection-lost-overlay').hide
         message_queue_flush
+      end
+
+      ws.on :close do
+        $document.at('#connection-lost-overlay').show
+        after 5 do
+          message_channel_start
+        end
       end
 
       ws.on :message do |e|

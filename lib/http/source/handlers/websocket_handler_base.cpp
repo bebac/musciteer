@@ -92,6 +92,8 @@ namespace http
         std::cout << "websocket streaming error!" << std::endl;
       }
     }
+
+    on_close();
   }
 
   void websocket_handler_base::dispatch(http::websocket::header& header, std::istream& payload)
@@ -120,7 +122,6 @@ namespace http
         // Not implemented yet.
         break;
       case 8:
-        on_close();
         payload.setstate(std::ios_base::eofbit);
         return;
     }

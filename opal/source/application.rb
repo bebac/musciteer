@@ -224,6 +224,10 @@ class Store
 
   private
 
+  def hidden?
+    `document.hidden`
+  end
+
   def stream_data_sync(stream_id)
     message_channel_send({ :event => :stream_data_sync, :data => stream_id })
   end
@@ -289,7 +293,7 @@ class Store
           @stream = Stream.new(data)
           stream_data_sync(@stream.id())
         end
-        render!
+        render! unless hidden?
       end
     when "stream_end"
       @stream = nil

@@ -3,10 +3,9 @@ class Notification
 
   def init
     @timer = every!(5) do
-      if store.notifications.empty?
-        $document.at('#notification-overlay').hide
-        @timer.stop
-      end
+      $document.at('#notification-overlay').hide
+      @timer.stop
+      store.notifications.clear
     end
   end
 
@@ -19,10 +18,10 @@ class Notification
     @timer.start
   end
 
-  def show
+  def show(notification)
     show_overlay
     restart_timer
-    store.notifications.clear
+    notification.shown = true
   end
 
   def render
@@ -33,18 +32,14 @@ class Notification
           case n
           when QueueUpdate
             render_queue_update(n)
-            show
+            show(n) unless n.shown
           when StreamBegin
-            if stream_data = store.stream_data(n.stream_id)
-              render_stream_data(stream_data)
-              show
-            else
-              div
+            if stream = store.stream
+              if track = stream.track
+                render_stream_data(track)
+                show(n) unless n.shown
+              end
             end
-          end
-        else
-          if stream_data = store.stream_data!
-            render_stream_data(stream_data)
           end
         end
       end

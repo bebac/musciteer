@@ -150,17 +150,8 @@ class Store
     end
   end
 
-  def stream_data!
-    @stream_data
-  end
-
-  def stream_data(stream_id)
-    if @stream_id and @stream_id == stream_id
-      @stream_data
-    else
-      message_channel_send({ :event => :stream_data_sync, :data => stream_id })
-      nil
-    end
+  def stream
+    @stream
   end
 
   def load_tracks
@@ -233,6 +224,10 @@ class Store
 
   private
 
+  def stream_data_sync(stream_id)
+    message_channel_send({ :event => :stream_data_sync, :data => stream_id })
+  end
+
   def handle_source_notification(data)
     case data['source_name']
     when 'local'
@@ -275,15 +270,33 @@ class Store
       end
       render!
     when "queue_update"
-      notifications << QueueUpdate.new(message['data'])
-      render!
+      if data = message['data']
+        notifications << QueueUpdate.new(data)
+        render!
+      end
     when "stream_begin"
-      notifications << StreamBegin.new(message['data'])
+      if data = message['data']
+        @stream = Stream.new(data)
+        stream_data_sync(@stream.id())
+        notifications << StreamBegin.new(data)
+      end
+    when "stream_progress"
+      if data = message['data']
+        if @stream
+          @stream.length = data["length"]
+          @stream.duration = data['duration']
+        else
+          @stream = Stream.new(data)
+          stream_data_sync(@stream.id())
+        end
+        render!
+      end
+    when "stream_end"
+      @stream = nil
       render!
     when "stream_data"
       if data = message['data']
-        @stream_id = data['stream_id']
-        @stream_data = Track.new(data['track'])
+        @stream.track = Track.new(data['track'])
         render!
       end
     when "source_notification"

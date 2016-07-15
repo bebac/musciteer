@@ -238,6 +238,11 @@ void http_connection::dispatch(http::request& request, http::response& response)
     static_file_handler handler(request, response);
     handler.call("index.html");
   }
+  else if ( uri == "/android")
+  {
+    static_file_handler handler(request, response);
+    handler.call("android.html");
+  }
   else if ( std::regex_match(uri, match, track_re) )
   {
     track_handler handler(request, response);

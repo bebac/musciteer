@@ -1,0 +1,79 @@
+#player
+{
+  width: 100%;
+  height:100%;
+
+  >div:nth-child(1)
+  {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    color: #aaa;
+    background: linear-gradient(to right, rgba(33,33,33,1) 0px, rgba(33,33,33,0.8) 60%, rgba(33,33,33,0) 100%);
+    z-index: 10;
+
+    >div {
+      display: table;
+      height: 33%;
+      padding: 1.33em;
+
+      >div {
+        display: table-cell;
+      }
+    }
+
+    >div:nth-child(1) {
+      >div {
+        vertical-align: top;
+      }
+    }
+
+    >div:nth-child(2) {
+      >div {
+        vertical-align: middle;
+      }
+    }
+
+    >div:nth-child(3) {
+      >div {
+        vertical-align: bottom;
+      }
+    }
+
+    .player-track-title {
+      color: #ccc;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .player-track-artists {
+      color: #ccc;
+      font-size: 1.33em;
+    }
+
+    .player-track-album {
+      font-size: 1em;
+    }
+
+    .player-stream-time {
+      font-size: 1.66em;
+    }
+  }
+
+  >div:nth-child(2)
+  {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    img {
+      position: absolute;
+      right: 0;
+      height: 100%;
+      width: auto;
+      image-rendering: pixelated;
+      //image-rendering: crisp-edges;
+    }
+    z-index: 1;
+  }
+}

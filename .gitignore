@@ -6,8 +6,11 @@
 opal/.sass-cache/
 
 public/assets/application.css*
+public/assets/android.css*
 public/assets/application.js
+public/assets/android.js
 public/index.html
+public/android.html
 
 source/player/source_spotify_app_key.cpp
 

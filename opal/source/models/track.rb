@@ -28,6 +28,10 @@ class Track
     @album["title"]
   end
 
+  def album_cover_path
+    "/api/albums/#{@album["id"]}/cover"
+  end
+
   def duration_formatted
     secs = duration / 1000
     min = Integer(secs / 60) % 60;

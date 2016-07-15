@@ -1,3 +1,6 @@
+###
+# Build application.
+
 guard 'rake', :task => 'html' do
   watch('index.html.erb')
 end
@@ -7,5 +10,20 @@ guard 'rake', :task => 'css' do
 end
 
 guard 'rake', :task => 'javascript' do
+  watch(%r{source/.+\.(rb|opalerb)})
+end
+
+###
+# Build android app.
+
+guard 'rake', :task => 'android_html' do
+  watch('android.html.erb')
+end
+
+guard 'rake', :task => 'android_css' do
+  watch(%r{styles/.+\.scss})
+end
+
+guard 'rake', :task => 'android_javascript' do
   watch(%r{source/.+\.(rb|opalerb)})
 end

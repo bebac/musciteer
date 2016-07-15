@@ -1,6 +1,6 @@
 @import "reset";
 @import "mixins";
-@import "layout";
+@import "layout-android";
 @import "top";
 @import "connection_lost";
 @import "settings";
@@ -10,16 +10,16 @@
 @import "tracks";
 @import "player";
 
-body
-{
-  font-family: Impact, Charcoal, sans-serif;
-  overflow: hidden;
+html, body {
+  height: 100%;
+
+  >div {
+    height: 100%;
+  }
 }
 
-#play
+body
 {
-  display: block;
-  height: 50px;
-  width: 200px;
-  background: #999;
+  background: #000;
 }
+

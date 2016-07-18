@@ -9,6 +9,7 @@
 
 // ----------------------------------------------------------------------------
 #include "message.h"
+#include "player_ctpb_provider.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/track.h"
@@ -87,6 +88,8 @@ namespace musicbox
     std::set<message_channel> observers_;
   private:
     std::deque<musicbox::dm::track> play_q_;
+    bool continuous_playback_;
+    std::unique_ptr<player_ctpb_provider> ctpb_provider_;
   private:
     std::shared_ptr<player_session> session_;
   private:

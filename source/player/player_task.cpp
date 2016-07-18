@@ -19,7 +19,12 @@ namespace musicbox
     :
     state_(stopped),
     message_ch_(message_ch),
-    audio_output_(new audio_output_alsa())
+    audio_output_(new audio_output_alsa()),
+    audio_output_device_(),
+    observers_(),
+    play_q_(),
+    continuous_playback_(true),
+    ctpb_provider_(new player_ctpb_provider())
   {
     audio_output_subscribe(message_ch_);
   }
@@ -161,7 +166,31 @@ namespace musicbox
       {
         if ( m.id.empty() )
         {
-          std::cout << "play with no id not supported yet" << std::endl;
+          if ( !play_q_.empty() )
+          {
+            assert(!session_);
+            become_playing(play_q_.front());
+            play_q_.pop_front();
+          }
+          else if ( continuous_playback_ )
+          {
+            assert(ctpb_provider_);
+
+            auto id = ctpb_provider_->get_track_id();
+
+            if ( !id.empty() )
+            {
+              auto tracks = musicbox::dm::tracks();
+              auto track = tracks.find_by_id(id);
+
+              assert(!session_);
+              become_playing(track);
+            }
+            else
+            {
+              std::cerr << "player_task - ctpb provider returned empty track id!" << std::endl;
+            }
+          }
         }
         else
         {
@@ -313,6 +342,25 @@ namespace musicbox
         {
           become_playing(play_q_.front());
           play_q_.pop_front();
+        }
+        else if ( continuous_playback_ )
+        {
+          assert(ctpb_provider_);
+
+          auto id = ctpb_provider_->get_track_id();
+
+          if ( !id.empty() )
+          {
+            auto tracks = musicbox::dm::tracks();
+            auto track = tracks.find_by_id(id);
+
+            become_playing(track);
+          }
+          else
+          {
+            std::cerr << "player_task - ctpb provider returned empty track id!" << std::endl;
+            become_stopped();
+          }
         }
         else
         {

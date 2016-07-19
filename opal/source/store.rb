@@ -318,7 +318,12 @@ class Store
           @stream = Stream.new(data)
           stream_data_sync(@stream.id())
         end
-        render! unless hidden?
+        # NOTE:
+        # For now don't render on stream progress events when on the "main" view.
+        # Input fields in the settings view will reset on every render. This is
+        # of course a problem for with all events, but at least it won't happen
+        # as frequently.
+        render! unless hidden? || (Inesita::Browser.path == "/")
       end
     when "stream_end"
       @stream = nil

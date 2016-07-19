@@ -96,7 +96,11 @@ $background-color: #F1EFEC;
         padding: 0.3em;
       }
 
-      select, input {
+      input[type=checkbox]
+      {
+      }
+
+      select, input[type=text], input[type=password] {
         font-size: 1em;
         padding: 0.3em;
         width: 100%;

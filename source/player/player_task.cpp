@@ -9,8 +9,8 @@
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
-#include "../storage/kvstore.h"
 #include "../dm/tracks.h"
+#include "../dm/player.h"
 
 // ----------------------------------------------------------------------------
 namespace musicbox
@@ -24,7 +24,7 @@ namespace musicbox
     observers_(),
     play_q_(),
     continuous_playback_(true),
-    ctpb_provider_(new player_ctpb_provider())
+    ctpb_provider_()
   {
     audio_output_subscribe(message_ch_);
   }
@@ -52,8 +52,22 @@ namespace musicbox
 
   void player_task::load_settings()
   {
-    auto kvstore = musicbox::kvstore();
-    kvstore.get(audio_output_device_key, audio_output_device_);
+    musicbox::dm::player settings;
+
+    audio_output_device_ = settings.audio_device();
+    continuous_playback_ = settings.ctpb_enabled();
+
+    // For now the only continuous playback provider is random.
+    if ( settings.ctpb_type() == "random" )
+    {
+      ctpb_provider_.reset(new player_ctpb_provider());
+    }
+    else
+    {
+      std::cerr << "player_task - unknown ctpb provider" << std::endl;
+    }
+
+    std::cout << "player_task - loaded settings audio_device=" << audio_output_device_ << ", ctpb_enabled=" << continuous_playback_ << std::endl;
   }
 
   void player_task::dispatch(message& m)
@@ -69,8 +83,8 @@ namespace musicbox
       case message::device_list_req_id:
         handle(m.device_list_req, m.ref);
         break;
-      case message::device_id:
-        handle(m.device);
+      case message::settings_changed_id:
+        handle(m.settings_changed);
         break;
       case message::stream_data_req_id:
         handle(m.stream_data_req);
@@ -132,13 +146,9 @@ namespace musicbox
     audio_output_->send(std::move(am));
   }
 
-  void player_task::handle(audio_output_device& m)
+  void player_task::handle(settings_changed_message& m)
   {
-    auto kvstore = musicbox::kvstore();
-
-    audio_output_device_ = m.device_name;
-
-    kvstore.set(audio_output_device_key, audio_output_device_);
+    load_settings();
   }
 
   void player_task::handle(stream_data_request& m)
@@ -172,10 +182,8 @@ namespace musicbox
             become_playing(play_q_.front());
             play_q_.pop_front();
           }
-          else if ( continuous_playback_ )
+          else if ( ctpb_provider_ )
           {
-            assert(ctpb_provider_);
-
             auto id = ctpb_provider_->get_track_id();
 
             if ( !id.empty() )

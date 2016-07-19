@@ -60,7 +60,7 @@ namespace musicbox
     void handle(subscribe& m);
     void handle(unsubscribe& m);
     void handle(device_list_request& m, unsigned ref);
-    void handle(audio_output_device& m);
+    void handle(settings_changed_message& m);
     void handle(stream_data_request& m);
     void handle(play_request& m);
     void handle(stop_request& m);

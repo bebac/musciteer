@@ -75,15 +75,7 @@ class websocket_handler : public http::websocket_handler_base
       auto player = musicbox::player();
       auto event = j["event"];
 
-      if ( event == "audio_device_list_sync" )
-      {
-        player.audio_device_list(message_ch_);
-      }
-      else if ( event == "audio_device" )
-      {
-        player.audio_device(j["data"].get<std::string>());
-      }
-      else if ( event == "stream_data_sync" )
+      if ( event == "stream_data_sync" )
       {
         player.stream_data(j["data"].get<unsigned>(), message_ch_);
       }

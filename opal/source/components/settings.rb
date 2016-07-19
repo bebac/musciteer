@@ -2,7 +2,7 @@ class Settings
   include Inesita::Component
 
   def init
-    store.audio_device_list_sync
+    store.player_settings_sync
     store.spotify_settings_sync
   end
 
@@ -23,6 +23,39 @@ class Settings
         end
       end
 
+      # Player.
+      section do
+        h2 do
+          text "Continuous Playback"
+        end
+        div class: 'settings-item' do
+          div do
+            text "Enabled"
+          end
+          div class: 'togglebox' do
+            input type: 'checkbox', checked: store.ctpb_enabled, onchange: -> (e) { store.update_ctpb_enabled(e.target.checked) }
+          end
+          div do
+          end
+        end
+        div class: 'settings-item' do
+          div do
+            text "Type"
+          end
+          div do
+            select class: 'setting', onchange: -> (e) {} do
+              [ "random" ].each do |value|
+                option selected: (value == store.ctpb_type ? "selected" : "") do
+                  text value
+                end
+              end
+            end
+          end
+          div do
+          end
+        end
+      end
+
       # Audio ouput.
       section do
         h2 do
@@ -34,9 +67,10 @@ class Settings
           end
           div do
             select class: 'setting', onchange: -> (e) { store.set_audio_output_device(e.target.value) } do
-              option do; text store.audio_device; end
               store.audio_device_list.each do |value|
-                option do; text value end
+                option selected: (value == store.audio_device ? "selected" : "") do
+                  text value
+                end
               end
             end
           end
@@ -67,11 +101,11 @@ class Settings
           div do
             store.directories.each_with_index do |directory, i|
               div do
-                input value: directory, onchange: -> (e) { store.directories_set(i, e.target.value) }
+                input type: 'text', value: directory, onchange: -> (e) { store.directories_set(i, e.target.value) }
               end
             end
             div do
-              input value: "", onchange: -> (e) { store.directories_add(e.target.value) }
+              input type: 'text', value: "", onchange: -> (e) { store.directories_add(e.target.value) }
             end
             div do
               div do
@@ -111,7 +145,7 @@ class Settings
             text "Username"
           end
           div do
-            input value: store.spotify_settings.username, onchange: -> (e) { store.spotify_settings.username = e.target.value }
+            input type: 'text', value: store.spotify_settings.username, onchange: -> (e) { store.spotify_settings.username = e.target.value }
           end
           div do
           end

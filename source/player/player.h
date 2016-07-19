@@ -51,11 +51,9 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
-    void audio_device(const std::string& device_name)
+    void settings_changed()
     {
-      message m(message::device_id, 0);
-
-      m.device.device_name = device_name;
+      message m(message::settings_changed_id, 0);
 
       message_ch_.send(std::move(m));
     }

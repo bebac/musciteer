@@ -29,12 +29,33 @@ class Store
     render!
   end
 
-  def audio_device_list_sync
-    message_channel_send({ :event => :audio_device_list_sync })
+  def player_settings_sync
+    Browser::HTTP.get("/api/player") do |request|
+      request.on :success do |response|
+        if output = response.json["output"]
+          @audio_device = output["current"]
+          @audio_device_list = output["devices"]
+        end
+        if ctpb = response.json["ctpb"]
+          @ctpb_enabled = ctpb["enabled"]
+          @ctpb_type = ctpb["type"]
+        end
+        render!
+      end
+    end
   end
 
   def set_audio_output_device(device_name)
-    message_channel_send({ :event => :audio_device, :data => device_name })
+    Browser::HTTP.post("/api/player/output", data={"current" => device_name}.to_json) do |request|
+      request.content_type("application/json")
+      request.on :success do |response|
+        if output = response.json
+          @audio_device = output["current"]
+          @audio_device_list = output["devices"]
+        end
+        render!
+      end
+    end
   end
 
   def audio_device
@@ -43,6 +64,27 @@ class Store
 
   def audio_device_list
     @audio_device_list ||= []
+  end
+
+  def ctpb_enabled
+    @ctpb_enabled
+  end
+
+  def update_ctpb_enabled(value)
+    Browser::HTTP.post("/api/player/ctpb", data={"enabled" => value}.to_json) do |request|
+      request.content_type("application/json")
+      request.on :success do |response|
+        if ctpb = response.json
+          @ctpb_enabled = ctpb["enabled"]
+          @ctpb_type = ctpb["type"]
+        end
+        render!
+      end
+    end
+  end
+
+  def ctpb_type
+    @ctpb_type ||= ""
   end
 
   def source_local_status

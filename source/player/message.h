@@ -110,18 +110,15 @@ public:
 };
 
 // ----------------------------------------------------------------------------
-class audio_output_device
+class settings_changed_message
 {
 public:
-  audio_output_device() : device_name()
+  settings_changed_message()
   {
   }
-  audio_output_device(audio_output_device&& other)
+  settings_changed_message(settings_changed_message&& other)
   {
-    device_name = std::move(other.device_name);
   }
-public:
-  std::string device_name;
 };
 
 // ----------------------------------------------------------------------------
@@ -405,7 +402,7 @@ public:
     undefined_id,
     device_list_req_id,
     device_list_res_id,
-    device_id,
+    settings_changed_id,
     open_req_id,
     open_res_id,
     close_req_id,
@@ -441,8 +438,8 @@ public:
       case device_list_res_id:
         new (&device_list_res) audio_output_device_list_response();
         break;
-      case device_id:
-        new (&device) audio_output_device();
+      case settings_changed_id:
+        new (&settings_changed) settings_changed_message();
         break;
       case open_req_id:
         new (&open_req) audio_output_open_request();
@@ -517,8 +514,8 @@ public:
       case device_list_res_id:
         new (&device_list_res) audio_output_device_list_response(std::move(other.device_list_res));
         break;
-      case device_id:
-        new (&device) audio_output_device(std::move(other.device));
+      case settings_changed_id:
+        new (&settings_changed) settings_changed_message(std::move(other.settings_changed));
         break;
       case open_req_id:
         new (&open_req) audio_output_open_request(std::move(other.open_req));
@@ -595,8 +592,8 @@ public:
       case device_list_res_id:
         device_list_res.~audio_output_device_list_response();
         break;
-      case device_id:
-        device.~audio_output_device();
+      case settings_changed_id:
+        settings_changed.~settings_changed_message();
         break;
       case open_req_id:
         open_req.~audio_output_open_request();
@@ -666,7 +663,7 @@ public:
   {
     audio_output_device_list_request device_list_req;
     audio_output_device_list_response device_list_res;
-    audio_output_device device;
+    settings_changed_message settings_changed;
     audio_output_open_request open_req;
     audio_output_open_response open_res;
     audio_output_close_request close_req;

@@ -1,6 +1,10 @@
 class Settings
   include Inesita::Component
 
+  def initialize
+    @is_leaf = true
+  end
+
   def init
     store.player_settings_sync
     store.spotify_settings_sync

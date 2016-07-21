@@ -1,12 +1,18 @@
 class Notification
   include Inesita::Component
 
+  def initialize
+    @is_leaf = true
+  end
+
   def init
     @timer = every!(5) do
       $document.at('#notification-overlay').hide
       @timer.stop
       store.notifications.clear
+      render!(self)
     end
+    store.on(:notification) { render!(self) }
   end
 
   def show_overlay

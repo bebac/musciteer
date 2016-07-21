@@ -10,6 +10,7 @@ class Layout
   def toggle_album_details(evt)
     if evt.target.id == 'album-details-container'
       $document.at('#album-details-container').hide
+      store.album_details_clear
     end
   end
 

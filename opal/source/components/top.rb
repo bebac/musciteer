@@ -1,6 +1,14 @@
 class Top
   include Inesita::Component
 
+  def initialize
+    @is_leaf = true
+  end
+
+  def init
+    store.on(:player_state_changed) { render!(self) }
+  end
+
   def toggle_menu
     puts "toggle menu"
   end

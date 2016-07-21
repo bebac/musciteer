@@ -1,6 +1,11 @@
 class Player
   include Inesita::Component
 
+  def init
+    store.on(:stream_changed) { render! }
+    store.on(:player_state_changed) { render! }
+  end
+
   def render
     div id: "player" do
       if stream = store.stream

@@ -3,6 +3,7 @@ class AlbumDetails
 
   def init
     puts "init AlbumDetails"
+    store.on(:album_details) { render! }
   end
 
   def album

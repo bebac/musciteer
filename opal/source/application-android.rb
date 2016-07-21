@@ -1,4 +1,5 @@
 require 'opal'
+require 'opal-eventable'
 require 'browser'
 require 'browser/socket'
 require 'browser/http'

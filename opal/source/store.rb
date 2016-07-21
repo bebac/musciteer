@@ -1,5 +1,6 @@
 class Store
   include Inesita::Store
+  include Eventable
 
   def initialize
     super
@@ -222,13 +223,18 @@ class Store
           @album.tracks << Track.new(attrs)
         end
         @album.tracks.sort! { |x, y| x.index <=> y.index }
-        render!
+        trigger :album_details
       end
     end
   end
 
   def album_details
     @album
+  end
+
+  def album_details_clear
+    @album = nil
+    render!
   end
 
   def play(id)
@@ -286,10 +292,6 @@ class Store
 
   def message_channel_recv(message)
     case message['event']
-    when "audio_device_list"
-      @audio_device = message["data"][0]
-      @audio_device_list = message['data'][1]
-      render!
     when "player_state"
       case message['data']['state']
       when 0
@@ -297,17 +299,18 @@ class Store
       when 1
         @player_state = :playing
       end
-      render!
+      trigger :player_state_changed
     when "queue_update"
       if data = message['data']
         notifications << QueueUpdate.new(data)
-        render!
+        trigger :notification
       end
     when "stream_begin"
       if data = message['data']
         @stream = Stream.new(data)
         stream_data_sync(@stream.id())
         notifications << StreamBegin.new(data)
+        trigger :stream_changed
       end
     when "stream_progress"
       if data = message['data']
@@ -318,23 +321,20 @@ class Store
           @stream = Stream.new(data)
           stream_data_sync(@stream.id())
         end
-        # NOTE:
-        # For now don't render on stream progress events when on the "main" view.
-        # Input fields in the settings view will reset on every render. This is
-        # of course a problem for with all events, but at least it won't happen
-        # as frequently.
-        render! unless hidden? || (Inesita::Browser.path == "/")
+        trigger :stream_changed
       end
     when "stream_end"
       @stream = nil
-      render!
+      trigger :stream_changed
     when "stream_data"
       if data = message['data']
         @stream.track = Track.new(data['track'])
-        render!
+        trigger :stream_changed
+        trigger :notification
       end
     when "source_notification"
       handle_source_notification(message['data'])
+      # NOTE: This render! should probably be an event as well.
       render!
     end
   end

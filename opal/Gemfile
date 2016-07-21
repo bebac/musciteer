@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-#gem 'opal',         :github => 'opal/opal', :branch => 'master'
-gem 'opal',         :github => 'opal/opal', :tag => "v0.9.4"
-gem 'opal-browser', :github => 'opal/opal-browser'
-gem 'inesita'
+gem 'opal',           :github => 'opal/opal', :tag => "v0.9.4"
+gem 'opal-browser',   :github => 'opal/opal-browser'
+gem 'opal-eventable', :github => 'bebac/opal-eventable'
+gem 'inesita',        :github => 'bebac/inesita'
 gem 'sass'
 
 gem 'therubyracer'

@@ -28,7 +28,12 @@ class Player
             end
             div do
               div class: 'player-stream-time' do
-                text stream.time_formatted
+                span class: 'stream-duration' do
+                  text stream.duration_formatted
+                end
+                span class: 'stream-length' do
+                  text " / #{stream.length_formatted}"
+                end
               end
             end
           end

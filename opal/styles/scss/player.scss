@@ -9,6 +9,7 @@
     width: 50%;
     height: 100%;
     color: #aaa;
+    text-shadow: -1px 0 rgba(33,33,33,0.8), 0 1px rgba(33,33,33,0.8), 1px 0 rgba(33,33,33,0.8), 0 -1px rgba(33,33,33,0.8);
     background: linear-gradient(to right, rgba(33,33,33,1) 0px, rgba(33,33,33,0.8) 60%, rgba(33,33,33,0) 100%);
     z-index: 10;
 
@@ -37,6 +38,14 @@
     >div:nth-child(3) {
       >div {
         vertical-align: bottom;
+
+        .stream-duration {
+          color: #aaa;
+        }
+
+        .stream-length {
+          color: #666;
+        }
       }
     }
 

@@ -1,0 +1,52 @@
+$background-color: #000000;
+
+#player-ctrl-container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  width: 100%;
+  background:rgba(0,0,0,0);
+  z-index: 1000;
+}
+
+#player-ctrl {
+  display: none;
+  background:rgba(33,33,33,0.6);
+  width: 100%;
+  height: 33%;
+
+  >div
+  {
+    display: table;
+    width: 100%;
+    height: 100%;
+
+    >div
+    {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: center;
+      width: 33%;
+
+      button {
+        background:rgba(0,0,0,0);
+        border: none;
+        padding: 0.66em;
+        outline: none;
+        font-weight: bold;
+        font-size: 1.33em;
+        color: #aaa;
+      }
+
+      button:hover {
+        background:rgba(0,0,0,0);
+      }
+
+      button:active {
+        border: none;
+        background:rgba(0,0,0,0);
+      }
+    }
+  }
+}

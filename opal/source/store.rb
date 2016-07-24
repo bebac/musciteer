@@ -249,6 +249,10 @@ class Store
     message_channel_send({ event: :stop, data: nil })
   end
 
+  def player_skip
+    message_channel_send({ event: :skip, data: nil })
+  end
+
   def queue(id)
     message_channel_send({ event: :queue, data: id })
   end

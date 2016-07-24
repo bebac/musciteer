@@ -14,8 +14,8 @@
    id="svg2985"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="play.svg"
-   inkscape:export-filename="/home/bebac/Projects/c++11/dripcore-workspace/music-box-daemon/webclient/sinatra/source/images/play.png"
+   sodipodi:docname="skip.svg"
+   inkscape:export-filename="/home/bebac/Projects/c++11/dripcore-workspace/music-box-daemon/webclient/sinatra/source/images/stop.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -27,20 +27,22 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.8890873"
-     inkscape:cx="-23.713085"
-     inkscape:cy="61.663419"
+     inkscape:zoom="15.556349"
+     inkscape:cx="19.002593"
+     inkscape:cy="43.219073"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
      showguides="false"
-     inkscape:snap-grids="false"
-     inkscape:window-width="1880"
-     inkscape:window-height="1082"
-     inkscape:window-x="468"
-     inkscape:window-y="129"
-     inkscape:window-maximized="0">
+     inkscape:snap-grids="true"
+     inkscape:window-width="3840"
+     inkscape:window-height="2112"
+     inkscape:window-x="0"
+     inkscape:window-y="48"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true"
+     inkscape:snap-others="false">
     <inkscape:grid
        type="xygrid"
        id="grid2993"
@@ -57,7 +59,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -68,21 +70,21 @@
      transform="translate(0,32)">
     <path
        sodipodi:type="arc"
-       style="fill:none;stroke:#b4b4b4;stroke-width:0.89977521;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;"
+       style="fill:none;stroke:#b4b4b4;stroke-width:0.85112097;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2995"
        sodipodi:cx="22.5"
        sodipodi:cy="21.5"
        sodipodi:rx="12.5"
        sodipodi:ry="12.5"
        d="M 35,21.5 A 12.5,12.5 0 0 1 22.5,34 12.5,12.5 0 0 1 10,21.5 12.5,12.5 0 0 1 22.5,9 12.5,12.5 0 0 1 35,21.5 Z"
-       transform="matrix(3.564919,0,0,3.5400696,-32.411457,-59.986029)" />
-    <path
-       style="fill:#b4b4b4;fill-opacity:1;stroke:#b4b4b4;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;"
-       d="m 39.555455,-1.8932422 c 0,36.8807112 -0.162605,36.6896202 0,36.6896202 0.162609,0 0.162609,0 0.162609,0 l 0,0 26.667681,-18.153719 0,0 0,0 z"
-       id="path3771"
-       inkscape:connector-curvature="0"
+       transform="matrix(3.5021069,0,0,3.5475664,-31.255315,-60.275777)"
        inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"
-       inkscape:export-filename="/home/bebac/Projects/c++11/dripcore-workspace/music-box-daemon/webclient/sinatra/source/images/play.png" />
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:#b4b4b4;fill-opacity:1;fill-rule:evenodd;stroke:#b4b4b4;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 45.35891,1.3761535 55.85914,16.426406 45.551758,31.47666 40.85914,31.426407 51.309117,16.362124 40.85914,1.4264065 l 4.692618,-0.05025"
+       id="path3344"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc" />
   </g>
 </svg>

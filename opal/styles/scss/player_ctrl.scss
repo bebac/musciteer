@@ -27,7 +27,7 @@ $background-color: #000000;
       display: table-cell;
       vertical-align: middle;
       text-align: center;
-      width: 33%;
+      width: 20%;
 
       button {
         background:rgba(0,0,0,0);
@@ -46,6 +46,23 @@ $background-color: #000000;
       button:active {
         border: none;
         background:rgba(0,0,0,0);
+      }
+    }
+
+    #player-toggle
+    {
+      img {
+        height: 4em;
+        width: 4em;
+      }
+    }
+
+    #player-skip
+    {
+      text-align: left;
+      img {
+        height: 3em;
+        width: 3em;
       }
     }
   }

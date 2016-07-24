@@ -84,6 +84,13 @@ namespace musicbox
       message_ch_.send(std::move(m));
     }
   public:
+    void skip()
+    {
+      message m(message::skip_req_id, 0);
+
+      message_ch_.send(std::move(m));
+    }
+  public:
     void queue(const std::string& id)
     {
       message m(message::queue_req_id, 0);

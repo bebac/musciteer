@@ -94,6 +94,10 @@ class websocket_handler : public http::websocket_handler_base
       {
         player.stop();
       }
+      else if ( event == "skip" )
+      {
+        player.skip();
+      }
       else if ( event == "queue" )
       {
         player.queue(j["data"].get<std::string>());

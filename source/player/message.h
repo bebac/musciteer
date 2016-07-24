@@ -187,6 +187,18 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class skip_request
+{
+public:
+  skip_request()
+  {
+  }
+  skip_request(skip_request&& other)
+  {
+  }
+};
+
+// ----------------------------------------------------------------------------
 class queue_request
 {
 public:
@@ -409,6 +421,7 @@ public:
     close_res_id,
     play_req_id,
     stop_req_id,
+    skip_req_id,
     queue_req_id,
     stream_begin_id,
     stream_end_id,
@@ -458,6 +471,9 @@ public:
         break;
       case stop_req_id:
         new (&stop_req) stop_request();
+        break;
+      case skip_req_id:
+        new (&skip_req) skip_request();
         break;
       case queue_req_id:
         new (&queue_req) queue_request();
@@ -534,6 +550,9 @@ public:
         break;
       case stop_req_id:
         new (&stop_req) stop_request(std::move(other.stop_req));
+        break;
+      case skip_req_id:
+        new (&skip_req) skip_request(std::move(other.skip_req));
         break;
       case queue_req_id:
         new (&queue_req) queue_request(std::move(other.queue_req));
@@ -613,6 +632,9 @@ public:
       case stop_req_id:
         stop_req.~stop_request();
         break;
+      case skip_req_id:
+        skip_req.~skip_request();
+        break;
       case queue_req_id:
         queue_req.~queue_request();
         break;
@@ -670,6 +692,7 @@ public:
     audio_output_close_response close_res;
     play_request play_req;
     stop_request stop_req;
+    skip_request skip_req;
     queue_request queue_req;
     audio_output_stream_begin stream_begin;
     audio_output_stream_end stream_end;

@@ -95,6 +95,9 @@ namespace musicbox
       case message::stop_req_id:
         handle(m.stop_req);
         break;
+      case message::skip_req_id:
+        handle(m.skip_req);
+        break;
       case message::queue_req_id:
         handle(m.queue_req);
         break;
@@ -228,6 +231,23 @@ namespace musicbox
         assert(session_);
         session_->stop();
         state_ = stopping;
+        break;
+      case stopping:
+        break;
+      case paused:
+        break;
+    }
+  }
+
+  void player_task::handle(skip_request& m)
+  {
+    switch ( state_ )
+    {
+      case stopped:
+        break;
+      case playing:
+        assert(session_);
+        session_->stop();
         break;
       case stopping:
         break;

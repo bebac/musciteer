@@ -179,12 +179,16 @@ build build/test.d/test_http_request.o: cc test/test_http_request.cpp
 build build/test.d/test_http_response.o: cc test/test_http_response.cpp
   includes = -Ilib/http/include
 
+build build/test.d/test_magpack.o: cc test/test_msgpack.cpp
+  includes = -Ilib/msgpack/include
+
 build build/test: ld $
   build/test.d/test_http_common.o $
   build/test.d/test_http_request.o $
   build/test.d/test_http_response.o $
-  build/test.d/main.o | build/libhttp.a
-  libs = -lhttp
+  build/test.d/test_magpack.o $
+  build/test.d/main.o | build/libhttp.a build/libmsgpack.a
+  libs = -lmsgpack -lhttp
 
 
 ###

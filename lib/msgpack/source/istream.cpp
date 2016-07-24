@@ -1,4 +1,19 @@
+// ----------------------------------------------------------------------------
+//
+//     Filename   : msgpack/istream.h
+//
+//     Author     : Benny Bach <benny.bach@gmail.com>
+//                  Copyright (C) 2015
+//
+// --- Description: -----------------------------------------------------------
+//
+//
+// ----------------------------------------------------------------------------
 #include <msgpack/istream.h>
+#include <msgpack/array.h>
+#include <msgpack/map.h>
+
+// ----------------------------------------------------------------------------
 #include <limits>
 
 // ----------------------------------------------------------------------------
@@ -125,13 +140,13 @@ namespace msgpack
   bool istream::read_bool()
   {
     bool value;
-    
+
     auto c = get();
 
     if ( c == 0xc2 )
     {
       value = false;
-    }  
+    }
     else if ( c == 0xc3 )
     {
       value = true;
@@ -174,5 +189,77 @@ namespace msgpack
   {
     value.resize(len);
     std::istream::read(&value[0], len);
+  }
+
+  void istream::skip()
+  {
+    auto c = get();
+
+    if ( c >= 0x00  && c <= 0x7f ) {
+      // ignore positive fixint.
+    }
+    else if ( c >= 0xc0 && c <= 0xc3 ) {
+      // ignore nil, false, true.
+    }
+    else if ( c == 0xcc || c == 0xd0 ) {
+      ignore(sizeof(unsigned char));
+    }
+    else if ( c == 0xcd || c == 0xd1 ) {
+      ignore(sizeof(unsigned short));
+    }
+    else if ( c == 0xce || c == 0xd2 ) {
+      ignore(sizeof(unsigned int));
+    }
+    else if ( c == 0xd3 ) {
+      ignore(read<unsigned long long>());
+    }
+    else if ( c >= 0xa0 && c <= 0xbf ) {
+      ignore(c & 0x1f);
+    }
+    else if ( c == 0xd9 ) {
+      ignore(read<unsigned char>());
+    }
+    else if ( c == 0xda ) {
+      ignore(read<unsigned short>());
+    }
+    else if ( c == 0xdb ) {
+      ignore(read<unsigned int>());
+    }
+    else if ( (c >= 0x90 && c <= 0x9f) || c == 0xdc || c == 0xdd )
+    {
+      msgpack::array arr;
+
+      // Put back array identifier.
+      unget();
+
+      if ( *this >> arr )
+      {
+        for ( size_t i=0; i<arr.size(); i++ ) {
+          *this >> msgpack::skip;
+        }
+      }
+      else
+      {
+        setstate(std::ios_base::failbit);
+      }
+    }
+    else if ( (c >= 0x80 && c <= 0x8f) || c == 0xde || c == 0xdf )
+    {
+      msgpack::map map;
+
+      // Put back object identifier.
+      unget();
+
+      if ( *this >> map )
+      {
+        for ( size_t i=0; i<map.size(); i++ ) {
+          *this >> msgpack::skip >> msgpack::skip;
+        }
+      }
+      else
+      {
+        setstate(std::ios_base::failbit);
+      }
+    }
   }
 }

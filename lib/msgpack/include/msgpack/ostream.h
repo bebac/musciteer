@@ -25,6 +25,8 @@ namespace msgpack
   public:
     ostream(std::streambuf* buf);
   public:
+    ostream& operator<<(char);
+    ostream& operator<<(unsigned char);
     ostream& operator<<(short);
     ostream& operator<<(unsigned short);
     ostream& operator<<(int);
@@ -51,6 +53,18 @@ namespace msgpack
     template<typename T> void put(unsigned char type, T v);
     void put(unsigned char type);
   };
+
+  inline ostream& ostream::operator<<(char value)
+  {
+    std::ostream::put(value);
+    return *this;
+  }
+
+  inline ostream& ostream::operator<<(unsigned char value)
+  {
+    write_u16(value);
+    return *this;
+  }
 
   inline ostream& ostream::operator<<(short value)
   {

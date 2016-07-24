@@ -19,6 +19,16 @@
 // ----------------------------------------------------------------------------
 namespace msgpack
 {
+  namespace details
+  {
+    class skip {};
+  }
+
+  namespace
+  {
+    const details::skip skip;
+  }
+
   class istream : public std::istream
   {
   public:
@@ -27,6 +37,7 @@ namespace msgpack
     //istream& operator>>(char&);
     //istream& operator>>(short&);
     //istream& operator>>(unsigned short&);
+    istream& operator>>(const details::skip&);
     istream& operator>>(int&);
     istream& operator>>(unsigned int&);
     istream& operator>>(bool&);
@@ -44,8 +55,16 @@ namespace msgpack
     void read_string(std::string&);
     void read_string(std::string&, std::size_t);
   private:
+    void skip();
+  private:
     template<typename T> T read();
   };
+
+  inline istream& istream::operator>>(const details::skip& value)
+  {
+    skip();
+    return *this;
+  }
 
   inline istream& istream::operator>>(int& value)
   {

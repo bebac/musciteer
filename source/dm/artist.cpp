@@ -75,7 +75,7 @@ namespace musicbox
               case 2: is >> name_; break;
               case 3: is >> album_ids_; break;
               default:
-                //is >> msgpack::skip;
+                is >> msgpack::skip;
                 break;
             }
           }

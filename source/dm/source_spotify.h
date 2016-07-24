@@ -41,7 +41,7 @@ namespace musicbox
                 case 1: is >> username; break;
                 case 2: is >> password; break;
                 default:
-                  //is >> msgpack::skip;
+                  is >> msgpack::skip;
                   break;
               }
             }

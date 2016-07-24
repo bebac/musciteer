@@ -167,7 +167,7 @@ namespace musicbox
               case 7: is >> artist_ids_; break;
               case 8: is >> sources_; break;
               default:
-                //is >> msgpack::skip;
+                is >> msgpack::skip;
                 break;
             }
           }

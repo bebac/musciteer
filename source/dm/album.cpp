@@ -109,7 +109,7 @@ namespace musicbox
               case 4: is >> artist_id_; break;
               case 5: is >> alt_ids_; break;
               default:
-                //is >> msgpack::skip;
+                is >> msgpack::skip;
                 break;
             }
           }

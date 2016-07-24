@@ -57,7 +57,7 @@ namespace musicbox
               case 1: is >> name_; break;
               case 2: is >> uri_; break;
               default:
-                //is >> msgpack::skip;
+                is >> msgpack::skip;
                 break;
             }
           }

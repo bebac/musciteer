@@ -52,7 +52,7 @@ namespace musicbox
               case 1: is >> mime_type_; break;
               case 2: is >> data_; break;
               default:
-                //is >> msgpack::skip;
+                is >> msgpack::skip;
                 break;
             }
           }

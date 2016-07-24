@@ -42,7 +42,7 @@ namespace musicbox
                 case 2: is >> ctpb_type; break;
                 case 3: is >> audio_device; break;
                 default:
-                  //is >> msgpack::skip;
+                  is >> msgpack::skip;
                   break;
               }
             }

@@ -95,6 +95,12 @@ namespace msgpack
     return *this;
   }
 
+  inline ostream& ostream::operator<<(long value)
+  {
+    write_i64(value);
+    return *this;
+  }
+
   inline ostream& ostream::operator<<(long long value)
   {
     write_i64(value);

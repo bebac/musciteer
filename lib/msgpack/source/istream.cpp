@@ -349,8 +349,8 @@ namespace msgpack
     else if ( c == 0xce || c == 0xd2 ) {
       ignore(sizeof(unsigned int));
     }
-    else if ( c == 0xd3 ) {
-      ignore(read<unsigned long long>());
+    else if ( c == 0xcf || c == 0xd3 ) {
+      ignore(sizeof(unsigned long long));
     }
     else if ( c >= 0xa0 && c <= 0xbf ) {
       ignore(c & 0x1f);
@@ -399,6 +399,15 @@ namespace msgpack
       {
         setstate(std::ios_base::failbit);
       }
+    }
+    else if ( c == 0xd5 ) {
+      ignore(1 + sizeof(short));
+    }
+    else if ( c == 0xd6 ) {
+      ignore(1 + sizeof(int));
+    }
+    else if ( c == 0xd7 ) {
+      ignore(1 + sizeof(long long));
     }
   }
 }

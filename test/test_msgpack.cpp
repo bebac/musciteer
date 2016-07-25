@@ -4,6 +4,9 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
+#include "../source/time_point.h"
+
+// ----------------------------------------------------------------------------
 #include <msgpack/istream.h>
 #include <msgpack/ostream.h>
 #include <msgpack/map.h>
@@ -13,6 +16,7 @@
 #include <sstream>
 #include <vector>
 #include <limits>
+#include <chrono>
 
 // ----------------------------------------------------------------------------
 #include "doctest/doctest.h"
@@ -240,6 +244,17 @@ TEST_CASE("msgpack streaming")
     CHECK(is.eof());
   }
 
+  SUBCASE("it streams time_pint")
+  {
+    auto now = musicbox::clock::now();
+    auto x = musicbox::clock::time_point();
+
+    os << now;
+    is >> x;
+
+    CHECK(x == now);
+  }
+
   SUBCASE("it can skip positive fixint")
   {
     unsigned marker = 0xa5a5;
@@ -260,11 +275,12 @@ TEST_CASE("msgpack streaming")
       << std::numeric_limits<char>::max()
       << std::numeric_limits<short>::max()
       << std::numeric_limits<int>::max()
+      << std::numeric_limits<long long>::max()
       << marker;
 
-    unsigned x;
+    unsigned x = 0;
 
-    is >> msgpack::skip >> msgpack::skip >> msgpack::skip >> x;
+    is >> msgpack::skip >> msgpack::skip >> msgpack::skip >> msgpack::skip >> x;
     CHECK(x == marker);
   }
 
@@ -276,11 +292,12 @@ TEST_CASE("msgpack streaming")
       << std::numeric_limits<unsigned char>::max()
       << std::numeric_limits<unsigned short>::max()
       << std::numeric_limits<unsigned int>::max()
+      << std::numeric_limits<unsigned long long>::max()
       << marker;
 
-    unsigned x;
+    unsigned x = 0;
 
-    is >> msgpack::skip >> msgpack::skip >> msgpack::skip >> x;
+    is >> msgpack::skip >> msgpack::skip >> msgpack::skip >> msgpack::skip >> x;
     CHECK(x == marker);
   }
 
@@ -338,11 +355,24 @@ TEST_CASE("msgpack streaming")
     CHECK(x == marker);
   }
 
-  SUBCASE("it can skip object")
+  SUBCASE("it can skip map")
   {
     unsigned marker = 0xa5a5;
 
     os << std::map<int, int>{ { 1, 1 }, { 2, 2 } } << marker;
+
+    unsigned x = 0;
+
+    is >> msgpack::skip >> x;
+    CHECK(x == marker);
+  }
+
+  SUBCASE("it can skip a timepoint")
+  {
+    unsigned marker = 0xa5a5;
+
+    auto now = musicbox::clock::now();
+    os << now << marker;
 
     unsigned x = 0;
 

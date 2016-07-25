@@ -60,7 +60,7 @@ namespace msgpack
     void read_string(std::string&, std::size_t);
   private:
     void skip();
-  private:
+  public:
     template<typename T> T read();
   };
 

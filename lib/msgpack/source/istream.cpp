@@ -137,6 +137,145 @@ namespace msgpack
     return value;
   }
 
+  long long istream::read_i64()
+  {
+    long long value;
+
+    auto c = get();
+
+    if ( c >= 0xe0  && c <= 0xff )
+    {
+      value = char(c);
+    }
+    else if ( c >= 0 && c <= 0x7f )
+    {
+      value = c;
+    }
+    else if ( c == 0xcc )
+    {
+      value = read<unsigned char>();
+    }
+    else if ( c == 0xd1 )
+    {
+      value = read<short>();
+    }
+    else if ( c == 0xcd )
+    {
+      value = read<unsigned short>();
+    }
+    else if ( c == 0xd2 )
+    {
+      value = read<int>();
+    }
+    else if ( c == 0xd3 )
+    {
+      value = read<long long>();
+    }
+    else if ( c == 0xce )
+    {
+      value = read<unsigned int>();
+    }
+    else if ( c = 0xcf )
+    {
+      auto v = read<unsigned long long>();
+      if ( v < std::numeric_limits<long long>::max() )
+      {
+        value = v;
+      }
+      else
+      {
+        std::cerr << "read_i64 failed c=" << c << std::endl;
+        setstate(std::ios_base::failbit);
+      }
+    }
+    else
+    {
+      std::cerr << "read_i32 failed c=" << c << std::endl;
+      setstate(std::ios_base::failbit);
+    }
+
+    return value;
+  }
+
+  unsigned long long istream::read_u64()
+  {
+    unsigned long long value;
+
+    auto c = get();
+
+    if ( c >= 0xe0  && c <= 0xff )
+    {
+      std::cerr << "read_u64 failed c=" << c << std::endl;
+      setstate(std::ios_base::failbit);
+    }
+    else if ( c >= 0 && c <= 0x7f )
+    {
+      value = c;
+    }
+    else if ( c == 0xcc )
+    {
+      value = read<unsigned char>();
+    }
+    else if ( c == 0xd1 )
+    {
+      auto v = read<short>();
+      if ( v > 0 )
+      {
+        value = v;
+      }
+      else
+      {
+        std::cerr << "read_u64 failed c=" << c << std::endl;
+        setstate(std::ios_base::failbit);
+      }
+    }
+    else if ( c == 0xcd )
+    {
+      value = read<unsigned short>();
+    }
+    else if ( c == 0xd2 )
+    {
+      auto v = read<int>();
+      if ( v > 0 )
+      {
+        value = v;
+      }
+      else
+      {
+        std::cerr << "read_u64 failed c=" << c << std::endl;
+        setstate(std::ios_base::failbit);
+      }
+    }
+    else if ( c == 0xd3 )
+    {
+      auto v = read<long long>();
+      if ( v > 0 )
+      {
+        value = v;
+      }
+      else
+      {
+        std::cerr << "read_u64 failed c=" << c << std::endl;
+        setstate(std::ios_base::failbit);
+      }
+    }
+    else if ( c == 0xce )
+    {
+      value = read<unsigned int>();
+    }
+    else if ( c == 0xcf )
+    {
+      value = read<unsigned long long>();
+    }
+    else
+    {
+      std::cerr << "read_u64 failed c=" << c << std::endl;
+      setstate(std::ios_base::failbit);
+    }
+
+    return value;
+  }
+
   bool istream::read_bool()
   {
     bool value;

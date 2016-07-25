@@ -63,6 +63,30 @@ namespace msgpack
     }
   }
 
+  void ostream::write_i64(long long value)
+  {
+    if ( value >= -0x80000000 && value <= 0x7fffffff )
+    {
+      write_i32(value);
+    }
+    else
+    {
+      put(0xd3, value);
+    }
+  }
+
+  void ostream::write_u64(unsigned long long value)
+  {
+    if ( value < 0x100000000)
+    {
+      write_i32(value);
+    }
+    else
+    {
+      put(0xcf, value);
+    }
+  }
+
   void ostream::write_bool(bool value)
   {
     if ( value )

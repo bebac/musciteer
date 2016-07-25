@@ -18,6 +18,9 @@
 #include <vector>
 
 // ----------------------------------------------------------------------------
+#include <endian.h>
+
+// ----------------------------------------------------------------------------
 namespace msgpack
 {
   class ostream : public std::ostream
@@ -46,6 +49,8 @@ namespace msgpack
     void write_u16(unsigned short);
     void write_i32(int);
     void write_u32(unsigned int);
+    void write_i64(long long);
+    void write_u64(unsigned long long);
     void write_bool(bool);
   public:
     void write_string(const char*, size_t);
@@ -90,6 +95,18 @@ namespace msgpack
     return *this;
   }
 
+  inline ostream& ostream::operator<<(long long value)
+  {
+    write_i64(value);
+    return *this;
+  }
+
+  inline ostream& ostream::operator<<(unsigned long long value)
+  {
+    write_u64(value);
+    return *this;
+  }
+
   inline ostream& ostream::operator<<(bool value)
   {
     write_bool(value);
@@ -121,6 +138,18 @@ namespace msgpack
       std::ostream::put(v >> 16);
       std::ostream::put(v >> 8);
       std::ostream::put(v);
+    }
+    else if ( sizeof(T) == 8 )
+    {
+      union
+      {
+        T v;
+        unsigned char b[8];
+      } tmp{htobe64(v)};
+
+      for ( auto i = 0; i < 8; ++i ) {
+        std::ostream::put(tmp.b[i]);
+      }
     }
   }
 

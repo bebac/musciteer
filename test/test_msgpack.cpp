@@ -175,7 +175,7 @@ TEST_CASE("msgpack streaming")
     // All ints fits into an unsigned.
     for ( auto v : values )
     {
-      unsigned int x;
+      unsigned int x = 0;
 
       os << v;
       is >> x;
@@ -186,12 +186,42 @@ TEST_CASE("msgpack streaming")
 
   SUBCASE("fails to read negative integer into unsigned")
   {
-    unsigned int x;
+    unsigned int x = 0;
 
     os << -1;
     is >> x;
 
     CHECK(is.fail());
+  }
+
+  SUBCASE("it streams int64")
+  {
+    long long values[] = { std::numeric_limits<long long>::min() -1, 0, 1, 127, 128, 255, 256, 4095, 4096, std::numeric_limits<long long>::max() };
+
+    for ( auto v : values )
+    {
+      long long x = 0;
+
+      os << v;
+      is >> x;
+
+      CHECK(x == v);
+    }
+  }
+
+  SUBCASE("it streams uint64")
+  {
+    unsigned long long values[] = { 0, 1, 127, 128, 255, 256, 4095, 4096, std::numeric_limits<unsigned long long>::max() };
+
+    for ( auto v : values )
+    {
+      unsigned long long x = 0;
+
+      os << v;
+      is >> x;
+
+      CHECK(x == v);
+    }
   }
 
   SUBCASE("it streams bool")

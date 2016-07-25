@@ -40,17 +40,21 @@ namespace msgpack
     istream& operator>>(const details::skip&);
     istream& operator>>(int&);
     istream& operator>>(unsigned int&);
+    istream& operator>>(long long&);
+    istream& operator>>(unsigned long long&);
     istream& operator>>(bool&);
   public:
     istream& operator>>(std::string&);
   public:
-    char           read_i8();
-    unsigned char  read_u8();
-    short          read_i16();
+    char read_i8();
+    unsigned char read_u8();
+    short read_i16();
     unsigned short read_u16();
-    int            read_i32();
-    unsigned       read_u32();
-    bool           read_bool();
+    int read_i32();
+    unsigned read_u32();
+    long long read_i64();
+    unsigned long long read_u64();
+    bool read_bool();
   public:
     void read_string(std::string&);
     void read_string(std::string&, std::size_t);
@@ -75,6 +79,18 @@ namespace msgpack
   inline istream& istream::operator>>(unsigned int& value)
   {
     value = read_u32();
+    return *this;
+  }
+
+  inline istream& istream::operator>>(long long& value)
+  {
+    value = read_i64();
+    return *this;
+  }
+
+  inline istream& istream::operator>>(unsigned long long& value)
+  {
+    value = read_u64();
     return *this;
   }
 
@@ -136,6 +152,20 @@ namespace msgpack
       v |= get();
 
       return v;
+    }
+    else if ( sizeof(T) == 8 )
+    {
+      union
+      {
+        T v;
+        unsigned char b[8];
+      } tmp;
+
+      for ( auto i = 0; i < 8; ++i ) {
+        tmp.b[i] = get();
+      }
+
+      return be64toh(tmp.v);
     }
   }
 }

@@ -95,7 +95,7 @@ namespace musicbox
     class message
     {
     public:
-      message(atom id) : id(id)
+      message(atom id) : id(id), error(SP_ERROR_OK)
       {
       }
       message(atom id, sp_error error) : id(id), error(error)

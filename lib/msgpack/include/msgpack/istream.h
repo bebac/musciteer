@@ -167,6 +167,10 @@ namespace msgpack
 
       return be64toh(tmp.v);
     }
+    else
+    {
+      throw std::runtime_error("msgpack istream read sizeof(T) > 8");
+    }
   }
 }
 

@@ -12,7 +12,7 @@ require 'inesita'
 
 require 'store'
 require 'router'
-require 'layout-android'
+require 'layout_android'
 
 require_tree './components'
 require_tree './models'

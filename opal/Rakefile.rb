@@ -50,12 +50,12 @@ end
 
 desc "Build android.js"
 task :android_javascript => [ ASSET_DIR ] do
-  File.binwrite ANDROID_JS, Opal::Builder.build("application-android").to_s
+  File.binwrite ANDROID_JS, Opal::Builder.build("application_android").to_s
 end
 
 desc "Build android css"
 task :android_css => [ ASSET_DIR ] do
-  sh "bundle exec sass -I styles/scss styles/scss/main-android.scss #{ANDROID_CSS}"
+  sh "bundle exec sass -I styles/scss styles/scss/main_android.scss #{ANDROID_CSS}"
 end
 
 desc "Minify android javascript"

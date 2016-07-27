@@ -175,7 +175,7 @@ namespace msgpack
     {
       value = read<unsigned int>();
     }
-    else if ( c = 0xcf )
+    else if ( c == 0xcf )
     {
       auto v = read<unsigned long long>();
       if ( v < std::numeric_limits<long long>::max() )

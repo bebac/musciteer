@@ -184,7 +184,7 @@ TEST_CASE("msgpack streaming")
       os << v;
       is >> x;
 
-      CHECK(x == v);
+      CHECK(static_cast<int>(x) == v);
     }
   }
 
@@ -200,7 +200,7 @@ TEST_CASE("msgpack streaming")
 
   SUBCASE("it streams int64")
   {
-    long long values[] = { std::numeric_limits<long long>::min() -1, 0, 1, 127, 128, 255, 256, 4095, 4096, std::numeric_limits<long long>::max() };
+    long long values[] = { std::numeric_limits<long long>::min(), -1, 0, 1, 127, 128, 255, 256, 4095, 4096, std::numeric_limits<long long>::max() };
 
     for ( auto v : values )
     {
@@ -396,7 +396,7 @@ TEST_CASE("msgpack streaming")
 
     CHECK(x.member1 == "member 1");
     CHECK(x.member2 == "member 2");
-    CHECK(x.member3 == 7);
+    CHECK(x.member3 == 7u);
   }
 
   SUBCASE("it streams custom type with removed member")
@@ -414,6 +414,6 @@ TEST_CASE("msgpack streaming")
     is >> x;
 
     CHECK(x.member1 == "member 1");
-    CHECK(x.member3 == 7);
+    CHECK(x.member3 == 7u);
   }
 }

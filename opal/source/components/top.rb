@@ -23,9 +23,6 @@ class Top
         div id: 'menu-toggle', onclick: method(:toggle_menu) do
           img src: 'assets/menu.svg'
         end
-        div id: 'settings-toggle', onclick: method(:toggle_settings) do
-          img src: 'assets/settings.svg'
-        end
         div id: 'player-toggle' do
           case store.player_state
           when :stopped
@@ -37,6 +34,9 @@ class Top
               text 'stop'
             end
           end
+        end
+        div id: 'settings-toggle', onclick: method(:toggle_settings) do
+          img src: 'assets/settings.svg'
         end
       end
     end

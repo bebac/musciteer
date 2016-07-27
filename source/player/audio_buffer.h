@@ -96,8 +96,8 @@ public:
 
     for( size_t i = size_; i < num_frames; i++ )
     {
-      data_[i].l = ((int32_t)ibuf[i].l<<16);
-      data_[i].r = ((int32_t)ibuf[i].r<<16);
+      data_[i].l = static_cast<int32_t>(ibuf[i].l) * (1<<16);
+      data_[i].r = static_cast<int32_t>(ibuf[i].r) * (1<<16);
     }
     size_ += num_frames;
   }
@@ -115,8 +115,8 @@ public:
 
     for( size_t i = size_; i < num_frames; ++i )
     {
-      data_[i].l = ibuf->l[i]<<scale;
-      data_[i].r = ibuf->r[i]<<scale;
+      data_[i].l = static_cast<int32_t>(ibuf->l[i]) * (1<<scale);
+      data_[i].r = static_cast<int32_t>(ibuf->r[i]) * (1<<scale);
     }
     size_ += num_frames;
   }

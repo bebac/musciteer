@@ -102,9 +102,15 @@ class websocket_handler : public http::websocket_handler_base
       {
         player.queue(j["data"].get<std::string>());
       }
+      else
+      {
+        std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
+      }
     }
-
-    std::cout << "websocket message=\"" << j << "\"" << std::endl;
+    else
+    {
+      std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
+    }
   }
 public:
   void set_task(dripcore::task* task)

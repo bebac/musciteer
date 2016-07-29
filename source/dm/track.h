@@ -47,6 +47,8 @@ namespace musicbox
       std::vector<dm::artist> artists() const;
       const track_source& sources_get(const std::string& name);
       source_list sources() const;
+      unsigned play_count() const;
+      unsigned skip_count() const;
     public:
       void id(const std::string&);
       void title(const std::string&);
@@ -59,6 +61,9 @@ namespace musicbox
       void sources_add(const dm::track_source&);
       void sources_del(const dm::track_source&);
     public:
+      void increment_play_count();
+      void increment_skip_count();
+    public:
       void read(msgpack::istream& is);
       void write(msgpack::ostream& os) const;
     private:
@@ -70,6 +75,8 @@ namespace musicbox
       std::string album_id_;
       artist_id_list artist_ids_;
       source_list sources_;
+      unsigned play_count_;
+      unsigned skip_count_;
     };
 
     inline msgpack::istream& operator>>(msgpack::istream& is, track& value)

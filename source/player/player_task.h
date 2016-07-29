@@ -37,6 +37,7 @@ namespace musicbox
     using unsubscribe = audio_output_unsubscribe_message;
     using device_list_request = audio_output_device_list_request;
     using stream_begin_notify =  audio_output_stream_begin_notification;
+    using stream_progress_notify =  audio_output_stream_progress_notification;
     using stream_end_notify =  audio_output_stream_end_notification;
   private:
     enum state
@@ -67,6 +68,7 @@ namespace musicbox
     void handle(skip_request& m);
     void handle(queue_request& m);
     void handle(stream_begin_notify& m);
+    void handle(stream_progress_notify& m);
     void handle(stream_end_notify& m);
     void handle(source_notification& m);
   private:

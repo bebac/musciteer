@@ -43,7 +43,9 @@ namespace musicbox
       { "dn", track.disc_number() },
       { "duration", track.duration() },
       { "artists", artists },
-      { "album", jalbum }
+      { "album", jalbum },
+      { "play_count", track.play_count() },
+      { "skip_count", track.skip_count() }
     };
 
     return t;

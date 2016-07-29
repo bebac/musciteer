@@ -16,7 +16,8 @@ namespace musicbox
   namespace dm
   {
     track::track()
-      : id_(), title_(), tn_(0), dn_(0), duration_(0), album_id_(), artist_ids_()
+      : id_(), title_(), tn_(0), dn_(0), duration_(0), album_id_(),
+      artist_ids_(), sources_(), play_count_(0), skip_count_(0)
     {
     }
 
@@ -85,6 +86,16 @@ namespace musicbox
       return sources_;
     }
 
+    unsigned track::play_count() const
+    {
+      return play_count_;
+    }
+
+    unsigned track::skip_count() const
+    {
+      return skip_count_;
+    }
+
     void track::id(const std::string& id)
     {
       id_ = id;
@@ -144,6 +155,16 @@ namespace musicbox
     {
     }
 
+    void track::increment_play_count()
+    {
+      play_count_++;
+    }
+
+    void track::increment_skip_count()
+    {
+      skip_count_++;
+    }
+
     void track::read(msgpack::istream& is)
     {
       msgpack::map map;
@@ -158,14 +179,16 @@ namespace musicbox
           {
             switch ( key )
             {
-              case 1: is >> id_; break;
-              case 2: is >> title_; break;
-              case 3: is >> tn_; break;
-              case 4: is >> dn_; break;
-              case 5: is >> duration_; break;
-              case 6: is >> album_id_; break;
-              case 7: is >> artist_ids_; break;
-              case 8: is >> sources_; break;
+              case  1: is >> id_; break;
+              case  2: is >> title_; break;
+              case  3: is >> tn_; break;
+              case  4: is >> dn_; break;
+              case  5: is >> duration_; break;
+              case  6: is >> album_id_; break;
+              case  7: is >> artist_ids_; break;
+              case  8: is >> sources_; break;
+              case  9: is >> play_count_; break;
+              case 10: is >> skip_count_; break;
               default:
                 is >> msgpack::skip;
                 break;
@@ -187,17 +210,19 @@ namespace musicbox
 
     void track::write(msgpack::ostream& os) const
     {
-      msgpack::map map{8};
+      msgpack::map map{10};
 
       os << map
-        << 1 << id_
-        << 2 << title_
-        << 3 << tn_
-        << 4 << dn_
-        << 5 << duration_
-        << 6 << album_id_
-        << 7 << artist_ids_
-        << 8 << sources_;
+        <<  1 << id_
+        <<  2 << title_
+        <<  3 << tn_
+        <<  4 << dn_
+        <<  5 << duration_
+        <<  6 << album_id_
+        <<  7 << artist_ids_
+        <<  8 << sources_
+        <<  9 << play_count_
+        << 10 << skip_count_;
     }
   }
 }

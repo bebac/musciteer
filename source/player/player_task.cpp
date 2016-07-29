@@ -104,6 +104,9 @@ namespace musicbox
       case message::stream_begin_notify_id:
         handle(m.stream_begin_notify);
         break;
+      case message::stream_progress_notify_id:
+        handle(m.stream_progress_notify);
+        break;
       case message::stream_end_notify_id:
         handle(m.stream_end_notify);
         break;
@@ -246,9 +249,14 @@ namespace musicbox
       case stopped:
         break;
       case playing:
+      {
         assert(session_);
+        auto track = session_->track();
+        assert(track);
+        track->increment_skip_count();
         session_->stop();
         break;
+      }
       case stopping:
         break;
       case paused:
@@ -295,9 +303,48 @@ namespace musicbox
   {
   }
 
+  void player_task::handle(stream_progress_notify& m)
+  {
+    if ( session_ )
+    {
+      if ( m.stream_id == session_->id() )
+      {
+        if ( m.duration > 0 )
+        {
+          session_->fraction_played(float(m.duration) / float(m.length));
+        }
+      }
+      else
+      {
+        std::cerr << "player_task - session id mismatch on stream progress notification" << std::endl;
+      }
+    }
+    else
+    {
+      std::cerr << "player_task - received stream progress notify with session_ == nullptr" << std::endl;
+    }
+  }
+
   void player_task::handle(stream_end_notify& m)
   {
-    end_session();
+    if ( session_ )
+    {
+      auto tracks = musicbox::dm::tracks();
+      auto track = session_->track();
+
+      assert(track);
+
+      if ( session_->fraction_played() > 0.80 ) {
+        track->increment_play_count();
+      }
+
+      tracks.save(*track);
+      end_session();
+    }
+    else
+    {
+      std::cerr << "player_task - received stream end notify with session_ == nullptr" << std::endl;
+    }
   }
 
   void player_task::handle(source_notification& m)

@@ -36,6 +36,7 @@ namespace musicbox
     };
   public:
     player_session()
+      : track_(), fraction_played_(0.0), audio_output_(), control_ch_()
     {
       auto kvstore = musicbox::kvstore();
       id_ = kvstore.increment(stream_id_key, 1, 1);
@@ -55,6 +56,11 @@ namespace musicbox
       return track_;
     }
   public:
+    float fraction_played() const
+    {
+      return fraction_played_;
+    }
+  public:
     std::shared_ptr<audio_output_alsa> audio_output() const
     {
       return audio_output_;
@@ -63,6 +69,11 @@ namespace musicbox
     void track(const musicbox::dm::track& track)
     {
       track_.reset(new musicbox::dm::track(track));
+    }
+  public:
+    void fraction_played(float value)
+    {
+      fraction_played_ = value;
     }
   public:
     void audio_output(std::shared_ptr<audio_output_alsa> audio_output)
@@ -77,6 +88,7 @@ namespace musicbox
   public:
     void done()
     {
+      std::cerr << "player_session done id=" << id_ << ", fraction_played=" << fraction_played_ << std::endl;
       control_ch_.send(control::done);
     }
   public:
@@ -89,6 +101,7 @@ namespace musicbox
   private:
     unsigned id_;
     std::shared_ptr<musicbox::dm::track> track_;
+    float fraction_played_;
     std::shared_ptr<audio_output_alsa> audio_output_;
     dripcore::channel<control> control_ch_;
   private:

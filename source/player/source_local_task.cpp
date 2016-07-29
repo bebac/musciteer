@@ -46,7 +46,7 @@ namespace musicbox
     {
       task_ = task;
 
-      stream_buffer_channel_init(5);
+      stream_buffer_channel_init(10);
       process_until_end_of_stream();
       stream_end();
     }

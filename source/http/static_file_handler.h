@@ -11,12 +11,16 @@
 #define __http_server__static_file_handler_h__
 
 // ----------------------------------------------------------------------------
+#include "../file_system.h"
+
+// ----------------------------------------------------------------------------
 #include <http/request.h>
 #include <http/response.h>
 
 // ----------------------------------------------------------------------------
 #include <streambuf>
 #include <fstream>
+#include <sstream>
 
 // ----------------------------------------------------------------------------
 class static_file_handler
@@ -27,6 +31,15 @@ public:
     request(request),
     response(response)
   {
+    const char* snap_path = getenv("SNAP");
+
+    if ( snap_path ) {
+      root_ = std::string(snap_path) + "/" + public_dir;
+    }
+    else {
+      root_ = public_dir;
+    }
+    std::cout << "static_file_handler root_=" << root_ << std::endl;
   }
 public:
   void call(const std::string& path)
@@ -45,20 +58,62 @@ protected:
   {
     using std::ifstream;
 
-    ifstream f(public_dir+path, ifstream::ate | ifstream::binary);
+    auto filename = root_ + path;
 
-    if ( f )
+    file_system::status status(filename);
+
+    if ( status )
     {
-      auto size = f.tellg();
+      auto ims_s = std::string();
+      auto ims_t = std::chrono::system_clock::time_point();
 
-      response << "HTTP/1.1 200 OK" << crlf
-         << "Content-Type: " << mime_type(path) << crlf
-         << "Content-Length: " << size << crlf
-         << crlf;
+      if ( request.get_header("If-Modified-Since", ims_s) )
+      {
+        auto is = std::istringstream{ims_s};
+        auto tm = std::tm{};
 
-      f.seekg(0);
+        if ( is >> std::get_time(&tm, "%a, %d %b %Y %H:%M:%S GMT") )
+        {
+          ims_t = std::chrono::system_clock::from_time_t(::timegm(&tm));
+        }
+        else
+        {
+          std::cerr << "static_file_handler - failed to parse If-Modified-Since header value" << std::endl;
+        }
+      }
 
-      response << f.rdbuf();
+      auto newer = std::chrono::duration_cast<std::chrono::seconds>(status.mtime() - ims_t);
+
+      if ( newer.count() > 0 )
+      {
+        ifstream f(filename, ifstream::ate | ifstream::binary);
+
+        if ( f )
+        {
+          auto size = f.tellg();
+          auto lm_t = std::chrono::system_clock::to_time_t(status.mtime());
+
+          response << "HTTP/1.1 200 OK" << crlf
+             << "Content-Type: " << mime_type(path) << crlf
+             << "Content-Length: " << size << crlf
+             << "Last-Modified:" << std::put_time(std::gmtime(&lm_t), "%a, %d %b %Y %H:%M:%S %Z") << crlf
+             << crlf;
+
+          f.seekg(0);
+
+          response << f.rdbuf();
+        }
+        else
+        {
+          not_found();
+        }
+      }
+      else
+      {
+        response << "HTTP/1.1 304 Not Modified" << crlf
+           << "Content-Length: " << 0 << crlf
+           << crlf;
+      }
     }
     else
     {
@@ -108,6 +163,8 @@ protected:
 protected:
   http::request& request;
   http::response& response;
+protected:
+  std::string root_;
 private:
   static constexpr const char* crlf = "\r\n";
   static constexpr const char* public_dir = "public/";

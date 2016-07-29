@@ -5,6 +5,9 @@ class Store
   def initialize
     super
     message_channel_start
+    $document.on :visibilitychange do
+      render! unless hidden?
+    end
   end
 
   def notifications
@@ -303,18 +306,18 @@ class Store
       when 1
         @player_state = :playing
       end
-      trigger :player_state_changed
+      trigger :player_state_changed unless hidden?
     when "queue_update"
       if data = message['data']
         notifications << QueueUpdate.new(data)
-        trigger :notification
+        trigger :notification unless hidden?
       end
     when "stream_begin"
       if data = message['data']
         @stream = Stream.new(data)
         stream_data_sync(@stream.id())
         notifications << StreamBegin.new(data)
-        trigger :stream_changed
+        trigger :stream_changed unless hidden?
       end
     when "stream_progress"
       if data = message['data']
@@ -325,21 +328,21 @@ class Store
           @stream = Stream.new(data)
           stream_data_sync(@stream.id())
         end
-        trigger :stream_changed
+        trigger :stream_changed unless hidden?
       end
     when "stream_end"
       @stream = nil
-      trigger :stream_changed
+      trigger :stream_changed unless hidden?
     when "stream_data"
       if data = message['data']
         @stream.track = Track.new(data['track'])
-        trigger :stream_changed
-        trigger :notification
+        trigger :stream_changed unless hidden?
+        trigger :notification unless hidden?
       end
     when "source_notification"
       handle_source_notification(message['data'])
       # NOTE: This render! should probably be an event as well.
-      render!
+      render! unless hidden?
     end
   end
 

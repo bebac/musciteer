@@ -25,12 +25,12 @@
 // ----------------------------------------------------------------------------
 void websocket_send_task::main()
 {
-  std::cout << "websocket_send_task started" << std::endl;
+  std::cout << "websocket_send_task - started" << std::endl;
   while ( true )
   {
     auto msg = ch_.recv(this);
 
-    if ( msg.type == 0 ) {
+    if ( stopping() ) {
       break;
     }
 
@@ -141,7 +141,7 @@ void websocket_send_task::main()
       }
     }
   }
-  std::cout << "websocket_send_task stopped" << std::endl;
+  std::cout << "websocket_send_task - stopped" << std::endl;
 }
 
 // ----------------------------------------------------------------------------

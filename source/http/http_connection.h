@@ -120,17 +120,28 @@ public:
 private:
   void start_send_task()
   {
-    task_->spawn<websocket_send_task>(*this, message_ch_);
+    send_task_ref_ = task_->spawn<websocket_send_task>(*this, message_ch_);
   }
 private:
   void stop_send_task()
   {
-    message_ch_.send(message{}, task_);
+    auto send_task = send_task_ref_.lock();
+
+    if ( send_task )
+    {
+      send_task->stop();
+      // Send it a message to make sure it runs.
+      message_ch_.send(message{}, task_);
+      // Give it a chance to run.
+      task_->yield(true);
+    }
   }
 private:
   message_channel message_ch_;
 private:
   dripcore::task* task_;
+private:
+  std::weak_ptr<dripcore::task> send_task_ref_;
 };
 
 // ----------------------------------------------------------------------------

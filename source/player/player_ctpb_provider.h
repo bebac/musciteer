@@ -19,32 +19,48 @@ namespace musicbox
   class player_ctpb_provider
   {
   public:
-    player_ctpb_provider()
-      : rd_(), rg_(rd_()), di_()
+    player_ctpb_provider() : idx_(0)
+    {
+    }
+  public:
+    musicbox::dm::track get_track()
     {
       auto tracks = musicbox::dm::tracks();
 
+      auto start = std::chrono::steady_clock::now();
+
+      std::vector<std::string> track_ids;
+      std::vector<int> weights;
+
       tracks.each([&](musicbox::dm::track& track)
       {
-        track_ids_.push_back(track.id());
-        weights_.push_back(1);
+        track_ids.push_back(track.id());
+        weights.push_back(1);
         return true;
       });
 
-      di_.reset(new std::discrete_distribution<>(weights_.begin(), weights_.end()));
-    }
-  public:
-    const std::string& get_track_id()
-    {
-      return track_ids_[(*di_)(rg_)];
+      std::discrete_distribution<> dist(weights.begin(), weights.end());
+      std::mt19937 gen;
+
+      std::seed_seq seq{time(0), idx_};
+      gen.seed(seq);
+
+      idx_ = dist(gen);
+
+      auto track_id = track_ids[idx_];
+
+      auto end = std::chrono::steady_clock::now();
+
+      std::cout
+        << "ctpb provider - produced track id '" << track_id << "' in "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+        << "ms"
+        << std::endl;
+
+      return tracks.find_by_id(track_ids[idx_]);
     }
   private:
-    std::random_device rd_;
-    std::mt19937 rg_;
-    std::unique_ptr<std::discrete_distribution<>> di_;
-  private:
-    std::vector<std::string> track_ids_;
-    std::vector<int> weights_;
+    long int idx_;
   };
 }
 

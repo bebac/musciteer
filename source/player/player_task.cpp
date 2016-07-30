@@ -190,19 +190,16 @@ namespace musicbox
           }
           else if ( ctpb_provider_ )
           {
-            auto id = ctpb_provider_->get_track_id();
+            auto track = ctpb_provider_->get_track();
 
-            if ( !id.empty() )
+            if ( !track.id_is_null() )
             {
-              auto tracks = musicbox::dm::tracks();
-              auto track = tracks.find_by_id(id);
-
               assert(!session_);
               become_playing(track);
             }
             else
             {
-              std::cerr << "player_task - ctpb provider returned empty track id!" << std::endl;
+              std::cerr << "player_task - ctpb provider returned empty track!" << std::endl;
             }
           }
         }
@@ -422,18 +419,15 @@ namespace musicbox
         {
           assert(ctpb_provider_);
 
-          auto id = ctpb_provider_->get_track_id();
+          auto track = ctpb_provider_->get_track();
 
-          if ( !id.empty() )
+          if ( !track.id_is_null() )
           {
-            auto tracks = musicbox::dm::tracks();
-            auto track = tracks.find_by_id(id);
-
             become_playing(track);
           }
           else
           {
-            std::cerr << "player_task - ctpb provider returned empty track id!" << std::endl;
+            std::cerr << "player_task - ctpb provider returned empty track!" << std::endl;
             become_stopped();
           }
         }

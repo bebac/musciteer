@@ -247,7 +247,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
   }
   else if ( std::regex_match(uri, match, track_re) )
   {
-    track_handler handler(request, response);
+    tracks_handler handler(request, response, this);
 
     if ( match.size() == 2 )
     {

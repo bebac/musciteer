@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __http_server__track_handler_h__
-#define __http_server__track_handler_h__
+#ifndef __http_server__tracks_handler_h__
+#define __http_server__tracks_handler_h__
 
 // ----------------------------------------------------------------------------
 #include "api.h"
@@ -24,11 +24,11 @@
 #include <regex>
 
 // ----------------------------------------------------------------------------
-class track_handler
+class tracks_handler
 {
 public:
-  track_handler(http::request& request, http::response& response)
-    : request(request), response(response), route_re_("^/?([^/]*)?/?([^/]*)?")
+  tracks_handler(http::request& request, http::response& response, dripcore::task* task)
+    : request(request), response(response), task_(task), route_re_("^/?([^/]*)?/?([^/]*)?")
   {
   }
 public:
@@ -84,6 +84,7 @@ protected:
 
     tracks.each([&](musicbox::dm::track& track) {
       j.push_back(musicbox::to_json(track));
+      task_->yield(true);
       return true;
     });
 
@@ -158,6 +159,7 @@ protected:
 protected:
   http::request& request;
   http::response& response;
+  dripcore::task* task_;
 private:
   std::regex route_re_;
 private:

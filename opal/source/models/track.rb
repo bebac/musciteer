@@ -4,6 +4,8 @@ class Track
   attr_accessor :tn
   attr_accessor :dn
   attr_accessor :duration
+  attr_accessor :play_count
+  attr_accessor :skip_count
 
   def initialize(attrs)
     attrs.each do |k,v|

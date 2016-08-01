@@ -39,6 +39,8 @@ public:
 private:
   void main() override;
 private:
+  void handle_message(const message& msg);
+private:
   websocket_handler& handler_;
   message_channel ch_;
 };

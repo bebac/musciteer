@@ -101,6 +101,11 @@ namespace dripcore
       return ptr;
     }
   public:
+    task_state state() const
+    {
+      return state_;
+    }
+  public:
     void stop()
     {
       state_ = task_state::stopping;

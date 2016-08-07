@@ -39,7 +39,7 @@ public:
     else {
       root_ = public_dir;
     }
-    std::cout << "static_file_handler root_=" << root_ << std::endl;
+    //std::cout << "static_file_handler root_=" << root_ << std::endl;
   }
 public:
   void call(const std::string& path)

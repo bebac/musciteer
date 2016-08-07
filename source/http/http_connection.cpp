@@ -52,7 +52,7 @@ void websocket_send_task::main()
   dripcore::streambuf sbuf(socket_, *this);
   std::ostream os(&sbuf);
 
-  std::cout << "websocket_send_task - start" << std::endl;
+  //std::cout << "websocket_send_task - start" << std::endl;
   while ( os )
   {
     auto msg = ch_.recv(this);
@@ -64,7 +64,7 @@ void websocket_send_task::main()
     handle_message(msg, os);
   }
   connection_.resume();
-  std::cout << "websocket_send_task - stop" << std::endl;
+  std::cout << "websocket_send_task - stopping state=" << unsigned(state()) << ", os.state=" << os.rdstate() << std::endl;
 }
 
 void websocket_send_task::shutdown()
@@ -216,7 +216,7 @@ void websocket_recv_task::init()
 
 void websocket_recv_task::main()
 {
-  std::cout << "websocket_recv_task - start" << std::endl;
+  //std::cout << "websocket_recv_task - start" << std::endl;
 
   dripcore::streambuf sbuf(socket_, *this);
   std::istream is(&sbuf);
@@ -249,7 +249,7 @@ void websocket_recv_task::main()
     }
   }
   connection_.resume();
-  std::cout << "websocket_recv_task - stop" << std::endl;
+  std::cout << "websocket_recv_task - stopping state=" << unsigned(state()) << ", is.state=" << is.rdstate() << std::endl;
 }
 
 void websocket_recv_task::dispatch(http::websocket::header& header, std::istream& is)

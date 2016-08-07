@@ -1,3 +1,6 @@
+$thumb_width: 200px;
+$thumb_height: 200px;
+
 #albums-container
 {
 }
@@ -13,14 +16,14 @@
 .album-thumb
 {
   color: #333;
-  width: 200px;
+  width: $thumb_width;
   margin: 1.33em;
   background-color: #eee;
   display: inline-block;
 
   div:nth-child(2) {
-    min-height: 200px;
-    max-height: 200px;
+    min-height: $thumb_height;
+    max-height: $thumb_height;
     display: table;
     vertical-align: top;
   }
@@ -34,8 +37,8 @@
   }
 
   img {
-    max-width: 200px;
-    min-width: 200px;
-    max-height: 200px;
+    max-width: $thumb_width;
+    min-width: $thumb_width;
+    max-height: $thumb_height;
   }
 }

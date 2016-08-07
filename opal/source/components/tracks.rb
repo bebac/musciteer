@@ -11,7 +11,7 @@ class Tracks
   end
 
   def queue(track_id)
-    store.play(track_id.to_s)
+    store.queue(track_id.to_s)
   end
 
   def tracks

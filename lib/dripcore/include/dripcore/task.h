@@ -104,6 +104,7 @@ namespace dripcore
     void stop()
     {
       state_ = task_state::stopping;
+      shutdown();
     }
   public:
     template <typename T>
@@ -118,9 +119,11 @@ namespace dripcore
       loop_->del(eventable);
     }
   protected:
+    virtual void init() {};
     virtual void main() = 0;
+    virtual void shutdown() {};
   public:
-    void init(loop* loop);
+    void start(loop* loop);
   public:
     void resume()
     {

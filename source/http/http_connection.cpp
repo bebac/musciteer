@@ -16,40 +16,63 @@
 #include "api.h"
 
 // ----------------------------------------------------------------------------
-#include <dripcore/socket.h>
-#include <dripcore/streambuf.h>
+#include "../player/player.h"
+
+// ----------------------------------------------------------------------------
+#include <http/base64.h>
+
+// ----------------------------------------------------------------------------
+#include <crypto++/sha.h>
 
 // ----------------------------------------------------------------------------
 #include <regex>
 
-// ----------------------------------------------------------------------------
-void websocket_send_task::main()
+/////
+// Websocket send task.
+
+websocket_send_task::websocket_send_task(dripcore::task& connection, dripcore::socket& socket, message_channel channel)
+  : connection_(connection), socket_(socket), ch_(channel)
 {
-  std::cout << "websocket_send_task - started" << std::endl;
-
-  try
-  {
-    while ( true )
-    {
-      auto msg = ch_.recv(this);
-
-      if ( stopping() ) {
-        break;
-      }
-
-      handle_message(msg);
-    }
-  }
-  catch(const std::ios_base::failure& e)
-  {
-    std::cerr << "websocket_send_task - error " << e.what() << std::endl;
-  }
-
-  std::cout << "websocket_send_task - stopped" << std::endl;
 }
 
-// ----------------------------------------------------------------------------
-void websocket_send_task::handle_message(const message& msg)
+websocket_send_task::~websocket_send_task()
+{
+  auto player = musicbox::player();
+  player.unsubscribe(ch_);
+}
+
+void websocket_send_task::init()
+{
+  auto player = musicbox::player();
+  player.subscribe(ch_);
+}
+
+void websocket_send_task::main()
+{
+  dripcore::streambuf sbuf(socket_, *this);
+  std::ostream os(&sbuf);
+
+  std::cout << "websocket_send_task - start" << std::endl;
+  while ( os )
+  {
+    auto msg = ch_.recv(this);
+
+    if ( stopping() ) {
+      break;
+    }
+
+    handle_message(msg, os);
+  }
+  connection_.resume();
+  std::cout << "websocket_send_task - stop" << std::endl;
+}
+
+void websocket_send_task::shutdown()
+{
+  ch_.send(message{}, this);
+}
+
+void websocket_send_task::handle_message(const message& msg, std::ostream& os)
 {
   switch ( msg.type )
   {
@@ -60,7 +83,7 @@ void websocket_send_task::handle_message(const message& msg)
         { "data",  { msg.device_list_res.current, msg.device_list_res.device_names } }
       };
 
-      handler_.send_message(event.dump());
+      send(os, event.dump());
       break;
     }
     case message::stream_begin_notify_id:
@@ -72,7 +95,7 @@ void websocket_send_task::handle_message(const message& msg)
         }
       };
 
-      handler_.send_message(event.dump());
+      send(os, event.dump());
       break;
     }
     case message::stream_end_notify_id:
@@ -84,7 +107,7 @@ void websocket_send_task::handle_message(const message& msg)
         }
       };
 
-      handler_.send_message(event.dump());
+      send(os, event.dump());
       break;
     }
     case message::stream_progress_notify_id:
@@ -98,7 +121,7 @@ void websocket_send_task::handle_message(const message& msg)
         }
       };
 
-      handler_.send_message(event.dump());
+      send(os, event.dump());
       break;
     }
     case message::queue_update_id:
@@ -110,7 +133,8 @@ void websocket_send_task::handle_message(const message& msg)
           { "track", musicbox::to_json(*msg.queue_update.track) } }
         }
       };
-      handler_.send_message(event.dump());
+
+      send(os, event.dump());
       break;
     }
     case message::player_state_id:
@@ -121,7 +145,8 @@ void websocket_send_task::handle_message(const message& msg)
           { "state", msg.player_state.state } }
         }
       };
-      handler_.send_message(event.dump());
+
+      send(os, event.dump());
       break;
     }
     case message::source_notify_id:
@@ -134,7 +159,8 @@ void websocket_send_task::handle_message(const message& msg)
           { "message", msg.source_notify.message } }
         }
       };
-      handler_.send_message(event.dump());
+
+      send(os, event.dump());
       break;
     }
     case message::stream_data_res_id:
@@ -153,9 +179,154 @@ void websocket_send_task::handle_message(const message& msg)
         { "event", "stream_data" }, { "data", data }
       };
 
-      handler_.send_message(event.dump());
+      send(os, event.dump());
       break;
     }
+  }
+}
+
+void websocket_send_task::send(std::ostream& os, const std::string& message)
+{
+  http::websocket::header header;
+
+  header.fin(true);
+  header.rsv(0);
+  header.opcode(1);
+  header.mask(false);
+  header.payload_length(message.length());
+
+  os << header << message << std::flush;
+}
+
+/////
+// Websocket recv task.
+
+websocket_recv_task::websocket_recv_task(dripcore::task& connection, dripcore::socket& socket, message_channel channel)
+  : connection_(connection), socket_(socket), ch_(channel)
+{
+}
+
+websocket_recv_task::~websocket_recv_task()
+{
+}
+
+void websocket_recv_task::init()
+{
+}
+
+void websocket_recv_task::main()
+{
+  std::cout << "websocket_recv_task - start" << std::endl;
+
+  dripcore::streambuf sbuf(socket_, *this);
+  std::istream is(&sbuf);
+
+  while ( is.good() )
+  {
+    http::websocket::header header;
+
+    if ( is >> header )
+    {
+      if ( header.rsv() != 0 )
+      {
+        // ERROR!
+      }
+
+#if 0
+      std::cout << "websocket:" << std::endl
+        << "  fin : " << header.fin() << std::endl
+        << "  rsv : " << header.rsv() << std::endl
+        << "  opc : " << header.opcode() << std::endl
+        << "  msk : " << header.mask() << std::endl
+        << "  len : " << header.payload_length() << std::endl;
+#endif
+
+      dispatch(header, is);
+    }
+    else
+    {
+      std::cout << "websocket streaming error!" << std::endl;
+    }
+  }
+  connection_.resume();
+  std::cout << "websocket_recv_task - stop" << std::endl;
+}
+
+void websocket_recv_task::dispatch(http::websocket::header& header, std::istream& is)
+{
+  switch ( header.opcode() )
+  {
+    case 0:
+      // Not implemented yet.
+      break;
+    case 1:
+    {
+      std::string message;
+
+      // TODO: Check fin.
+      // TODO: Check masking
+
+      message.reserve(header.payload_length());
+      for ( size_t i=0; i<header.payload_length(); ++i )
+      {
+        message.push_back(is.get() ^ header.masking_key(i));
+      }
+      on_message(message);
+      break;
+    }
+    case 2:
+      // Not implemented yet.
+      break;
+    case 8:
+      is.setstate(std::ios_base::eofbit);
+      return;
+  }
+}
+
+void websocket_recv_task::on_message(const std::string& message)
+{
+  auto j = json::parse(message);
+
+  if ( j.count("event") )
+  {
+    auto player = musicbox::player();
+    auto event = j["event"];
+
+    if ( event == "stream_data_sync" )
+    {
+      player.stream_data(j["data"].get<unsigned>(), ch_);
+    }
+    else if ( event == "play" )
+    {
+      auto data = j["data"];
+
+      if ( data.is_null() ) {
+        player.play();
+      }
+      else {
+        player.play(data.get<std::string>());
+      }
+    }
+    else if ( event == "stop" )
+    {
+      player.stop();
+    }
+    else if ( event == "skip" )
+    {
+      player.skip();
+    }
+    else if ( event == "queue" )
+    {
+      player.queue(j["data"].get<std::string>());
+    }
+    else
+    {
+      std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
   }
 }
 
@@ -170,16 +341,22 @@ http_connection::http_connection(dripcore::socket socket)
 http_connection::~http_connection()
 {
   std::cout << "~connection " << size_t(this) << std::endl;
+  detach_eventable(socket_);
+}
+
+void http_connection::init()
+{
+  attach_eventable(socket_);
 }
 
 // ----------------------------------------------------------------------------
 void http_connection::main()
 {
-  std::unique_ptr<dripcore::streambuf> sbuf(new dripcore::streambuf(socket_, *this));
+  streambuf_.reset(new dripcore::streambuf(socket_, *this));
 
   try
   {
-    loop(sbuf.get());
+    loop(streambuf_.get());
   }
   catch(const dripcore::end_of_stream& e)
   {
@@ -211,10 +388,51 @@ void http_connection::loop(std::streambuf* sbuf)
       {
         if ( upgrade == "websocket" )
         {
-          //std::cout << "connection " << size_t(this) << " upgrade to websocket" << std::endl;
-          websocket_handler handler(request, response);
-          handler.set_task(this);
-          handler.call(request.uri());
+          std::string sec_websocket_key;
+
+          if ( request.get_header("Sec-WebSocket-Key", sec_websocket_key) )
+          {
+            std::string sec_websocket_accept = sec_websocket_key+guid;
+
+            byte digest[CryptoPP::SHA1::DIGESTSIZE];
+
+            CryptoPP::SHA1().CalculateDigest(
+              digest,
+              reinterpret_cast<const unsigned char*>(sec_websocket_accept.data()),
+              sec_websocket_accept.length()
+            );
+
+            response << "HTTP/1.1 101 Switching Protocols" << crlf
+              << "Upgrade: websocket" << crlf
+              << "Connection: Upgrade" << crlf
+              << "Sec-WebSocket-Accept: " << base64::encode(digest, sizeof(digest)) << crlf
+              << crlf
+              << std::flush;
+
+            message_channel channel;
+
+            auto recv_task = spawn<websocket_recv_task>(*this, socket_, channel).lock();
+            auto send_task = spawn<websocket_send_task>(*this, socket_, channel).lock();
+
+            std::cout << "http_connection " << size_t(this) << " - switched to websocket protocol" << std::endl;
+
+            while ( !recv_task->done() || !send_task->done() )
+            {
+              yield();
+
+              if ( !recv_task->done() ) {
+                recv_task->stop();
+              }
+
+              if ( !send_task->done() ) {
+                send_task->stop();
+              }
+            }
+          }
+          else
+          {
+            // Error!
+          }
           return;
         }
         else

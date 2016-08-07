@@ -11,139 +11,54 @@
 #define __musciteer__http_connection_h__
 
 // ----------------------------------------------------------------------------
-#include "../player/player.h"
+#include "../player/message.h"
 
 // ----------------------------------------------------------------------------
 #include <dripcore/task.h>
 #include <dripcore/socket.h>
+#include <dripcore/streambuf.h>
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
 #include <http/response.h>
-#include <http/handlers/websocket_handler_base.h>
-
-// ----------------------------------------------------------------------------
-#include <json.h>
-
-// ----------------------------------------------------------------------------
-class websocket_handler;
+#include <http/websocket.h>
 
 // ----------------------------------------------------------------------------
 class websocket_send_task : public dripcore::task
 {
 public:
-  websocket_send_task(websocket_handler& handler, message_channel ch)
-    : handler_(handler), ch_(ch)
-  {
-  }
+  websocket_send_task(dripcore::task& connection, dripcore::socket& socket, message_channel channel);
+public:
+  ~websocket_send_task();
 private:
+  void init() override;
   void main() override;
+  void shutdown() override;
 private:
-  void handle_message(const message& msg);
+  void handle_message(const message& msg, std::ostream& os);
+  void send(std::ostream& os, const std::string& message);
 private:
-  websocket_handler& handler_;
+  dripcore::task& connection_;
+  dripcore::socket& socket_;
   message_channel ch_;
 };
 
 // ----------------------------------------------------------------------------
-class websocket_handler : public http::websocket_handler_base
+class websocket_recv_task : public dripcore::task
 {
-  using websocket_handler_base::websocket_handler_base;
-
-  void on_connect() override
-  {
-    auto player = musicbox::player();
-
-    start_send_task();
-
-    player.subscribe(message_ch_);
-  }
-
-  void on_close() override
-  {
-    auto player = musicbox::player();
-
-    player.unsubscribe(message_ch_);
-
-    stop_send_task();
-  }
-
-  void on_message(const std::string& message) override
-  {
-    auto j = json::parse(message);
-
-    if ( j.count("event") )
-    {
-      auto player = musicbox::player();
-      auto event = j["event"];
-
-      if ( event == "stream_data_sync" )
-      {
-        player.stream_data(j["data"].get<unsigned>(), message_ch_);
-      }
-      else if ( event == "play" )
-      {
-        auto data = j["data"];
-
-        if ( data.is_null() ) {
-          player.play();
-        }
-        else {
-          player.play(data.get<std::string>());
-        }
-      }
-      else if ( event == "stop" )
-      {
-        player.stop();
-      }
-      else if ( event == "skip" )
-      {
-        player.skip();
-      }
-      else if ( event == "queue" )
-      {
-        player.queue(j["data"].get<std::string>());
-      }
-      else
-      {
-        std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
-      }
-    }
-    else
-    {
-      std::cerr << "unhandled websocket message=\"" << j << "\"" << std::endl;
-    }
-  }
 public:
-  void set_task(dripcore::task* task)
-  {
-    task_ = task;
-  }
+  websocket_recv_task(dripcore::task& connection, dripcore::socket& socket, message_channel channel);
+  ~websocket_recv_task();
 private:
-  void start_send_task()
-  {
-    send_task_ref_ = task_->spawn<websocket_send_task>(*this, message_ch_);
-  }
+  void init() override;
+  void main() override;
 private:
-  void stop_send_task()
-  {
-    auto send_task = send_task_ref_.lock();
-
-    if ( send_task )
-    {
-      send_task->stop();
-      // Send it a message to make sure it runs.
-      message_ch_.send(message{}, task_);
-      // Give it a chance to run.
-      task_->yield(true);
-    }
-  }
+  void dispatch(http::websocket::header& header, std::istream& is);
+  void on_message(const std::string& message);
 private:
-  message_channel message_ch_;
-private:
-  dripcore::task* task_;
-private:
-  std::weak_ptr<dripcore::task> send_task_ref_;
+  dripcore::task& connection_;
+  dripcore::socket& socket_;
+  message_channel ch_;
 };
 
 // ----------------------------------------------------------------------------
@@ -153,6 +68,7 @@ public:
   http_connection(dripcore::socket socket);
   ~http_connection();
 public:
+  void init() override;
   void main() override;
 protected:
   void loop(std::streambuf* sbuf);
@@ -162,8 +78,10 @@ protected:
   void not_found(http::response& response);
 private:
   dripcore::socket socket_;
+  std::unique_ptr<dripcore::streambuf> streambuf_;
 private:
   static constexpr const char* crlf = "\r\n";
+  static constexpr const char* guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 };
 
 // ----------------------------------------------------------------------------

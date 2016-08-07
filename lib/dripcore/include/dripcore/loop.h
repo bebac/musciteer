@@ -53,7 +53,7 @@ namespace dripcore
       /////
       auto ptr = std::make_shared<T>(std::forward<Args>(args)...);
       tasks_.push_back(ptr);
-      ptr->init(this);
+      ptr->start(this);
       return ptr;
     }
   public:

@@ -12,7 +12,7 @@
 // ----------------------------------------------------------------------------
 namespace dripcore
 {
-  void task::init(loop* loop)
+  void task::start(loop* loop)
   {
     loop_ = loop;
 
@@ -25,6 +25,9 @@ namespace dripcore
         resume_();
       }
     };
+
+    init();
+
     // Activate event.
     loop_->mod(&ed_);
     // Let it run.

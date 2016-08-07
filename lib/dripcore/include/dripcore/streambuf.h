@@ -38,12 +38,10 @@ namespace dripcore
     {
       init_put_area();
       init_get_area();
-      task_.attach_eventable(io_);
     }
   public:
     virtual ~streambuf()
     {
-      task_.detach_eventable(io_);
     }
   private:
     void init_get_area()

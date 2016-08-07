@@ -36,6 +36,14 @@ private:
   void shutdown() override;
 private:
   void handle_message(const message& msg, std::ostream& os);
+  void handle(const audio_output_device_list_response&, std::ostream&);
+  void handle(const audio_output_stream_begin_notification&, std::ostream&);
+  void handle(const audio_output_stream_end_notification&, std::ostream&);
+  void handle(const audio_output_stream_progress_notification&, std::ostream&);
+  void handle(const queue_update_notification&, std::ostream&);
+  void handle(const player_state_notification&, std::ostream&);
+  void handle(const source_notification&, std::ostream&);
+  void handle(const stream_data_response&, std::ostream&);
   void send(std::ostream& os, const std::string& message);
 private:
   dripcore::task& connection_;

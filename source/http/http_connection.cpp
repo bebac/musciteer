@@ -3,9 +3,6 @@
 //     Author     : Benny Bach <benny.bach@gmail.com>
 //                  Copyright (C) 2015
 //
-// --- Description: -----------------------------------------------------------
-//
-//
 // ----------------------------------------------------------------------------
 #include "http_connection.h"
 #include "tracks_handler.h"
@@ -77,112 +74,136 @@ void websocket_send_task::handle_message(const message& msg, std::ostream& os)
   switch ( msg.type )
   {
     case message::device_list_res_id:
-    {
-      json event = {
-        { "event", "audio_device_list"},
-        { "data",  { msg.device_list_res.current, msg.device_list_res.device_names } }
-      };
-
-      send(os, event.dump());
+      handle(msg.device_list_res, os);
       break;
-    }
     case message::stream_begin_notify_id:
-    {
-      json event = {
-        { "event", "stream_begin"},
-        { "data",  {
-          { "stream_id", msg.stream_begin_notify.stream_id } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.stream_begin_notify, os);
       break;
-    }
     case message::stream_end_notify_id:
-    {
-      json event = {
-        { "event", "stream_end"},
-        { "data",  {
-          { "stream_id", msg.stream_begin_notify.stream_id } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.stream_begin_notify, os);
       break;
-    }
     case message::stream_progress_notify_id:
-    {
-      json event = {
-        { "event", "stream_progress"},
-        { "data", {
-          { "stream_id", msg.stream_progress_notify.stream_id },
-          { "duration", msg.stream_progress_notify.duration },
-          { "length", msg.stream_progress_notify.length } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.stream_progress_notify, os);
       break;
-    }
     case message::queue_update_id:
-    {
-      json event = {
-        { "event", "queue_update"},
-        { "data",  {
-          { "queue_size", msg.queue_update.queue_size },
-          { "track", musicbox::to_json(*msg.queue_update.track) } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.queue_update, os);
       break;
-    }
     case message::player_state_id:
-    {
-      json event = {
-        { "event", "player_state"},
-        { "data",  {
-          { "state", msg.player_state.state } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.player_state, os);
       break;
-    }
     case message::source_notify_id:
-    {
-      json event = {
-        { "event", "source_notification"},
-        { "data",  {
-          { "type", unsigned(msg.source_notify.type) },
-          { "source_name", msg.source_notify.source_name },
-          { "message", msg.source_notify.message } }
-        }
-      };
-
-      send(os, event.dump());
+      handle(msg.source_notify, os);
       break;
-    }
     case message::stream_data_res_id:
-    {
-      json data;
-
-      if ( msg.stream_data_res.stream_id != -1 )
-      {
-        data = {
-          { "stream_id", msg.stream_data_res.stream_id },
-          { "track", musicbox::to_json(*msg.stream_data_res.track) }
-        };
-      }
-
-      json event = {
-        { "event", "stream_data" }, { "data", data }
-      };
-
-      send(os, event.dump());
+      handle(msg.stream_data_res, os);
       break;
-    }
   }
+}
+
+void websocket_send_task::handle(const audio_output_device_list_response& m, std::ostream& os)
+{
+  json event = {
+    { "event", "audio_device_list"},
+    { "data",  { m.current, m.device_names } }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const audio_output_stream_begin_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "stream_begin"},
+    { "data",  {
+      { "stream_id", m.stream_id } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const audio_output_stream_end_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "stream_end"},
+    { "data",  {
+      { "stream_id", m.stream_id } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const audio_output_stream_progress_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "stream_progress"},
+    { "data", {
+      { "stream_id", m.stream_id },
+      { "duration", m.duration },
+      { "length", m.length } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const queue_update_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "queue_update"},
+    { "data",  {
+      { "queue_size", m.queue_size },
+      { "track", musicbox::to_json(*m.track) } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const player_state_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "player_state"},
+    { "data",  {
+      { "state", m.state } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const source_notification& m, std::ostream& os)
+{
+  json event = {
+    { "event", "source_notification"},
+    { "data",  {
+      { "type", unsigned(m.type) },
+      { "source_name", m.source_name },
+      { "message", m.message } }
+    }
+  };
+
+  send(os, event.dump());
+}
+
+void websocket_send_task::handle(const stream_data_response& m, std::ostream& os)
+{
+  json data;
+
+  if ( m.stream_id != -1 )
+  {
+    data = {
+      { "stream_id", m.stream_id },
+      { "track", musicbox::to_json(*m.track) }
+    };
+  }
+
+  json event = {
+    { "event", "stream_data" }, { "data", data }
+  };
+
+  send(os, event.dump());
 }
 
 void websocket_send_task::send(std::ostream& os, const std::string& message)

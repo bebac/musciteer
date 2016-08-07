@@ -3,9 +3,6 @@
 //     Author     : Benny Bach <benny.bach@gmail.com>
 //                  Copyright (C) 2015
 //
-// --- Description: -----------------------------------------------------------
-//
-//
 // ----------------------------------------------------------------------------
 #ifndef __musciteer__http_connection_h__
 #define __musciteer__http_connection_h__

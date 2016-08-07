@@ -19,8 +19,6 @@
 #include <http/response.h>
 
 // ----------------------------------------------------------------------------
-#include <streambuf>
-#include <fstream>
 #include <regex>
 
 // ----------------------------------------------------------------------------
@@ -40,13 +38,6 @@ public:
 
       if ( std::regex_match(path, match, route_re_) )
       {
-#if 0
-        for ( auto m : match )
-        {
-          std::cout << "albums route m.length=" << m.length() << ", m=" << m << std::endl;
-        }
-#endif
-
         if ( match[0].length() == 0 ) {
           get_albums(path);
         }

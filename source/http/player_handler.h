@@ -19,8 +19,6 @@
 #include <http/response.h>
 
 // ----------------------------------------------------------------------------
-#include <streambuf>
-#include <fstream>
 #include <regex>
 
 // ----------------------------------------------------------------------------
@@ -171,9 +169,7 @@ private:
     }
     else
     {
-      response << "HTTP/1.1 500 Internal Error" << crlf
-        << "Content-Length: 0" << crlf
-        << crlf;
+      internal_error();
     }
   }
 private:
@@ -252,6 +248,13 @@ protected:
   void not_found()
   {
     response << "HTTP/1.1 404 Not Found" << crlf
+      << "Content-Length: 0" << crlf
+      << crlf;
+  }
+protected:
+  void internal_error()
+  {
+    response << "HTTP/1.1 500 Internal Error" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }

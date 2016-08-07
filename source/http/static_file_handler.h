@@ -18,7 +18,6 @@
 #include <http/response.h>
 
 // ----------------------------------------------------------------------------
-#include <streambuf>
 #include <fstream>
 #include <sstream>
 
@@ -110,9 +109,7 @@ protected:
       }
       else
       {
-        response << "HTTP/1.1 304 Not Modified" << crlf
-           << "Content-Length: " << 0 << crlf
-           << crlf;
+        not_modified();
       }
     }
     else
@@ -145,6 +142,13 @@ protected:
     }
 
     return res;
+  }
+protected:
+  void not_modified()
+  {
+    response << "HTTP/1.1 304 Not Modified" << crlf
+       << "Content-Length: " << 0 << crlf
+       << crlf;
   }
 protected:
   void method_not_allowed()

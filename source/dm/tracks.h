@@ -40,6 +40,11 @@ namespace musicbox
         kvstore_.set(track.id(), track);
       }
     public:
+      void update(const dm::track& track)
+      {
+        kvstore_.replace(track.id(), track);
+      }
+    public:
       void remove(const dm::track& track)
       {
         kvstore_.remove(track.id());

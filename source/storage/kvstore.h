@@ -80,6 +80,17 @@ namespace musicbox
       return db_.set(key, buf.str());
     }
   public:
+    template<typename T>
+    bool replace(const std::string& key, const T& value)
+    {
+      std::stringbuf buf;
+      msgpack::ostream os(&buf);
+
+      os << value;
+
+      return db_.replace(key, buf.str());
+    }
+  public:
     bool remove(const std::string& key)
     {
       return db_.remove(key);
@@ -151,6 +162,13 @@ namespace musicbox
     {
       assert(instance_);
       return instance_->set(key, std::forward<T>(value));
+    }
+  public:
+    template<typename T>
+    bool replace(const std::string& key, T value)
+    {
+      assert(instance_);
+      return instance_->replace(key, std::forward<T>(value));
     }
   public:
     bool remove(const std::string& key)

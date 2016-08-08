@@ -335,7 +335,7 @@ namespace musicbox
         track->increment_play_count();
       }
 
-      tracks.save(*track);
+      tracks.update(*track);
       end_session();
     }
     else

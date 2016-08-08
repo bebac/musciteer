@@ -32,31 +32,60 @@ public:
 public:
   void call(const std::string& path)
   {
-    if ( request.method() == http::method::get )
-    {
-      std::smatch match;
+    auto method = request.method();
 
-      if ( std::regex_match(path, match, route_re_) )
+    std::smatch match;
+
+    if ( std::regex_match(path, match, route_re_) )
+    {
+      if ( match[0].length() == 0 )
       {
-        if ( match[0].length() == 0 ) {
+        if ( method == http::method::get ) {
           get_albums(path);
         }
-        else if ( match[0] == "/" && match[1].length() == 0 ) {
+        else {
+          method_not_allowed();
+        }
+      }
+      else if ( match[0] == "/" && match[1].length() == 0 )
+      {
+        if ( method == http::method::get ) {
           get_albums(path);
         }
-        else if ( match[0].length() > 0 && match[1].length() > 0 )
+        else {
+          method_not_allowed();
+        }
+      }
+      else if ( match[0].length() > 0 && match[1].length() > 0 )
+      {
+        if ( match[2].length() == 0 )
         {
-          if ( match[2].length() == 0 ) {
+          if ( method == http::method::get ) {
             get_album(match[1]);
           }
-          else if ( match[2] == "tracks" ) {
+          else if ( method == http::method::delete_ ) {
+            delete_album(match[1]);
+          }
+          else {
+            method_not_allowed();
+          }
+        }
+        else if ( match[2] == "tracks" )
+        {
+          if ( method == http::method::get ) {
             get_album_tracks(match[1]);
           }
-          else if ( match[2] == "cover" ) {
+          else {
+            method_not_allowed();
+          }
+        }
+        else if ( match[2] == "cover" )
+        {
+          if ( method == http::method::get ) {
             get_album_cover(match[1]);
           }
           else {
-            not_found();
+            method_not_allowed();
           }
         }
         else {
@@ -67,9 +96,8 @@ public:
         not_found();
       }
     }
-    else
-    {
-      method_not_allowed();
+    else {
+      not_found();
     }
   }
 protected:
@@ -95,10 +123,9 @@ private:
   void get_album(const std::string& id)
   {
     auto albums = musicbox::dm::albums();
-
     auto album = albums.find_by_id(id);
 
-    if ( !album.id().empty() )
+    if ( !album.id_is_null() )
     {
       json j = musicbox::to_json(album);
 
@@ -115,10 +142,36 @@ private:
     }
   }
 private:
+  void delete_album(const std::string& id)
+  {
+    auto albums = musicbox::dm::albums();
+    auto album = albums.find_by_id(id);
+
+    if ( !album.id_is_null() )
+    {
+      auto kvstore = musicbox::kvstore();
+      auto tracks = musicbox::dm::tracks();
+
+      album.tracks_each([&](const musicbox::dm::track& t) {
+        tracks.remove(t);
+      });
+
+      kvstore.remove(album.id()+"/cover");
+      albums.remove(album);
+
+      response << "HTTP/1.1 200 OK" << crlf
+        << "Content-Length: " << 0 << crlf
+        << crlf;
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
   void get_album_tracks(const std::string& id)
   {
     auto albums = musicbox::dm::albums();
-
     auto album = albums.find_by_id(id);
 
     if ( !album.id().empty() )

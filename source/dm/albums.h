@@ -40,6 +40,11 @@ namespace musicbox
         kvstore_.set(album.id(), album);
       }
     public:
+      void remove(const dm::album& album)
+      {
+        kvstore_.remove(album.id());
+      }
+    public:
       void each(std::function<bool(dm::album& album)> value_cb)
       {
         kvstore_.each(

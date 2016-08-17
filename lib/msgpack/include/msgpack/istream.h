@@ -26,7 +26,7 @@ namespace msgpack
 
   namespace
   {
-    const details::skip skip;
+    const details::skip skip{};
   }
 
   class istream : public std::istream

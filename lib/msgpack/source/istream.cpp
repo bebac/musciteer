@@ -25,7 +25,7 @@ namespace msgpack
 
   int istream::read_i32()
   {
-    int value;
+    int value = 0;
 
     auto c = get();
 
@@ -77,7 +77,7 @@ namespace msgpack
 
   unsigned int istream::read_u32()
   {
-    unsigned int value;
+    unsigned int value = 0;
 
     auto c = get();
 
@@ -139,7 +139,7 @@ namespace msgpack
 
   long long istream::read_i64()
   {
-    long long value;
+    long long value = 0;
 
     auto c = get();
 
@@ -199,7 +199,7 @@ namespace msgpack
 
   unsigned long long istream::read_u64()
   {
-    unsigned long long value;
+    unsigned long long value = 0;
 
     auto c = get();
 
@@ -278,7 +278,7 @@ namespace msgpack
 
   bool istream::read_bool()
   {
-    bool value;
+    bool value = false;
 
     auto c = get();
 

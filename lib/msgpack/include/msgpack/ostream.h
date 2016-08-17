@@ -151,7 +151,7 @@ namespace msgpack
       {
         T v;
         unsigned char b[8];
-      } tmp{htobe64(v)};
+      } tmp{T(htobe64(v))};
 
       for ( auto i = 0; i < 8; ++i ) {
         std::ostream::put(tmp.b[i]);

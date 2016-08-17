@@ -91,7 +91,7 @@ namespace dripcore
     socket accept(struct sockaddr *cliaddr, socklen_t *addrlen)
     {
       socket cli(::accept(fd_, NULL, NULL));
-      return std::move(cli);
+      return cli;
     }
   public:
     ssize_t recv(void *buf, size_t len, int flags=0) override

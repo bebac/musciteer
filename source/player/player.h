@@ -37,7 +37,7 @@ namespace musicbox
     {
       message m(message::unsubscribe_id, 0);
 
-      m.subscribe.channel = ch;
+      m.unsubscribe.channel = ch;
 
       message_ch_.send(std::move(m));
     }

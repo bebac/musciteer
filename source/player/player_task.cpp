@@ -78,7 +78,7 @@ namespace musicbox
         handle(m.subscribe);
         break;
       case message::unsubscribe_id:
-        handle(m.subscribe);
+        handle(m.unsubscribe);
         break;
       case message::device_list_req_id:
         handle(m.device_list_req, m.ref);

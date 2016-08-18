@@ -18,20 +18,11 @@ namespace dripcore
 
     attach_eventable(rdy_);
 
-    // Setup event descriptor.
-    ed_.fd = rdy_.native_handle();
-    ed_.rd = [&]() {
-      if ( rdy_.read() > 0 ) {
-        resume_();
-      }
-    };
-
     init();
-
-    // Activate event.
-    loop_->mod(&ed_);
-    // Let it run.
-    rdy_.notify();
+    // Setup event descriptor to wait for ready.
+    wait_ready();
+    // Signal ready.
+    resume();
   }
 
   void task::resume_()
@@ -101,6 +92,20 @@ namespace dripcore
 
     // Switch back to the caller.
     swapcontext(&callee_, &caller_);
+  }
+
+  void task::wait_ready()
+  {
+    // Setup event descriptor.
+    ed_.fd = rdy_.native_handle();
+    ed_.rd = [&]() {
+      if ( rdy_.read() > 0 ) {
+        resume_();
+      }
+    };
+
+    // Activate event.
+    loop_->mod(&ed_);
   }
 
   void task::call(int arg0, int arg1)

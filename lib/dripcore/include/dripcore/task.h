@@ -126,7 +126,11 @@ namespace dripcore
   protected:
     virtual void init() {};
     virtual void main() = 0;
-    virtual void shutdown() {};
+    virtual void shutdown()
+    {
+      wait_ready();
+      resume();
+    };
   public:
     void start(loop* loop);
   public:
@@ -171,6 +175,8 @@ namespace dripcore
     }
   public:
     void wait_writable(int fd);
+  protected:
+    void wait_ready();
   private:
     static void call(int arg0, int arg1);
   private:

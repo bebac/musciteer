@@ -120,6 +120,14 @@ namespace dripcore
       }
     }
   public:
+    void keepalive(bool value = true)
+    {
+      int v = ( value ? 1 : 0 );
+      if ( setsockopt(fd_, SOL_SOCKET, SO_KEEPALIVE, &v, sizeof(int)) == -1 ) {
+        throw socket_error(errno);
+      }
+    }
+  public:
     void close()
     {
       if ( fd_ != -1 ) {

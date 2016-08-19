@@ -430,6 +430,9 @@ void http_connection::loop(std::streambuf* sbuf)
               << crlf
               << std::flush;
 
+            // Protect against dead connections.
+            socket_.keepalive();
+
             message_channel channel;
 
             auto recv_task = spawn<websocket_recv_task>(*this, socket_, channel).lock();
@@ -448,6 +451,7 @@ void http_connection::loop(std::streambuf* sbuf)
               if ( !send_task->done() ) {
                 send_task->stop();
               }
+
             }
           }
           else

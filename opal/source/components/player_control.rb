@@ -2,6 +2,9 @@ class PlayerControl
   include Inesita::Component
 
   def init
+    store.on(:player_state_changed) do
+      $document.at('#player-ctrl').show if store.player_state == :stopped
+    end
   end
 
   def render
@@ -34,8 +37,8 @@ class PlayerControl
         end
       end
       div do
-        button onclick: -> { `Android.toggle_fullscreen()` } do
-          text "menu"
+        button onclick: -> { `document.documentElement.webkitRequestFullscreen()` } do
+          text "fullscreen"
         end
       end
     end

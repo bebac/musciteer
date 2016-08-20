@@ -104,7 +104,7 @@ class Store
         end
       end
       []
-    else#
+    else
       @directories
     end
   end

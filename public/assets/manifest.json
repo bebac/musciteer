@@ -1,0 +1,11 @@
+{
+    "short_name": "MusicBox",
+    "name": "MusicBox Player Client",
+    "description": "Application to control MusicBox daemon",
+    "icons": [],
+    "start_url": "/android",
+    "display": "fullscreen",
+    "orientation": "landscape",
+    "theme_color": "#29BDBB",
+    "background_color": "#29BDBB"
+}

@@ -9,6 +9,45 @@ a modern web interface
 
 
 
+Features
+========
+
+A somewhat prioritized list of features.
+
+- [x] Configurable through the desktop web interface.
+- [x] FLAC local files
+- [x] Spotify playback
+- [ ] Spotify - Search and add music from spotify to local library. For now
+      use spotify_import tool. (new libspotify coming soon I hope. Until then
+      at least some simple input field from web interface)
+- [x] Continuous playback. If nothing is explictly queued, play songs at random
+      from the entire collection. Can be turned on/off from settings.
+- [x] Mobile web application. goto /android in mobile browser and select add to
+      home screen.
+- [ ] Ubuntu snap package. Not possible currently as snaps cannot access alsa
+      :exclamation:
+- [ ] Debian package for Ubuntu
+- [ ] Browse and queue music from mobile web app.
+- [ ] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify.
+- [ ] Tagging
+- [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
+- [ ] Remove content on rescan when local flac files are removed
+- [ ] Play albums
+- [ ] Playlists
+- [ ] Ubuntu Touch app
+- [ ] FLAC file tagging from web interface / Integrate with online music meta
+      data service.
+- [ ] Tidal
+- [ ] MP3 local files
+- [ ] Native Android app
+- [ ] OGG local files
+- [ ] WAV local files
+- [ ] Google play
+- [ ] Deezer
+- [ ] Native IOS app
+
+
+
 API
 ===
 

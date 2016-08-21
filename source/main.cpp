@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 {
   dripcore::loop loop;
 
-  musciteer::kvstore::start(".mboxd");
+  musciteer::kvstore::start(".musciteerdb");
   musciteer::sources::start(&loop);
   musciteer::player::start(&loop);
 

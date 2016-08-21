@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__album_cover_h__
-#define __musicbox__dm__album_cover_h__
+#ifndef __musciteer__dm__album_cover_h__
+#define __musciteer__dm__album_cover_h__
 
 // ----------------------------------------------------------------------------
 #include <msgpack/istream.h>
@@ -17,7 +17,7 @@
 #include <string>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {

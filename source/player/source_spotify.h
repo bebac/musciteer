@@ -18,7 +18,7 @@
 #include <dripcore/loop.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   enum class source_control
   {
@@ -49,7 +49,7 @@ namespace musicbox
         {
           case source_control::start:
           {
-            musicbox::dm::source_spotify spotify_settings{};
+            musciteer::dm::source_spotify spotify_settings{};
 
             auto& username = spotify_settings.username();
             auto& password = spotify_settings.password();

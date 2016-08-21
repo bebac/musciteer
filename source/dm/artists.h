@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__artists_h__
-#define __musicbox__dm__artists_h__
+#ifndef __musciteer__dm__artists_h__
+#define __musciteer__dm__artists_h__
 
 // ----------------------------------------------------------------------------
 #include "artist.h"
@@ -15,14 +15,14 @@
 #include "../storage/base62.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {
     class artists
     {
     public:
-      artists() : kvstore_(musicbox::kvstore())
+      artists() : kvstore_(musciteer::kvstore())
       {
       }
     public:

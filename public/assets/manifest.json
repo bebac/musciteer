@@ -1,7 +1,7 @@
 {
-    "short_name": "MusicBox",
-    "name": "MusicBox Player Client",
-    "description": "Application to control MusicBox daemon",
+    "short_name": "Musciteer",
+    "name": "Musciteer Music Player",
+    "description": "Application to control the Musciteer music server",
     "icons": [
         {
             "src": "/assets/icon-48.png",

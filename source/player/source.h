@@ -15,7 +15,7 @@
 #include <dripcore/task.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   using done_channel = dripcore::channel<bool>;
 

@@ -9,11 +9,11 @@
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   void player_session::play(std::shared_ptr<audio_output_alsa> audio_output)
   {
-    auto sources = musicbox::sources();
+    auto sources = musciteer::sources();
     audio_output_ = audio_output;
     sources.play(shared_from_this());
   }

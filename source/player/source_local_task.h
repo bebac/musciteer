@@ -15,7 +15,7 @@
 #include <dripcore/channel.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   using session_channel = dripcore::channel<std::shared_ptr<player_session>>;
 

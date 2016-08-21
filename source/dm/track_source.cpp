@@ -7,7 +7,7 @@
 #include "track_source.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {

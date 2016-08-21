@@ -84,37 +84,37 @@ build build/libhttp.a: ar $
 
 
 ###
-# libmusicbox_dm
+# libmusciteer_dm
 
-build build/storage/kvstore.o: cc source/storage/kvstore.cpp
+build build/musciteer_dm.d/kvstore.o: cc source/storage/kvstore.cpp
   includes = -Ilib/msgpack/include
 
-build build/storage/base62.o: cc source/storage/base62.cpp
+build build/musciteer_dm.d/base62.o: cc source/storage/base62.cpp
   includes = -Ilib/msgpack/include
 
-build build/dm/artist.o: cc source/dm/artist.cpp
+build build/musciteer_dm.d/artist.o: cc source/dm/artist.cpp
   includes = -Ilib/msgpack/include
 
-build build/dm/album.o: cc source/dm/album.cpp
+build build/musciteer_dm.d/album.o: cc source/dm/album.cpp
   includes = -Ilib/msgpack/include
 
-build build/dm/track.o: cc source/dm/track.cpp
+build build/musciteer_dm.d/track.o: cc source/dm/track.cpp
   includes = -Ilib/msgpack/include
 
-build build/dm/track_source.o: cc source/dm/track_source.cpp
+build build/musciteer_dm.d/track_source.o: cc source/dm/track_source.cpp
   includes = -Ilib/msgpack/include
 
-build build/dm/album_cover.o: cc source/dm/album_cover.cpp
+build build/musciteer_dm.d/album_cover.o: cc source/dm/album_cover.cpp
   includes = -Ilib/msgpack/include
 
-build build/libmusicbox_dm.a: ar $
-  build/storage/kvstore.o $
-  build/storage/base62.o $
-  build/dm/artist.o $
-  build/dm/track.o $
-  build/dm/track_source.o $
-  build/dm/album.o $
-  build/dm/album_cover.o
+build build/libmusciteer_dm.a: ar $
+  build/musciteer_dm.d/kvstore.o $
+  build/musciteer_dm.d/base62.o $
+  build/musciteer_dm.d/artist.o $
+  build/musciteer_dm.d/track.o $
+  build/musciteer_dm.d/track_source.o $
+  build/musciteer_dm.d/album.o $
+  build/musciteer_dm.d/album_cover.o
 
 
 ###
@@ -150,7 +150,7 @@ build build/main.o: cc source/main.cpp
 build build/player/sources.o: cc source/player/sources.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
-build build/mboxd: ld $
+build build/musciteer: ld $
   build/http_connection.o $
   build/player/audio_output.o $
   build/player/player.o $
@@ -160,8 +160,8 @@ build build/mboxd: ld $
   build/player/source_spotify_task.o $
   build/player/source_spotify_app_key.o $
   build/player/sources.o $
-  build/main.o | build/libdripcore.a build/libmusicbox_dm.a build/libhttp.a build/libmsgpack.a
-  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
+  build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a
+  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
 
 
 ###
@@ -197,8 +197,8 @@ build build/test: ld $
 build build/tools.d/flac_import.o: cc source/tools/flac_import.cpp
   includes = -Ilib/msgpack/include
 
-build build/flac_import: ld build/tools.d/flac_import.o | build/libmusicbox_dm.a build/libmsgpack.a
-  libs = -lmusicbox_dm -lFLAC++ -lmsgpack -lkyotocabinet
+build build/flac_import: ld build/tools.d/flac_import.o | build/libmusciteer_dm.a build/libmsgpack.a
+  libs = -lmusciteer_dm -lFLAC++ -lmsgpack -lkyotocabinet
 
 ###
 # spotify_import
@@ -206,5 +206,5 @@ build build/flac_import: ld build/tools.d/flac_import.o | build/libmusicbox_dm.a
 build build/tools.d/spotify_import.o: cc source/tools/spotify_import.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
-build build/spotify_import: ld build/tools.d/spotify_import.o | build/libmusicbox_dm.a build/libmsgpack.a build/libhttp.a
-  libs = -ldripcore -lmusicbox_dm -lmsgpack -lhttp -lkyotocabinet -lanl -lssl -lcrypto
+build build/spotify_import: ld build/tools.d/spotify_import.o | build/libmusciteer_dm.a build/libmsgpack.a build/libhttp.a
+  libs = -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lkyotocabinet -lanl -lssl -lcrypto

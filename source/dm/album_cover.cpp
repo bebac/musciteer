@@ -7,7 +7,7 @@
 #include "album_cover.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {

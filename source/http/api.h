@@ -14,9 +14,9 @@
 #include <json.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
-  inline json to_json(const musicbox::dm::track& track)
+  inline json to_json(const musciteer::dm::track& track)
   {
     json artists;
 
@@ -51,7 +51,7 @@ namespace musicbox
     return t;
   }
 
-  inline json to_json(const musicbox::dm::album& album)
+  inline json to_json(const musciteer::dm::album& album)
   {
     auto artist = album.artist();
 

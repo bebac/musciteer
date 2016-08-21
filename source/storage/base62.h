@@ -4,14 +4,14 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__base62_h__
-#define __musicbox__base62_h__
+#ifndef __musciteer__base62_h__
+#define __musciteer__base62_h__
 
 // ----------------------------------------------------------------------------
 #include <string>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   /////
   // Encode 64 bit integer as base63 encoded string.

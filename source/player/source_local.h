@@ -15,7 +15,7 @@
 #include <dripcore/loop.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class source_local : public source
   {

@@ -7,7 +7,7 @@
 #include "player.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   /////
   // Instantiate player message channel.

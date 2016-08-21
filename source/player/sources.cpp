@@ -7,7 +7,7 @@
 #include "sources.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   sources::source_ptr sources::source_local_;
   sources::source_ptr sources::source_spotify_;

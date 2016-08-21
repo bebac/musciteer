@@ -7,8 +7,8 @@
 //
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__kvstore_h__
-#define __musicbox__kvstore_h__
+#ifndef __musciteer__kvstore_h__
+#define __musciteer__kvstore_h__
 
 // ----------------------------------------------------------------------------
 #include <kchashdb.h>
@@ -18,7 +18,7 @@
 #include <msgpack/ostream.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class kvstore_impl
   {

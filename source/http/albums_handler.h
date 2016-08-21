@@ -103,12 +103,12 @@ public:
 protected:
   void get_albums(const std::string& path)
   {
-    auto albums = musicbox::dm::albums();
+    auto albums = musciteer::dm::albums();
 
     json j;
 
-    albums.each([&](musicbox::dm::album& album) {
-      j.push_back(musicbox::to_json(album));
+    albums.each([&](musciteer::dm::album& album) {
+      j.push_back(musciteer::to_json(album));
       return true;
     });
 
@@ -122,12 +122,12 @@ protected:
 private:
   void get_album(const std::string& id)
   {
-    auto albums = musicbox::dm::albums();
+    auto albums = musciteer::dm::albums();
     auto album = albums.find_by_id(id);
 
     if ( !album.id_is_null() )
     {
-      json j = musicbox::to_json(album);
+      json j = musciteer::to_json(album);
 
       auto payload = j.dump();
 
@@ -144,15 +144,15 @@ private:
 private:
   void delete_album(const std::string& id)
   {
-    auto albums = musicbox::dm::albums();
+    auto albums = musciteer::dm::albums();
     auto album = albums.find_by_id(id);
 
     if ( !album.id_is_null() )
     {
-      auto kvstore = musicbox::kvstore();
-      auto tracks = musicbox::dm::tracks();
+      auto kvstore = musciteer::kvstore();
+      auto tracks = musciteer::dm::tracks();
 
-      album.tracks_each([&](const musicbox::dm::track& t) {
+      album.tracks_each([&](const musciteer::dm::track& t) {
         tracks.remove(t);
       });
 
@@ -171,17 +171,17 @@ private:
 private:
   void get_album_tracks(const std::string& id)
   {
-    auto albums = musicbox::dm::albums();
+    auto albums = musciteer::dm::albums();
     auto album = albums.find_by_id(id);
 
     if ( !album.id().empty() )
     {
       json j;
 
-      album.tracks_each([&](const musicbox::dm::track& track)
+      album.tracks_each([&](const musciteer::dm::track& track)
       {
         if ( !track.id_is_null() ) {
-          j.push_back(musicbox::to_json(track));
+          j.push_back(musciteer::to_json(track));
         }
       });
 
@@ -200,9 +200,9 @@ private:
 private:
   void get_album_cover(const std::string& id)
   {
-    auto kvstore = musicbox::kvstore();
+    auto kvstore = musciteer::kvstore();
 
-    musicbox::dm::album_cover cover;
+    musciteer::dm::album_cover cover;
 
     if ( kvstore.get(id+"/cover", cover) )
     {

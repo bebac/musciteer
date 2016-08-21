@@ -148,14 +148,14 @@ private:
       throw std::runtime_error("player output must be an object");
     }
 
-    musicbox::dm::player player_settings;
+    musciteer::dm::player player_settings;
 
     if ( j.count("current") )
     {
       player_settings.audio_device(j["current"].get<std::string>());
       player_settings.save();
 
-      auto player = musicbox::player();
+      auto player = musciteer::player();
       player.settings_changed();
 
       json j = get_output_json();
@@ -213,7 +213,7 @@ private:
       throw std::runtime_error("player ctpb must be an object");
     }
 
-    musicbox::dm::player player_settings;
+    musciteer::dm::player player_settings;
 
     if ( j.count("enabled") ) {
       player_settings.ctpb_enabled(j["enabled"].get<bool>());
@@ -225,7 +225,7 @@ private:
 
     player_settings.save();
 
-    auto player = musicbox::player();
+    auto player = musciteer::player();
     player.settings_changed();
 
     json r = get_output_json();
@@ -261,7 +261,7 @@ protected:
 private:
   json get_output_json()
   {
-    auto player = musicbox::player();
+    auto player = musciteer::player();
 
     message_channel reply_ch;
     player.audio_device_list(reply_ch);
@@ -277,7 +277,7 @@ private:
 private:
   json get_ctpb_json()
   {
-    musicbox::dm::player player_settings;
+    musciteer::dm::player player_settings;
 
     json ctpb = {
       { "enabled", player_settings.ctpb_enabled() },

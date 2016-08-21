@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__player_h__
-#define __musicbox__dm__player_h__
+#ifndef __musciteer__dm__player_h__
+#define __musciteer__dm__player_h__
 
 // ----------------------------------------------------------------------------
 #include "../storage/kvstore.h"
@@ -17,7 +17,7 @@
 #include <msgpack/array.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {
@@ -78,7 +78,7 @@ namespace musicbox
     class player
     {
     public:
-      player() : kvstore_(musicbox::kvstore())
+      player() : kvstore_(musciteer::kvstore())
       {
         if ( !kvstore_.get(player_key, data_) )
         {

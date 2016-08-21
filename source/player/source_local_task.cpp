@@ -13,7 +13,7 @@
 #include <FLAC++/decoder.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   /////
   // FLAC player.

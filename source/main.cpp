@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
 {
   dripcore::loop loop;
 
-  musicbox::kvstore::start(".mboxd");
-  musicbox::sources::start(&loop);
-  musicbox::player::start(&loop);
+  musciteer::kvstore::start(".mboxd");
+  musciteer::sources::start(&loop);
+  musciteer::player::start(&loop);
 
   auto on_connection = [&](dripcore::socket socket) {
     loop.spawn<http_connection>(std::move(socket));

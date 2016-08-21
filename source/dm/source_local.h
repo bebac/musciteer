@@ -4,14 +4,14 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__source_local_h__
-#define __musicbox__dm__source_local_h__
+#ifndef __musciteer__dm__source_local_h__
+#define __musciteer__dm__source_local_h__
 
 // ----------------------------------------------------------------------------
 #include "../storage/kvstore.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {
@@ -19,7 +19,7 @@ namespace musicbox
     {
       using directory_list = std::vector<std::string>;
     public:
-      source_local() : kvstore_(musicbox::kvstore())
+      source_local() : kvstore_(musciteer::kvstore())
       {
       }
     public:

@@ -10,7 +10,7 @@
 #include <algorithm>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   char alphabet[] = "0123456789"
                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

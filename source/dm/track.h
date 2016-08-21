@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__track_h__
-#define __musicbox__dm__track_h__
+#ifndef __musciteer__dm__track_h__
+#define __musciteer__dm__track_h__
 
 // ----------------------------------------------------------------------------
 #include "album.h"
@@ -25,7 +25,7 @@
 #include <functional>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {

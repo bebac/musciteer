@@ -14,7 +14,7 @@
 #include "../dm/tracks.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class player_ctpb_provider
   {
@@ -23,16 +23,16 @@ namespace musicbox
     {
     }
   public:
-    musicbox::dm::track get_track()
+    musciteer::dm::track get_track()
     {
-      auto tracks = musicbox::dm::tracks();
+      auto tracks = musciteer::dm::tracks();
 
       auto start = std::chrono::steady_clock::now();
 
       std::vector<std::string> track_ids;
       std::vector<int> weights;
 
-      tracks.each([&](musicbox::dm::track& track)
+      tracks.each([&](musciteer::dm::track& track)
       {
         track_ids.push_back(track.id());
         weights.push_back(1);

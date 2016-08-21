@@ -21,7 +21,7 @@ extern const uint8_t g_appkey[];
 extern const size_t  g_appkey_size;
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   /////
   // Spotify error.
@@ -223,7 +223,7 @@ namespace musicbox
       throw spotify_error(error);
     }
 
-    musicbox::dm::source_spotify settings{};
+    musciteer::dm::source_spotify settings{};
 
     auto& username = settings.username();
     auto& password = settings.password();
@@ -355,7 +355,7 @@ namespace musicbox
 
   void spotify_session::logged_in(sp_error error)
   {
-    auto player = musicbox::player();
+    auto player = musciteer::player();
 
     player.source_notification(
       source_notification::id::status,
@@ -366,7 +366,7 @@ namespace musicbox
 
   void spotify_session::connection_error(sp_error error)
   {
-    auto player = musicbox::player();
+    auto player = musciteer::player();
 
     player.source_notification(
       source_notification::id::error,
@@ -391,7 +391,7 @@ namespace musicbox
       release_track();
       player_session_.reset();
 
-      auto player = musicbox::player();
+      auto player = musciteer::player();
 
       player.source_notification(
         source_notification::id::track_unavailable,

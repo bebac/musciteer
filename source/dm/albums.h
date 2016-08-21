@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__albums_h__
-#define __musicbox__dm__albums_h__
+#ifndef __musciteer__dm__albums_h__
+#define __musciteer__dm__albums_h__
 
 // ----------------------------------------------------------------------------
 #include "album.h"
@@ -15,14 +15,14 @@
 #include "../storage/base62.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {
     class albums
     {
     public:
-      albums() : kvstore_(musicbox::kvstore())
+      albums() : kvstore_(musciteer::kvstore())
       {
       }
     public:

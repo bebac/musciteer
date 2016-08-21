@@ -11,7 +11,7 @@
 #include <chrono>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   using clock = std::chrono::system_clock;
 
@@ -21,7 +21,7 @@ namespace musicbox
   }
 }
 
-inline msgpack::istream& operator>>(msgpack::istream& is, musicbox::clock::time_point& value)
+inline msgpack::istream& operator>>(msgpack::istream& is, musciteer::clock::time_point& value)
 {
   auto c = is.get();
 
@@ -29,9 +29,9 @@ inline msgpack::istream& operator>>(msgpack::istream& is, musicbox::clock::time_
   {
     c = is.get();
 
-    if ( c == musicbox::msgpack_time_point )
+    if ( c == musciteer::msgpack_time_point )
     {
-      value = musicbox::clock::time_point(std::chrono::nanoseconds(is.read<long long>()));
+      value = musciteer::clock::time_point(std::chrono::nanoseconds(is.read<long long>()));
     }
     else
     {
@@ -46,12 +46,12 @@ inline msgpack::istream& operator>>(msgpack::istream& is, musicbox::clock::time_
   return is;
 }
 
-inline msgpack::ostream& operator<<(msgpack::ostream& os, musicbox::clock::time_point& value)
+inline msgpack::ostream& operator<<(msgpack::ostream& os, musciteer::clock::time_point& value)
 {
   auto d = std::chrono::duration_cast<std::chrono::nanoseconds>(value.time_since_epoch());
 
   os.put(0xd7);
-  os.put(musicbox::msgpack_time_point, d.count());
+  os.put(musciteer::msgpack_time_point, d.count());
 
   return os;
 }

@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__file_system_h__
-#define __musicbox__file_system_h__
+#ifndef __musciteer__file_system_h__
+#define __musciteer__file_system_h__
 
 // ----------------------------------------------------------------------------
 #include <chrono>

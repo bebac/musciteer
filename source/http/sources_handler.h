@@ -110,7 +110,7 @@ public:
 protected:
   void get_sources_local_directories()
   {
-    musicbox::dm::source_local source_local{};
+    musciteer::dm::source_local source_local{};
 
     json j;
 
@@ -152,7 +152,7 @@ protected:
       throw std::runtime_error("source local directories must be an array");
     }
 
-    musicbox::dm::source_local source_local{};
+    musciteer::dm::source_local source_local{};
 
     source_local.directories(j.get<std::vector<std::string>>());
 
@@ -163,7 +163,7 @@ protected:
 protected:
   void post_sources_local_scan()
   {
-    musicbox::dm::source_local source_local{};
+    musciteer::dm::source_local source_local{};
 
     for ( auto& dirname : source_local.directories() )
     {
@@ -174,7 +174,7 @@ protected:
         if ( file_system::extension(filename) == "flac" )
         {
           std::cout << filename << std::endl;
-          musicbox::flac_file_importer importer(filename);
+          musciteer::flac_file_importer importer(filename);
 
           importer.run();
 
@@ -190,7 +190,7 @@ protected:
 protected:
   void get_sources_spotify_settings()
   {
-    musicbox::dm::source_spotify settings{};
+    musciteer::dm::source_spotify settings{};
 
     json j;
 
@@ -234,7 +234,7 @@ protected:
       throw std::runtime_error("source spotify settings must be an object");
     }
 
-    musicbox::dm::source_spotify settings{};
+    musciteer::dm::source_spotify settings{};
 
     if ( j["username"].is_string() ) {
       settings.username(j["username"]);
@@ -246,7 +246,7 @@ protected:
 
     settings.save();
 
-    auto sources = musicbox::sources();
+    auto sources = musciteer::sources();
     sources.settings_changed("spotify");
 
     response << "HTTP/1.1 200 OK" << crlf

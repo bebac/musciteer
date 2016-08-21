@@ -10,7 +10,7 @@
 #include "kvstore.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   kvstore::instance_ptr kvstore::instance_;
 

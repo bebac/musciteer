@@ -15,7 +15,7 @@
 #include <cassert>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class player
   {

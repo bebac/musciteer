@@ -22,9 +22,9 @@
 // ----------------------------------------------------------------------------
 void print_tracks()
 {
-  auto tracks = musicbox::dm::tracks();
+  auto tracks = musciteer::dm::tracks();
 
-  tracks.each([](musicbox::dm::track& track)
+  tracks.each([](musciteer::dm::track& track)
   {
     std::cout << "---" << std::endl;
     std::cout << "track id       : " << track.id() << std::endl;
@@ -50,8 +50,8 @@ void print_tracks()
 // ----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  //musicbox::kvstore::start("testdb");
-  musicbox::kvstore::start(".mboxd");
+  //musciteer::kvstore::start("testdb");
+  musciteer::kvstore::start(".mboxd");
 
   auto dir = file_system::directory{argv[1]};
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     if ( file_system::extension(filename) == "flac" )
     {
       std::cout << filename << std::endl;
-      musicbox::flac_file_importer importer(filename);
+      musciteer::flac_file_importer importer(filename);
 
       importer.run();
     }

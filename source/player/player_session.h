@@ -23,7 +23,7 @@
 class audio_output_alsa;
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class player_session : public std::enable_shared_from_this<player_session>
   {
@@ -38,7 +38,7 @@ namespace musicbox
     player_session()
       : track_(), fraction_played_(0.0), audio_output_(), control_ch_()
     {
-      auto kvstore = musicbox::kvstore();
+      auto kvstore = musciteer::kvstore();
       id_ = kvstore.increment(stream_id_key, 1, 1);
     }
   public:
@@ -51,7 +51,7 @@ namespace musicbox
       return id_;
     }
   public:
-    std::shared_ptr<musicbox::dm::track> track() const
+    std::shared_ptr<musciteer::dm::track> track() const
     {
       return track_;
     }
@@ -66,9 +66,9 @@ namespace musicbox
       return audio_output_;
     }
   public:
-    void track(const musicbox::dm::track& track)
+    void track(const musciteer::dm::track& track)
     {
-      track_.reset(new musicbox::dm::track(track));
+      track_.reset(new musciteer::dm::track(track));
     }
   public:
     void fraction_played(float value)
@@ -100,7 +100,7 @@ namespace musicbox
     void play(std::shared_ptr<audio_output_alsa> audio_output);
   private:
     unsigned id_;
-    std::shared_ptr<musicbox::dm::track> track_;
+    std::shared_ptr<musciteer::dm::track> track_;
     float fraction_played_;
     std::shared_ptr<audio_output_alsa> audio_output_;
     dripcore::channel<control> control_ch_;

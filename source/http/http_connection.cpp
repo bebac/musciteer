@@ -34,13 +34,13 @@ websocket_send_task::websocket_send_task(dripcore::task& connection, dripcore::s
 
 websocket_send_task::~websocket_send_task()
 {
-  auto player = musicbox::player();
+  auto player = musciteer::player();
   player.unsubscribe(ch_);
 }
 
 void websocket_send_task::init()
 {
-  auto player = musicbox::player();
+  auto player = musciteer::player();
   player.subscribe(ch_);
 }
 
@@ -154,7 +154,7 @@ void websocket_send_task::handle(const queue_update_notification& m, std::ostrea
     { "event", "queue_update"},
     { "data",  {
       { "queue_size", m.queue_size },
-      { "track", musicbox::to_json(*m.track) } }
+      { "track", musciteer::to_json(*m.track) } }
     }
   };
 
@@ -195,7 +195,7 @@ void websocket_send_task::handle(const stream_data_response& m, std::ostream& os
   {
     data = {
       { "stream_id", m.stream_id },
-      { "track", musicbox::to_json(*m.track) }
+      { "track", musciteer::to_json(*m.track) }
     };
   }
 
@@ -310,7 +310,7 @@ void websocket_recv_task::on_message(const std::string& message)
 
   if ( j.count("event") )
   {
-    auto player = musicbox::player();
+    auto player = musciteer::player();
     auto event = j["event"];
 
     if ( event == "stream_data_sync" )

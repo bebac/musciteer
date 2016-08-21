@@ -246,8 +246,8 @@ TEST_CASE("msgpack streaming")
 
   SUBCASE("it streams time_pint")
   {
-    auto now = musicbox::clock::now();
-    auto x = musicbox::clock::time_point();
+    auto now = musciteer::clock::now();
+    auto x = musciteer::clock::time_point();
 
     os << now;
     is >> x;
@@ -371,7 +371,7 @@ TEST_CASE("msgpack streaming")
   {
     unsigned marker = 0xa5a5;
 
-    auto now = musicbox::clock::now();
+    auto now = musciteer::clock::now();
     os << now << marker;
 
     unsigned x = 0;

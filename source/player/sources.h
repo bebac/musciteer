@@ -15,7 +15,7 @@
 #include "source_spotify.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class sources
   {

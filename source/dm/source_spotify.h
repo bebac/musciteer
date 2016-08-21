@@ -4,8 +4,8 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#ifndef __musicbox__dm__source_spotify_h__
-#define __musicbox__dm__source_spotify_h__
+#ifndef __musciteer__dm__source_spotify_h__
+#define __musciteer__dm__source_spotify_h__
 
 // ----------------------------------------------------------------------------
 #include "../storage/kvstore.h"
@@ -17,7 +17,7 @@
 #include <msgpack/array.h>
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   namespace dm
   {
@@ -75,7 +75,7 @@ namespace musicbox
     class source_spotify
     {
     public:
-      source_spotify() : kvstore_(musicbox::kvstore())
+      source_spotify() : kvstore_(musciteer::kvstore())
       {
         kvstore_.get(source_spotify_settings_key, data_);
       }

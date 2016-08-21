@@ -76,12 +76,12 @@ public:
 protected:
   void get_tracks(const std::string& path)
   {
-    auto tracks = musicbox::dm::tracks();
+    auto tracks = musciteer::dm::tracks();
 
     json j;
 
-    tracks.each([&](musicbox::dm::track& track) {
-      j.push_back(musicbox::to_json(track));
+    tracks.each([&](musciteer::dm::track& track) {
+      j.push_back(musciteer::to_json(track));
       task_->yield(true);
       return true;
     });
@@ -96,12 +96,12 @@ protected:
 private:
   void get_track(const std::string& id)
   {
-    auto tracks = musicbox::dm::tracks();
+    auto tracks = musciteer::dm::tracks();
     auto track = tracks.find_by_id(id);
 
     if ( !track.id_is_null() )
     {
-      json j = musicbox::to_json(track);
+      json j = musciteer::to_json(track);
 
       auto payload = j.dump();
 
@@ -118,8 +118,8 @@ private:
 private:
   void delete_track(const std::string& id)
   {
-    auto tracks = musicbox::dm::tracks();
-    auto albums = musicbox::dm::albums();
+    auto tracks = musciteer::dm::tracks();
+    auto albums = musciteer::dm::albums();
 
     auto track = tracks.find_by_id(id);
 

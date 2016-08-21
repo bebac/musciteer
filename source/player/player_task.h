@@ -27,7 +27,7 @@
 class audio_output_alsa;
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   class player_session;
 
@@ -72,11 +72,11 @@ namespace musicbox
     void handle(stream_end_notify& m);
     void handle(source_notification& m);
   private:
-    void become_playing(const musicbox::dm::track& track);
+    void become_playing(const musciteer::dm::track& track);
     void become_stopped();
     void end_session();
     void player_state_notify(unsigned state);
-    void queue_update_notify(const musicbox::dm::track& track);
+    void queue_update_notify(const musciteer::dm::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
     void audio_output_open();
@@ -90,7 +90,7 @@ namespace musicbox
   private:
     std::set<message_channel> observers_;
   private:
-    std::deque<musicbox::dm::track> play_q_;
+    std::deque<musciteer::dm::track> play_q_;
     bool continuous_playback_;
     std::unique_ptr<player_ctpb_provider> ctpb_provider_;
   private:

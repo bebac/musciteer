@@ -13,7 +13,7 @@
 #include "../dm/player.h"
 
 // ----------------------------------------------------------------------------
-namespace musicbox
+namespace musciteer
 {
   player_task::player_task(message_channel message_ch)
     :
@@ -52,7 +52,7 @@ namespace musicbox
 
   void player_task::load_settings()
   {
-    musicbox::dm::player settings;
+    musciteer::dm::player settings;
 
     audio_output_device_ = settings.audio_device();
     continuous_playback_ = settings.ctpb_enabled();
@@ -205,7 +205,7 @@ namespace musicbox
         }
         else
         {
-          auto tracks = musicbox::dm::tracks();
+          auto tracks = musciteer::dm::tracks();
 
           assert(!session_);
           become_playing(tracks.find_by_id(m.id));
@@ -263,7 +263,7 @@ namespace musicbox
 
   void player_task::handle(queue_request& m)
   {
-    auto tracks = musicbox::dm::tracks();
+    auto tracks = musciteer::dm::tracks();
 
     auto track = tracks.find_by_id(m.id);
 
@@ -326,7 +326,7 @@ namespace musicbox
   {
     if ( session_ )
     {
-      auto tracks = musicbox::dm::tracks();
+      auto tracks = musciteer::dm::tracks();
       auto track = session_->track();
 
       assert(track);
@@ -375,7 +375,7 @@ namespace musicbox
     }
   }
 
-  void player_task::become_playing(const musicbox::dm::track& track)
+  void player_task::become_playing(const musciteer::dm::track& track)
   {
     if ( state_ == stopped ) {
       audio_output_open();
@@ -457,14 +457,14 @@ namespace musicbox
     }
   }
 
-  void player_task::queue_update_notify(const musicbox::dm::track& track)
+  void player_task::queue_update_notify(const musciteer::dm::track& track)
   {
     for ( auto observer : observers_ )
     {
       message n(message::queue_update_id);
 
       n.queue_update.queue_size = play_q_.size();
-      n.queue_update.track = std::make_shared<musicbox::dm::track>(track);
+      n.queue_update.track = std::make_shared<musciteer::dm::track>(track);
 
       observer.send(std::move(n));
     }

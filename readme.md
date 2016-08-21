@@ -1,7 +1,7 @@
 Musciteer
 =========
 
-Musciteer is music server for Linux. It combines your local music files with 
+Musciteer is a music server for Linux. It combines your local music files with
 selected music from streaming services and presents it as one library through 
 a modern web interface
 
@@ -19,7 +19,7 @@ A somewhat prioritized list of features.
 - [x] Spotify playback
 - [ ] Spotify - Search and add music from spotify to local library. For now
       use spotify_import tool. (new libspotify coming soon I hope. Until then
-      at least some simple input field from web interface)
+      at least some simple input field from the web interface)
 - [x] Continuous playback. If nothing is explictly queued, play songs at random
       from the entire collection. Can be turned on/off from settings.
 - [x] Mobile web application. goto /android in mobile browser and select add to

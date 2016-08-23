@@ -56,6 +56,27 @@ build build/libmsgpack.a: ar $
   build/msgpack.d/istream.o $
   build/msgpack.d/ostream.o
 
+###
+# libprogram-options
+
+build build/program-options.d/argv_streambuf.o: cc lib/program-options/source/argv_streambuf.cpp
+  includes = -Ilib/program-options/include
+
+build build/program-options.d/container.o: cc lib/program-options/source/container.cpp
+  includes = -Ilib/program-options/include
+
+build build/program-options.d/exceptions.o: cc lib/program-options/source/exceptions.cpp
+  includes = -Ilib/program-options/include
+
+build build/program-options.d/option.o: cc lib/program-options/source/option.cpp
+  includes = -Ilib/program-options/include
+
+build build/libprogram-options.a: ar $
+  build/program-options.d/argv_streambuf.o $
+  build/program-options.d/container.o $
+  build/program-options.d/exceptions.o $
+  build/program-options.d/option.o
+
 
 ###
 # libhttp
@@ -145,7 +166,7 @@ build build/player/source_spotify_app_key.o: cc source/player/source_spotify_app
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/libspotify-12.1.51-Linux-x86_64-release/include
 
 build build/main.o: cc source/main.cpp
-  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include -Ilib/program-options/include
 
 build build/player/sources.o: cc source/player/sources.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
@@ -160,8 +181,8 @@ build build/musciteer: ld $
   build/player/source_spotify_task.o $
   build/player/source_spotify_app_key.o $
   build/player/sources.o $
-  build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a
-  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
+  build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a build/libprogram-options.a
+  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
 
 
 ###

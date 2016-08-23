@@ -26,7 +26,7 @@ namespace dripcore
   {
     using connection_func = std::function<void(socket socket)>;
   public:
-    tcp_server(const char* ip, unsigned port, connection_func connection_cb)
+    tcp_server(const std::string& ip, unsigned port, connection_func connection_cb)
       :
       socket_(ipv4::tcp::socket()),
       connection_cb_(connection_cb)
@@ -38,7 +38,7 @@ namespace dripcore
       sock_addr.sin_family = AF_INET;
       sock_addr.sin_port = htons(port);
 
-      auto res = inet_pton(AF_INET, ip, &sock_addr.sin_addr);
+      auto res = inet_pton(AF_INET, ip.c_str(), &sock_addr.sin_addr);
 
       if ( res == 0 ) {
         throw std::runtime_error("invalid ip address");

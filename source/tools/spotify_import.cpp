@@ -172,6 +172,7 @@ namespace http
       {
         dripcore::ssl_socket ssl_socket(std::move(socket));
 
+        task_->attach_eventable(ssl_socket);
         // Create streambuf before connecting as streambuf does attach_eventable.
         dripcore::streambuf sbuf(ssl_socket, *task_);
 
@@ -191,9 +192,13 @@ namespace http
         response >> response;
 
         cb(response);
+
+        task_->detach_eventable(ssl_socket);
       }
       else
       {
+        task_->attach_eventable(socket);
+
         dripcore::streambuf sbuf(socket, *task_);
 
         http::request request(&sbuf);
@@ -209,6 +214,8 @@ namespace http
         response >> response;
 
         cb(response);
+
+        task_->detach_eventable(socket);
       }
     }
   private:
@@ -642,7 +649,7 @@ int main(int argc, char *argv[])
 
   init_openssl_library();
 
-  musciteer::kvstore::start(".mboxd");
+  musciteer::kvstore::start(".musciteerdb");
 
   // Import spotify track or album.
   //

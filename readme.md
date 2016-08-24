@@ -7,12 +7,13 @@ a modern web interface
 
 > NOTE: Currently it only supports flac and spotify
 
+For prebuilt binaries head over to [musciteer-distro](https://github.com/bebac/musciteer-distro)
 
 
 Features
 ========
 
-A somewhat prioritized list of features.
+A somewhat prioritized list of features / tasks.
 
 - [x] Configurable through the desktop web interface.
 - [x] FLAC local files
@@ -26,7 +27,7 @@ A somewhat prioritized list of features.
       home screen.
 - [ ] Ubuntu snap package. Not possible currently as snaps cannot access alsa
       :exclamation:
-- [ ] Debian package for Ubuntu
+- [x] Debian package for Ubuntu 16.04
 - [ ] Browse and queue music from mobile web app.
 - [ ] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify.
 - [ ] Tagging
@@ -34,6 +35,7 @@ A somewhat prioritized list of features.
 - [ ] Remove content on rescan when local flac files are removed
 - [ ] Play albums
 - [ ] Playlists
+- [ ] Support additional targets, like arm
 - [ ] Ubuntu Touch app
 - [ ] FLAC file tagging from web interface / Integrate with online music meta
       data service.

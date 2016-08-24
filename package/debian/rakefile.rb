@@ -18,7 +18,7 @@ LAUNCH = <<eos
 INSTDIR=/usr/share/musciteer
 export LD_LIBRARY_PATH+=$INSTDIR/lib/
 export SNAP=$INSTDIR
-$INSTDIR/bin/musciteer
+exec $INSTDIR/bin/musciteer
 eos
 
 PKG_DIRS = %w(stage/DEBIAN
@@ -52,6 +52,7 @@ task :dpkg do
 
   # Copy binaries.
   sh "cp ../../build/musciteer stage/usr/share/musciteer/bin/"
+  sh "cp ../../build/spotify_import stage/usr/share/musciteer/bin/"
   sh "cp #{Dir['../../lib/libspotify*'].first}/lib/libspotify.so* stage/usr/share/musciteer/lib/"
 
   # Copy public.

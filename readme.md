@@ -7,7 +7,6 @@ a modern web interface
 
 > NOTE: Currently it only supports flac and spotify
 
-For prebuilt binaries head over to [musciteer-distro](https://github.com/bebac/musciteer-distro)
 
 
 Features

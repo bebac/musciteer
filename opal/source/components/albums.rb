@@ -17,10 +17,10 @@ class Albums
         store.albums.each do |album|
           div class: 'album-thumb', onclick: -> { show_album(album.id) } do
             div do
-              text album.title
+              img src: album.cover
             end
             div do
-              img src: album.cover
+              text album.title
             end
             div do
               text album.artist

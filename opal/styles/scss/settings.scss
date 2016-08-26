@@ -1,4 +1,4 @@
-$background-color: #F1EFEC;
+@import "colors";
 
 #settings-overlay
 {
@@ -129,7 +129,7 @@ $background-color: #F1EFEC;
         padding: 0.6em 30px;
         outline: none;
         font-weight: bold;
-        color: #666;
+        color: $text-color;
         position: relative;
 
         @keyframes spin {
@@ -171,5 +171,5 @@ $background-color: #F1EFEC;
     }
   }
 
-  color: #666;
+  color: $text-color;
 }

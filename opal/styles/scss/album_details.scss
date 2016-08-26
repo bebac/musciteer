@@ -1,3 +1,5 @@
+@import "colors";
+
 #album-details-container {
   color: #000;
   position: fixed;
@@ -15,7 +17,7 @@
   min-height: 250px;
   padding: 2em;
   margin: 0px auto;
-  color: #666;
+  color: $text-color;
   background-color: #fff;
 
   h1, h2, hr {
@@ -27,7 +29,7 @@
   }
 
   h2 {
-    color: #888;
+    color: lighten($text-color, 10%);
     font-size: 1.5em;
   }
 
@@ -49,8 +51,7 @@
     li
     {
       padding: 0.66em;
-      //font-size: 1.15em;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid darken($background-color, 0%);
 
       > div {
         display: inline-block;
@@ -84,7 +85,7 @@
           padding: 0.166em 0.666em 0.166em 0.666em;
           border: 0px solid #fff;
           border-radius: 10px;
-          color: #666;
+          //color: #666;
           background-color: #fff;
       }
 
@@ -117,7 +118,7 @@
     }
 
     li:hover {
-      background-color: #eee;
+      background-color: lighten($background-color, 2%);
     }
   }
 }

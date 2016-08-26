@@ -1,4 +1,4 @@
-$background-color: #F1EFEC;
+@import "colors";
 
 .top
 {
@@ -53,7 +53,7 @@ $background-color: #F1EFEC;
       padding: 5px 15px;
       outline: none;
       font-weight: bold;
-      color: #666;
+      color: $text-color;
     }
 
     button:hover {

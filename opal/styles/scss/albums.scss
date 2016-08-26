@@ -1,3 +1,5 @@
+@import "colors";
+
 $thumb_width: 200px;
 $thumb_height: 200px;
 
@@ -15,20 +17,22 @@ $thumb_height: 200px;
 
 .album-thumb
 {
-  color: #333;
+  color: $text-color;
   width: $thumb_width;
   margin: 1.33em;
-  background-color: #eee;
+  background-color: lighten($background-color, 2%);
   display: inline-block;
+  border: 1px solid darken($background-color, 0%);
+  text-align: left;
 
-  div:nth-child(2) {
+  div:nth-child(1) {
     min-height: $thumb_height;
     max-height: $thumb_height;
     display: table;
     vertical-align: top;
   }
 
-  div:nth-child(1), div:nth-child(3) {
+  div:nth-child(2), div:nth-child(3) {
     margin: 0.33em 0.33em 0.33em 0.33em;
     font-size: 1em;
     text-overflow: ellipsis;
@@ -36,9 +40,19 @@ $thumb_height: 200px;
     overflow: hidden;
   }
 
+  div:nth-child(2) {
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  div:nth-child(3) {
+    font-size: 0.88em;
+  }
+
   img {
     max-width: $thumb_width;
     min-width: $thumb_width;
     max-height: $thumb_height;
+    background-color: lighten($background-color, 2%);
   }
 }

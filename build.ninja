@@ -229,3 +229,12 @@ build build/tools.d/spotify_import.o: cc source/tools/spotify_import.cpp
 
 build build/spotify_import: ld build/tools.d/spotify_import.o | build/libmusciteer_dm.a build/libmsgpack.a build/libhttp.a
   libs = -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lkyotocabinet -lanl -lssl -lcrypto
+
+###
+# flac_rg_tagger
+
+build build/tools.d/flac_rg_tagger.o: cc source/tools/flac_rg_tagger.cpp
+  includes = -Ilib/msgpack/include
+
+build build/flac_rg_tagger: ld build/tools.d/flac_rg_tagger.o | build/libmusciteer_dm.a build/libmsgpack.a
+  libs = -lmusciteer_dm -lFLAC++ -lmsgpack -lkyotocabinet

@@ -1,4 +1,4 @@
-cxxflags = -Os -flto -std=c++11 -Wall -DNDEBUG
+cxxflags = -O2 -flto -std=c++11 -Wall -DNDEBUG
 #cxxflags = -g -std=c++11 -Wall
 
 rule cc

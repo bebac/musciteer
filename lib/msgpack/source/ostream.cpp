@@ -99,6 +99,19 @@ namespace msgpack
     }
   }
 
+  void ostream::write_float(float value)
+  {
+    union
+    {
+      float f;
+      uint32_t i;
+    } m;
+
+    m.f = value;
+
+    put(0xca, m.i);
+  }
+
   void ostream::write_string(const char* value, size_t len)
   {
     if ( len < 0x20 )

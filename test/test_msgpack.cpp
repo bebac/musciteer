@@ -244,7 +244,23 @@ TEST_CASE("msgpack streaming")
     CHECK(is.eof());
   }
 
-  SUBCASE("it streams time_pint")
+  SUBCASE("it streams float")
+  {
+    float x;
+
+    os << 1.0f << std::numeric_limits<float>::max() << std::numeric_limits<float>::min();
+
+    is >> x;
+    CHECK(x == 1.0f);
+
+    is >> x;
+    CHECK(x == std::numeric_limits<float>::max());
+
+    is >> x;
+    CHECK(x == std::numeric_limits<float>::min());
+  }
+
+  SUBCASE("it streams time_point")
   {
     auto now = musciteer::clock::now();
     auto x = musciteer::clock::time_point();

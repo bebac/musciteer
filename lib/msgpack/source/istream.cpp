@@ -298,6 +298,28 @@ namespace msgpack
     return value;
   }
 
+  float istream::read_float()
+  {
+    union
+    {
+      float f;
+      uint32_t i;
+    } m{0.0f};
+
+    auto c = get();
+
+    if ( c == 0xca )
+    {
+      m.i = read<uint32_t>();
+    }
+    else
+    {
+      setstate(std::ios_base::failbit);
+    }
+
+    return m.f;
+  }
+
   void istream::read_string(std::string& value)
   {
     auto c = get();

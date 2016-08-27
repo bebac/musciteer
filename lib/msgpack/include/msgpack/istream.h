@@ -43,6 +43,7 @@ namespace msgpack
     istream& operator>>(long long&);
     istream& operator>>(unsigned long long&);
     istream& operator>>(bool&);
+    istream& operator>>(float&);
   public:
     istream& operator>>(std::string&);
   public:
@@ -55,6 +56,7 @@ namespace msgpack
     long long read_i64();
     unsigned long long read_u64();
     bool read_bool();
+    float read_float();
   public:
     void read_string(std::string&);
     void read_string(std::string&, std::size_t);
@@ -97,6 +99,12 @@ namespace msgpack
   inline istream& istream::operator>>(bool& value)
   {
     value = read_bool();
+    return *this;
+  }
+
+  inline istream& istream::operator>>(float& value)
+  {
+    value = read_float();
     return *this;
   }
 

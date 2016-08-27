@@ -52,6 +52,7 @@ namespace msgpack
     void write_i64(long long);
     void write_u64(unsigned long long);
     void write_bool(bool);
+    void write_float(float);
   public:
     void write_string(const char*, size_t);
   public:
@@ -116,6 +117,12 @@ namespace msgpack
   inline ostream& ostream::operator<<(bool value)
   {
     write_bool(value);
+    return *this;
+  }
+
+  inline ostream& ostream::operator<<(float value)
+  {
+    write_float(value);
     return *this;
   }
 

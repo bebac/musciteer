@@ -86,6 +86,14 @@ namespace musciteer
       return sources_;
     }
 
+    void track::sources_each(std::function<void(const dm::track_source& source)> cb) const
+    {
+      for ( auto& source : sources_ )
+      {
+        cb(source);
+      }
+    }
+
     unsigned track::play_count() const
     {
       return play_count_;

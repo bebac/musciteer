@@ -47,6 +47,7 @@ namespace musciteer
       std::vector<dm::artist> artists() const;
       const track_source& sources_get(const std::string& name);
       source_list sources() const;
+      void sources_each(std::function<void(const dm::track_source& source)>) const;
       unsigned play_count() const;
       unsigned skip_count() const;
     public:

@@ -36,6 +36,36 @@ namespace musciteer
       { "title", album.title() },
     };
 
+    json sources;
+
+    track.sources_each([&](const dm::track_source& source)
+    {
+      json j = {
+        { "name",  source.name() },
+        { "uri", source.uri() }
+      };
+
+      json replay_gain;
+
+      if ( auto& rg = source.rg_ref_loudness() ) {
+        replay_gain["ref_loudness"] = static_cast<double>(rg.value()*100)/100;
+      }
+
+      if ( auto& rg = source.rg_track_gain() ) {
+        replay_gain["track_gain"] = static_cast<double>(rg.value()*100)/100;
+      }
+
+      if ( auto& rg = source.rg_track_peak() ) {
+        replay_gain["track_peak"] = rg.value();
+      }
+
+      if ( !replay_gain.is_null() ) {
+        j["replay_gain"] = replay_gain;
+      }
+
+      sources.push_back(j);
+    });
+
     json t = {
       { "id", track.id() },
       { "title", track.title() },
@@ -45,7 +75,8 @@ namespace musciteer
       { "artists", artists },
       { "album", jalbum },
       { "play_count", track.play_count() },
-      { "skip_count", track.skip_count() }
+      { "skip_count", track.skip_count() },
+      { "sources", sources }
     };
 
     return t;

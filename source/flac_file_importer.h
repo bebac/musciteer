@@ -52,6 +52,11 @@ namespace musciteer
       std::string tag_album;
       std::string tag_album_artist;
       std::string tag_disc_id;
+      std::string tag_rg_ref_loudness;
+      std::string tag_rg_track_gain;
+      std::string tag_rg_track_peak;
+      std::string tag_rg_album_gain;
+      std::string tag_rg_album_peak;
       std::string alt_id;
 
       each_comment([&](std::string name, std::string value)
@@ -74,9 +79,23 @@ namespace musciteer
         else if ( name == "DISC_NUMBER" || name == "DISC NUMBER" || name == "DISCNUMBER" ) {
           tag_dn = std::stoi(value);
         }
-        else if ( name == "DISCID" )
-        {
+        else if ( name == "DISCID" ) {
           tag_disc_id = value;
+        }
+        else if ( name == "REPLAYGAIN_REFERENCE_LOUDNESS" ) {
+          tag_rg_ref_loudness = value;
+        }
+        else if ( name == "REPLAYGAIN_TRACK_GAIN" ) {
+          tag_rg_track_gain = value;
+        }
+        else if ( name == "REPLAYGAIN_TRACK_PEAK" ) {
+          tag_rg_track_peak = value;
+        }
+        else if ( name == "REPLAYGAIN_ALBUM_GAIN" ) {
+          tag_rg_album_gain = value;
+        }
+        else if ( name == "REPLAYGAIN_ALBUM_GAIN" ) {
+          tag_rg_album_peak = value;
         }
         else
         {
@@ -190,13 +209,27 @@ namespace musciteer
 
       // Update track and album.
 
+      musciteer::dm::track_source source("local", filename_);
+
+      if ( !tag_rg_ref_loudness.empty() ) {
+        source.rg_ref_loudness(tag_rg_ref_loudness);
+      }
+
+      if ( !tag_rg_track_gain.empty() ) {
+        source.rg_track_gain(tag_rg_track_gain);
+      }
+
+      if ( !tag_rg_track_peak.empty() ) {
+        source.rg_track_peak(tag_rg_track_peak);
+      }
+
       track_.title(tag_title);
       track_.track_number(tag_tn);
       track_.disc_number(tag_dn);
       track_.duration(stream_info_.get_total_samples() / stream_info_.get_sample_rate() * 1000);
       track_.album(album_);
       track_.artists_add(artist_);
-      track_.sources_add(musciteer::dm::track_source("local", filename_));
+      track_.sources_add(source);
 
       album_.tracks_add(track_);
 

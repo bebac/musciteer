@@ -1,4 +1,4 @@
-$background-color: #000000;
+$background-color: rgba(33,33,33,0);
 
 #player-ctrl-container {
   position: fixed;
@@ -6,7 +6,7 @@ $background-color: #000000;
   bottom: 0;
   overflow: auto;
   width: 100%;
-  background:rgba(0,0,0,0);
+  background: $background-color;
   z-index: 1000;
 }
 
@@ -30,7 +30,7 @@ $background-color: #000000;
       width: 20%;
 
       button {
-        background:rgba(0,0,0,0);
+        background:$background-color;
         border: none;
         padding: 0.66em;
         outline: none;
@@ -40,12 +40,12 @@ $background-color: #000000;
       }
 
       button:hover {
-        background:rgba(0,0,0,0);
+        background: $background-color;
       }
 
       button:active {
         border: none;
-        background:rgba(0,0,0,0);
+        background: $background-color;
       }
     }
 

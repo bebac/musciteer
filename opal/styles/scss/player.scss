@@ -50,23 +50,24 @@
     }
 
     .player-track-title {
-      color: #ccc;
+      color: #bbb;
       font-size: 2em;
       font-weight: bold;
     }
 
     .player-track-artists {
-      color: #ccc;
+      color: #bbb;
+      font-weight: bold;
       font-size: 1.33em;
     }
 
     .player-track-album {
-      font-size: 1.33em;
-      color: #888;
+      font-size: 1em;
+      color: #aaa;
     }
 
     .player-stream-time {
-      font-size: 1.66em;
+      font-size: 1.33em;
     }
   }
 
@@ -81,8 +82,6 @@
       right: 0;
       height: 100%;
       width: auto;
-      image-rendering: pixelated;
-      //image-rendering: crisp-edges;
     }
     z-index: 1;
   }

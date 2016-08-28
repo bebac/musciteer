@@ -31,7 +31,7 @@ namespace musciteer
 
       std::reverse(result.begin(), result.end());
 
-      return std::move(result);
+      return result;
   }
 
   unsigned long long base62_decode(const std::string& value)

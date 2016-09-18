@@ -1,6 +1,8 @@
 Musciteer
 =========
 
+[![Join the chat at https://gitter.im/musciteer/Lobby](https://badges.gitter.im/musciteer/Lobby.svg)](https://gitter.im/musciteer/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Musciteer is a music server for Linux. It combines your local music files with
 selected music from streaming services and presents it as one library through 
 a modern web interface

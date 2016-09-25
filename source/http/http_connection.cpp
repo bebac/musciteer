@@ -80,7 +80,7 @@ void websocket_send_task::handle_message(const message& msg, std::ostream& os)
       handle(msg.stream_begin_notify, os);
       break;
     case message::stream_end_notify_id:
-      handle(msg.stream_begin_notify, os);
+      handle(msg.stream_end_notify, os);
       break;
     case message::stream_progress_notify_id:
       handle(msg.stream_progress_notify, os);

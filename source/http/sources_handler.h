@@ -156,9 +156,13 @@ protected:
 
     source_local.directories(j.get<std::vector<std::string>>());
 
+    json res = source_local.directories();
+    auto payload = res.dump();
+
     response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
+      << "Content-Length: " << payload.length() << crlf
+      << crlf
+      << payload;
   }
 protected:
   void post_sources_local_scan()

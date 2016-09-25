@@ -228,7 +228,7 @@ private:
     auto player = musciteer::player();
     player.settings_changed();
 
-    json r = get_output_json();
+    json r = get_ctpb_json();
 
     auto payload = r.dump();
 

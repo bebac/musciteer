@@ -43,7 +43,6 @@ class MessageChannel
         store.dispatch({ type: :stream_begin, data: data })
       end
     when "stream_end"
-      puts "stream_end #{data}"
       store.dispatch({ type: :stream_end, data: data })
     when "stream_progress"
       if data = message['data']

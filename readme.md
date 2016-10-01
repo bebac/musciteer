@@ -1,13 +1,16 @@
+
 Musciteer
 =========
 
 [![Join the chat at https://gitter.im/musciteer/Lobby](https://badges.gitter.im/musciteer/Lobby.svg)](https://gitter.im/musciteer/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Musciteer is a music server for Linux. It combines your local music files with
-selected music from streaming services and presents it as one library through 
+selected music from streaming services and presents it as one library through
+
 a modern web interface
 
 > NOTE: Currently it only supports flac and spotify
+
 
 
 
@@ -65,7 +68,7 @@ API
 | GET, POST    | /api/sources/local/directories
 | POST         | /api/sources/local/scan
 | GET, POST    | /api/sources/spotify/settings
-| GET          | /api/player 
+| GET          | /api/player
 | GET, POST    | /api/player/ctpb
 | GET, POST    | /api/player/output
 
@@ -87,49 +90,51 @@ Server -> Client
 ```json
 { "event": "stream_begin", "data" : "<stream-id>" }
 { "event": "stream_end", "data" : "<stream-id>" }
-{ 
-    "event": "stream_progress", "data" : { 
+{
+    "event": "stream_progress", "data" : {
         "stream_id" : "<stream-id>",
         "duration"  : Number,
         "length"    : Number
-    } 
+    }
 }
-{ 
+{
     "event": "queue_update", "data" : {
         "queue_size" : Number,
         "track"      : Object
-    } 
+    }
 }
-{ 
+{
     "event": "player_state", "data" : {
         "state" : Number
-    } 
+    }
 }
-{ 
+{
     "event": "source_notification", "data" : {
         "type" : Number,
         "source_name" : String,
         "message" : String
-    } 
+    }
 }
-{ 
+{
     "event": "stream_data", "data" : {
         "stream_id" : String,
         "track" : Object
-    } 
+    }
 }
 ```
+
 
 
 
 Building
 ========
 
+
 Building The Server
 -------------------
 
 To build you will need a spotify application key which is not included in the
-repository. Register a new application on the spotify developer site and place 
+repository. Register a new application on the spotify developer site and place
 it in `source/player/source_spotify_app_key.cpp`
 
 Install needed dependencies
@@ -154,11 +159,11 @@ ninja
 Building The Web interface
 --------------------------
 
-The web interface is a statically build ruby/opal application using the Inesita 
-framework. To build you will need ruby. Personally I use rbenv and ruby 2.3, but
-I expect any recently new ruby version will do.
+The web interface is a statically build ruby/opal application using the maquette.js
+virtual dom library. To build you will need ruby. Personally I use rbenv and ruby
+2.3, but I expect any recently new ruby version will do.
 
-To isntall 
+To isntall
 
 ```sh
 cd opal; bundle install

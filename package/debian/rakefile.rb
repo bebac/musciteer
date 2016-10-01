@@ -12,7 +12,7 @@ Maintainer: Benny Bach <benny.bach@gmail.com>
 Description: Musciteer music player
 EOF
 
-# /usr/bin/spotihifid
+# /usr/bin/musciteer
 LAUNCH = <<eos
 #!/bin/bash
 INSTDIR=/usr/share/musciteer
@@ -36,7 +36,7 @@ task :dpkg do
   end
 
   name = "musciteer"
-  version = "0.1-1"
+  version = "0.1-2"
   architecture = %x[dpkg --print-architecture].strip
 
   # Create debian control file.

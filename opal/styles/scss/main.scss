@@ -1,25 +1,49 @@
 @import "reset";
 @import "mixins";
-@import "layout";
+@import "colors";
+@import "router";
 @import "top";
-@import "connection_lost";
 @import "settings";
 @import "notification";
 @import "albums";
 @import "album_details";
 @import "tracks";
 @import "player";
+@import "player_control";
+@import "connection_lost";
+
+html
+{
+  //height: 100%;
+}
 
 body
 {
   font-family: Impact, Charcoal, sans-serif;
   overflow: hidden;
+  color: #666;
+  height: 100%;
+  //background: #fff;
 }
 
-#play
+#bottom
 {
-  display: block;
-  height: 50px;
-  width: 200px;
-  background: #999;
+  position: relative;
+  top: 3em;
+  display: flex;
+}
+
+#menu
+{
+  background: $background-color;
+  flex: 1;
+  height: 100vh;
+  display: none;
+}
+
+#content
+{
+  flex: 4;
+  height: calc(100vh - 3em);
+  overflow: auto;
 }

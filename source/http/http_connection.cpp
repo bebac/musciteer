@@ -493,15 +493,10 @@ void http_connection::dispatch(http::request& request, http::response& response)
 
   //std::cout << "dispatch uri " << uri << std::endl;
 
-  if ( uri == "/" || uri == "/albums" || uri == "/tracks" )
+  if ( uri == "/" || uri == "/albums" || uri == "/tracks" || uri == "/player" )
   {
     static_file_handler handler(request, response);
     handler.call("index.html");
-  }
-  else if ( uri == "/android")
-  {
-    static_file_handler handler(request, response);
-    handler.call("android.html");
   }
   else if ( std::regex_match(uri, match, track_re) )
   {

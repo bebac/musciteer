@@ -1,58 +1,53 @@
-@import "colors";
-
-$thumb_width: 200px;
-$thumb_height: 200px;
-
-#albums-container
+#albums
 {
-}
+  ol
+  {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 
-#album-thumbs
-{
-  margin: 0 auto;
-  height: calc(100vh - 3em);
-  overflow-y: auto;
-  text-align: center;
-}
+    li
+    {
+      list-style: none;
+      display: inline-block;
+      margin: 1.33em;
+      width: 12em;
+      background-color: lighten($background-color, 2%);
 
-.album-thumb
-{
-  color: $text-color;
-  width: $thumb_width;
-  margin: 1.33em;
-  background-color: lighten($background-color, 2%);
-  display: inline-block;
-  border: 1px solid darken($background-color, 0%);
-  text-align: left;
+      .cover
+      {
+        position: relative;
+        height: 12em;
 
-  div:nth-child(1) {
-    min-height: $thumb_height;
-    max-height: $thumb_height;
-    display: table;
-    vertical-align: top;
-  }
+        >img
+        {
+          position: absolute;
+          top: 0;
+          min-width: 12em;
+          max-width: 12em;
+          max-height: 12em;
+        }
+      }
 
-  div:nth-child(2), div:nth-child(3) {
-    margin: 0.33em 0.33em 0.33em 0.33em;
-    font-size: 1em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
+      .title, .artist
+      {
+        margin: 0.33em 0.33em 0.33em 0.33em;
+        font-size: 1em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
 
-  div:nth-child(2) {
-    font-size: 1em;
-    font-weight: bold;
-  }
+      .title
+      {
+        font-size: 1em;
+        font-weight: bold;
+      }
 
-  div:nth-child(3) {
-    font-size: 0.88em;
-  }
-
-  img {
-    max-width: $thumb_width;
-    min-width: $thumb_width;
-    max-height: $thumb_height;
-    background-color: lighten($background-color, 2%);
+      .artist
+      {
+        font-size: 0.88em;
+      }
+    }
   }
 }

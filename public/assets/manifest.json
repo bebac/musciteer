@@ -29,9 +29,9 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/android",
+    "start_url": "/player",
     "display": "fullscreen",
     "orientation": "landscape",
-    "theme_color": "#29BDBB",
-    "background_color": "#29BDBB"
+    "theme_color": "#46443f",
+    "background_color": "#46443f"
 }

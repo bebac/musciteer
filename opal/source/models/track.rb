@@ -23,7 +23,7 @@ class Track
 
   def artists
     names = Array(@artists).collect { |artist| artist['name'] }
-    names.join(",")
+    names.join(", ")
   end
 
   def album

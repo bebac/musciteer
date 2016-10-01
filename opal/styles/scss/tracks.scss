@@ -1,55 +1,61 @@
-#track-list
+#tracks
 {
   width: 100%;
-  height: calc(100vh - 3em);
-  overflow-y: auto;
 
-  @include noselect;
-
-  >ul
+  div.header
   {
-    li:first-child {
-      color: #666;
-      font-weight: bold;
-    }
+    top: 0;
+    font-weight: bold;
+    width: 100%;
 
-    li:not(:first-child):hover {
-        background: #eee;
+    >ol {
+      width: 100%;
     }
+  }
 
-    >li
+  div.body
+  {
+    overflow: auto;
+
+    >ol {
+      //width: 90%;
+    }
+  }
+
+  ol
+  {
+    list-style: none;
+
+    li
     {
-      .col1,.col2,.col3,.col4,.col5,.col6 {
+      padding: 0.33em 1.33em;
+      border-bottom: 1px solid #eee;
+
+      div
+      {
         display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+      }
+
+      .col1, .col2, .col3, .col4, .col5
+      {
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
       }
 
       .col1 {
-        width: 10%;
+        width: 40%;
       }
 
-      .col2 {
-        width: 30%;
-      }
-
-      .col3 {
+      .col2,.col3 {
         width: 20%;
       }
 
-      .col4 {
-        width: 20%;
-      }
-
-      .col5 {
+      .col4,.col5 {
         width: 10%;
       }
-
-      .col6 {
-        width: 10%;
-      }
-
-      padding: 0.33em;
-      border-bottom: 1px solid #eee;
-      color: #333;
     }
   }
 }

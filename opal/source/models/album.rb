@@ -16,4 +16,8 @@ class Album
   def tracks
     @tracks ||= []
   end
+
+  def tracks=(value)
+    @tracks = value
+  end
 end

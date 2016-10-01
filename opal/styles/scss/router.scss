@@ -1,0 +1,30 @@
+#navbar
+{
+  ul
+  {
+    padding-top: 0.66em;
+
+    li
+    {
+      list-style: none;
+
+      a
+      {
+        display: block;
+        color: $text-color;
+        text-decoration: none;
+        padding: 0.66em;
+      }
+
+      a.active
+      {
+        background: darken($background-color, 4%);
+      }
+
+      &:hover
+      {
+        background: darken($background-color, 6%);
+      }
+    }
+  }
+}

@@ -1,32 +1,116 @@
-class Albums
-  include Inesita::Component
+class AlbumThumb < Maquette::Component
+  attr_reader :album
+  attr_reader :store
 
-  def init
-    puts "init Albums"
-    store.load_albums
+  def initialize(album, store)
+    @album = album
+    @store = store
   end
 
-  def show_album(album_id)
-    store.load_album_details(album_id)
-    $document.at('#album-details-container').show
+  def show_album_details(evt)
+    $document.at('#album-details-overlay').show
+    store.dispatch({ type: :album_details_load, data: album })
   end
 
   def render
-    div id: 'albums-container' do
-      div id: 'album-thumbs' do
-        store.albums.each do |album|
-          div class: 'album-thumb', onclick: -> { show_album(album.id) } do
-            div do
-              img src: album.cover
-            end
-            div do
-              text album.title
-            end
-            div do
-              text album.artist
-            end
+    h "li", key: self, onclick: handler(:show_album_details) do
+      [
+        (
+          h 'div.cover' do
+            h 'img', { src: album.cover }
           end
+        ),
+        (
+          h 'div.title', "#{album.title}"
+        ),
+        (
+          h 'div.artist', "#{album.artist}"
+        )
+      ]
+    end
+  end
+end
+
+class Albums < Maquette::Component
+  attr_reader :store
+
+  def initialize(store)
+    @store = store
+    @cache = Maquette::Cache.new
+  end
+
+  def loading?
+    store.state[:albums_loading]
+  end
+
+  def albums
+    albums = store.state[:albums]
+    if albums
+      albums.sort! do |x, y|
+        (x.artist <=> y.artist).nonzero? || (x.title <=> y.title)
+      end
+    end
+    albums
+  end
+
+  def render_loading
+    h 'p', "loading..."
+  end
+
+  def render_albums
+    h 'ol' do
+      albums.map do |album|
+        AlbumThumb.new(album, store).render
+      end
+    end
+  end
+
+  def render_not_loaded
+    h 'p', "Albums not loaded!"
+  end
+
+  def render
+    @cache.result_for(albums) do
+      h 'div#albums' do
+        if loading?
+          render_loading
+        elsif albums
+          render_albums
+        else
+          render_not_loaded
         end
+      end
+    end
+  end
+end
+
+module ActionDispatchHooks
+  def albums_load
+    Browser::HTTP.get("/api/albums") do |req|
+      req.on :success do |res|
+        dispatch({
+          type: :albums_load_success,
+          data: res.json.map { |t| Album.new(t) }
+        })
+      end
+
+      req.on :error do |err|
+        p err
+      end
+    end
+  end
+
+  def album_details_load(album)
+    Browser::HTTP.get("/api/albums/#{album.id}/tracks") do |req|
+      req.on :success do |res|
+        dispatch({
+          type: :album_details_load_success,
+          data: res.json.map { |t| Track.new(t) }
+        })
+      end
+
+      req.on :error do |err|
+        p err
       end
     end
   end

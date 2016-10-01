@@ -1,27 +1,6 @@
 GIT
-  remote: git://github.com/bebac/inesita.git
-  revision: c81a59c55845b7198de14f460baa0a9b31c86e8d
-  specs:
-    inesita (0.4.1)
-      listen (~> 3.0)
-      opal (>= 0.9, < 0.11)
-      opal-virtual-dom (~> 0.4.0)
-      rack-rewrite (~> 1.5)
-      sass (~> 3.4)
-      slim (~> 3.0)
-      thor (~> 0.19)
-
-GIT
-  remote: git://github.com/bebac/opal-eventable.git
-  revision: e0eb0214d45ee18c704f2ba637d6436ab93ad826
-  specs:
-    opal-eventable (0.0.1)
-      opal (~> 0.9)
-      rake
-
-GIT
   remote: git://github.com/opal/opal-browser.git
-  revision: 5d3be6e8ea7ae584c9fdddc8ce961b2e2107131a
+  revision: 815348e913ea79d65044db4dee3bbeea87be763d
   specs:
     opal-browser (0.2.0)
       opal
@@ -29,10 +8,10 @@ GIT
 
 GIT
   remote: git://github.com/opal/opal.git
-  revision: c59b1f3c00064e545c38f3b9cc61945c729933f0
-  tag: v0.9.4
+  revision: 4506348aa6d8ba63768f69f0e09578a315d3eadd
+  tag: v0.10.2
   specs:
-    opal (0.9.4)
+    opal (0.10.2)
       hike (~> 1.2)
       sourcemap (~> 0.1.0)
       sprockets (~> 3.1)
@@ -43,7 +22,6 @@ GEM
   specs:
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
-    execjs (2.6.0)
     ffi (1.9.10)
     formatador (0.2.5)
     guard (2.13.0)
@@ -59,7 +37,6 @@ GEM
       guard
       rake
     hike (1.2.3)
-    libv8 (3.16.14.13)
     listen (3.1.3)
       rb-fsevent (~> 0.9, >= 0.9.7)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -70,39 +47,26 @@ GEM
     notiffany (0.0.8)
       nenv (~> 0.1)
       shellany (~> 0.0)
-    opal-virtual-dom (0.4.2)
-      opal
     paggio (0.2.6)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
     rack (2.0.1)
-    rack-rewrite (1.5.1)
     rake (11.1.2)
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
-    ref (2.0.0)
     ruby_dep (1.3.1)
     sass (3.4.22)
     shellany (0.0.1)
-    slim (3.0.7)
-      temple (~> 0.7.6)
-      tilt (>= 1.3.3, < 2.1)
     slop (3.6.0)
     sourcemap (0.1.1)
-    sprockets (3.6.3)
+    sprockets (3.7.0)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    temple (0.7.7)
-    therubyracer (0.12.2)
-      libv8 (~> 3.16.14.0)
-      ref
     thor (0.19.1)
     tilt (2.0.5)
-    uglifier (3.0.0)
-      execjs (>= 0.3.0, < 3)
 
 PLATFORMS
   ruby
@@ -110,13 +74,9 @@ PLATFORMS
 DEPENDENCIES
   guard
   guard-rake
-  inesita!
   opal!
   opal-browser!
-  opal-eventable!
   sass
-  therubyracer
-  uglifier
 
 BUNDLED WITH
    1.12.5

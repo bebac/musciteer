@@ -1,68 +1,49 @@
-@import "colors";
-
-.top
+#top
 {
-  position: relative;
-  height: 3em;
+  position: fixed;
+  top: 0;
   background: $background-color;
   border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 3em;
+  z-index: 3;
 
-  @include noselect;
-
-  >div
+  >button
   {
-    display: table;
-    width: 100%;
-    height: 100%;
-
     img {
-      vertical-align: middle;
+      height: 1.66em;
+      padding: 0 0.66em;
     }
-  }
 
-  #menu-toggle, #player-toggle, #settings-toggle
-  {
-    display: table-cell;
-    vertical-align: middle;
-
-    img {
-      height: 1.33em;
-    }
-  }
-
-  #menu-toggle
-  {
-    text-align: left;
-    padding-left: 1em;
-  }
-
-  #settings-toggle
-  {
-    text-align: right;
-    padding-right: 1em;
-  }
-
-  #player-toggle
-  {
-    text-align: center;
-
-    button {
-      background: darken($background-color, 0%);
+    &.text
+    {
+      background: $background-color;
       border: 1px solid darken($background-color, 8%);
       border-radius: 20px;
-      padding: 5px 15px;
+      margin: 0.3em;
+      padding: 0.6em 30px;
       outline: none;
       font-weight: bold;
       color: $text-color;
     }
 
-    button:hover {
+    &:hover.text {
       background: darken($background-color, 4%);
     }
 
-    button:active {
+    &:active.text {
       border: none;
       background: darken($background-color, 8%);
+    }
+
+    &.icon
+    {
+      background: $background-color;
+      outline: none;
+      border: none;
     }
   }
 }

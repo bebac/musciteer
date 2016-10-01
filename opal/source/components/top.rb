@@ -1,44 +1,45 @@
-class Top
-  include Inesita::Component
+class Top < Maquette::Component
+  attr_reader :store
 
-  def initialize
-    @is_leaf = true
+  def initialize(store)
+    @store = store
   end
 
-  def init
-    store.on(:player_state_changed) { render!(self) }
+  def toggle_menu(evt)
+    $document.at('#menu').toggle
   end
 
-  def toggle_menu
-    puts "toggle menu"
+  def toggle_settings
+    $document.at('#settings-overlay').toggle
   end
 
-  def toggle_settings(evt)
-    store.settings_toggle
+  def toggle_player
+    if playing?
+      store.dispatch({ type: :player_stop })
+    else
+      store.dispatch({ type: :player_start })
+    end
+  end
+
+  def playing?
+    store.state[:player_state] == :playing
   end
 
   def render
-    div class: 'top' do
-      div do
-        div id: 'menu-toggle', onclick: method(:toggle_menu) do
-          img src: 'assets/menu.svg'
+    [
+      (
+        h 'button.icon', { onclick: handler(:toggle_menu) } do
+          h 'img', { src: 'assets/menu.svg' }
         end
-        div id: 'player-toggle' do
-          case store.player_state
-          when :stopped
-            button onclick: -> { store.player_play } do
-              text 'play'
-            end
-          when :playing
-            button onclick: -> { store.player_stop } do
-              text 'stop'
-            end
-          end
+      ),
+      (
+        h 'button.text', { onclick: handler(:toggle_player) }, playing? ? "stop" : "play"
+      ),
+      (
+        h 'button.icon', { onclick: handler(:toggle_settings) } do
+          h 'img', { src: 'assets/settings.svg' }
         end
-        div id: 'settings-toggle', onclick: method(:toggle_settings) do
-          img src: 'assets/settings.svg'
-        end
-      end
-    end
+      ),
+    ]
   end
 end

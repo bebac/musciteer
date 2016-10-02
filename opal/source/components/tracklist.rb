@@ -86,23 +86,6 @@ class TrackList < Maquette::Component
       end
     end
   end
-
-  # def load
-  #   Browser::HTTP.get("/api/tracks") do |req|
-  #     req.on :success do |res|
-  #       store.dispatch(
-  #         {
-  #           type: :tracks_load_success,
-  #           data: res.json.map { |t| Track.new(t) }
-  #         })
-  #     end
-
-  #     req.on :error do |err|
-  #       p err
-  #     end
-  #   end
-  #   store.dispatch({ type: :tracks_load })
-  # end
 end
 
 module ActionDispatchHooks

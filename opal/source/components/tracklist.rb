@@ -92,11 +92,10 @@ module ActionDispatchHooks
   def tracks_load
     Browser::HTTP.get("/api/tracks") do |req|
       req.on :success do |res|
-        dispatch(
-          {
-            type: :tracks_load_success,
-            data: res.json.map { |t| Track.new(t) }
-          })
+        dispatch({
+          type: :tracks_load_success,
+          data: res.json.map { |t| Track.new(t) }.sort { |x, y| x.play_count <=> y.play_count }.reverse
+        })
       end
 
       req.on :error do |err|

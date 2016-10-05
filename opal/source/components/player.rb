@@ -60,7 +60,7 @@ class Player < Maquette::Component
   def render_stream
     [
       (
-        h 'div.stream' do
+        h 'div.stream', onclick: handler(:show_control) do
           [
             (
               h 'div.title' do

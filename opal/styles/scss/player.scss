@@ -11,7 +11,7 @@
     height: 100vh;
     color: #aaa;
     text-shadow: -1px 0 rgba(33,33,33,0.8), 0 1px rgba(33,33,33,0.8), 1px 0 rgba(33,33,33,0.8), 0 -1px rgba(33,33,33,0.8);
-    background: linear-gradient(to right, rgba(33,33,33,1) 0px, rgba(33,33,33,0.8) 60%, rgba(33,33,33,0) 100%);
+    background: linear-gradient(to right, rgba(33,33,33,0.25) 0px, rgba(33,33,33,0.5) 60%, rgba(33,33,33,0) 100%);
     z-index: 9;
 
     >div {
@@ -74,8 +74,7 @@
 
   >div:nth-child(2)
   {
-    //background: rgba(33,33,33,1);
-    background: #212121;
+    background-image: url("background.png");
     position: absolute;
     top: -3em;
     height: 100vh;

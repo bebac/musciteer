@@ -1,5 +1,8 @@
 #albums
 {
+  height: 100%;
+  overflow-y: auto;
+
   ol
   {
     display: flex;

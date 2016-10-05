@@ -1,10 +1,13 @@
 #tracks
 {
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
 
   div.header
   {
-    top: 0;
+    background: lighten($background-color, 4%);
+    padding-top: 0.33em;
     font-weight: bold;
     width: 100%;
 
@@ -15,10 +18,11 @@
 
   div.body
   {
-    overflow: auto;
+    width: 100%;
+    height: 100%;
 
     >ol {
-      //width: 90%;
+      width: 100%;
     }
   }
 

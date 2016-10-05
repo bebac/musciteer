@@ -90,7 +90,6 @@ end
 
 module ActionDispatchHooks
   def tracks_load
-    puts "load tracks"
     Browser::HTTP.get("/api/tracks") do |req|
       req.on :success do |res|
         dispatch(

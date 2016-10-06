@@ -12,13 +12,13 @@ class TrackListItem < Maquette::Component
   end
 
   def render
-    h "li", key: self, onclick: handler(:queue) do
+    h "tr", key: self, onclick: handler(:queue) do
       [
-        (h 'div.col1', "#{track.title}"),
-        (h 'div.col2', "#{track.artists}"),
-        (h 'div.col3', "#{track.album}"),
-        (h 'div.col4', "#{track.play_count}"),
-        (h 'div.col5', "#{track.skip_count}")
+        (h 'td.col1', "#{track.title}"),
+        (h 'td.col2', "#{track.artists}"),
+        (h 'td.col3', "#{track.album}"),
+        (h 'td.col4', "#{track.play_count}"),
+        (h 'td.col5', "#{track.skip_count}")
       ]
     end
   end
@@ -45,28 +45,27 @@ class TrackList < Maquette::Component
   end
 
   def render_header
-    h 'div.header' do
-      h 'ol' do
-        h 'li' do
-          [
-            (h 'div.col1', "Title"),
-            (h 'div.col2', "Artist"),
-            (h 'div.col3', "Album"),
-            (h 'div.col4', "Plays"),
-            (h 'div.col4', "Skips")
-          ]
-        end
-      end
+    h 'tr' do
+      [
+        (h 'th.col1', "Title"),
+        (h 'th.col2', "Artist"),
+        (h 'th.col3', "Album"),
+        (h 'th.col4', "Plays"),
+        (h 'th.col5', "Skips")
+      ]
     end
   end
 
   def render_tracks
-    h 'div.body' do
-      h 'ol' do
-        tracks.map do |track|
-          TrackListItem.new(track, store).render
-        end
-      end
+    h 'table' do
+      [
+        render_header,
+        (
+          tracks.map do |track|
+            TrackListItem.new(track, store).render
+          end
+        )
+      ]
     end
   end
 
@@ -76,10 +75,7 @@ class TrackList < Maquette::Component
         if loading?
           render_loading
         elsif tracks
-          [
-            render_header,
-            render_tracks
-          ]
+          render_tracks
         else
           h 'p', "Tracks not loaded!"
         end

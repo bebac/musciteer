@@ -6,11 +6,9 @@ Musciteer
 
 Musciteer is a music server for Linux. It combines your local music files with
 selected music from streaming services and presents it as one library through
-
 a modern web interface
 
 > NOTE: Currently it only supports flac and spotify
-
 
 
 
@@ -27,12 +25,14 @@ A somewhat prioritized list of features / tasks.
       at least some simple input field from the web interface)
 - [x] Continuous playback. If nothing is explictly queued, play songs at random
       from the entire collection. Can be turned on/off from settings.
-- [x] Mobile web application. goto /android in mobile browser and select add to
-      home screen.
+- [x] Mobile web application. For android open in browser and choose add to home
+      screen. It is the same web app, but default page is /player. Don't know
+      how it works on iphone.
 - [ ] Ubuntu snap package. Not possible currently as snaps cannot access alsa
       :exclamation:
 - [x] Debian package for Ubuntu 16.04
-- [ ] Browse and queue music from mobile web app.
+- [x] Browse and queue music from mobile web app. Works best on a tablet, on
+      small screens it is not very usable.
 - [ ] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify.
 - [ ] Tagging
 - [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
@@ -122,7 +122,6 @@ Server -> Client
     }
 }
 ```
-
 
 
 

@@ -12,7 +12,7 @@ class TrackListItem < Maquette::Component
   end
 
   def render
-    h "tr", key: self, onclick: handler(:queue) do
+    h "tr", key: track.id, onclick: handler(:queue) do
       [
         (h 'td.col1', "#{track.title}"),
         (h 'td.col2', "#{track.artists}"),

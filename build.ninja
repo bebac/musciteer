@@ -182,7 +182,7 @@ build build/musciteer: ld $
   build/player/source_spotify_app_key.o $
   build/player/sources.o $
   build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a build/libprogram-options.a
-  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lcrypto++ -lkyotocabinet -lspotify
+  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lanl -lssl -lcrypto -lcrypto++ -lkyotocabinet -lspotify
 
 
 ###

@@ -9,6 +9,7 @@
 #include "albums_handler.h"
 #include "player_handler.h"
 #include "sources_handler.h"
+#include "spotify_handler.h"
 #include "static_file_handler.h"
 #include "api.h"
 
@@ -487,6 +488,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
   std::regex albums_re("^/api/albums(/.*)?");
   std::regex player_re("^/api/player(/.*)?");
   std::regex sources_re("^/api/sources(/.*)?");
+  std::regex spotify_re("^/api/spotify(/.*)?");
   std::regex assets_re("^/(assets/.+)");
 
   std::smatch match;
@@ -555,6 +557,18 @@ void http_connection::dispatch(http::request& request, http::response& response)
     if ( match.size() == 2 )
     {
       static_file_handler handler(request, response);
+      handler.call(match[1]);
+    }
+    else
+    {
+      // ERROR!
+    }
+  }
+  else if ( std::regex_match(uri, match, spotify_re) )
+  {
+    if ( match.size() == 2 )
+    {
+      spotify_handler handler(request, response, this);
       handler.call(match[1]);
     }
     else

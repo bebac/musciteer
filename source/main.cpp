@@ -22,6 +22,11 @@
 #include <program_options.h>
 
 // ----------------------------------------------------------------------------
+#include <openssl/conf.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+// ----------------------------------------------------------------------------
 namespace musciteer
 {
   class options : public program_options::container
@@ -56,6 +61,23 @@ namespace musciteer
 }
 
 // ----------------------------------------------------------------------------
+void init_openssl_library(void)
+{
+  SSL_library_init();
+
+  SSL_load_error_strings();
+
+  /* ERR_load_crypto_strings(); */
+
+  OPENSSL_config(NULL);
+
+  /* Include <openssl/opensslconf.h> to get this define */
+#if defined (OPENSSL_THREADS)
+  std::cerr << "Warning: openssl thread locking is not implemented" << std::endl;
+#endif
+}
+
+// ----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   musciteer::options options;
@@ -79,6 +101,8 @@ int main(int argc, char *argv[])
   }
 
   dripcore::loop loop;
+
+  init_openssl_library();
 
   musciteer::kvstore::start(options.database_filename);
   musciteer::sources::start(&loop);

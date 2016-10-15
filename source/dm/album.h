@@ -39,6 +39,7 @@ namespace musciteer
       const std::string& id() const;
       const std::string& title() const;
       const track_id_list& track_ids() const;
+      const std::string& artist_id() const;
     public:
       dm::artist artist() const;
     public:

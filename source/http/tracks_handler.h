@@ -118,6 +118,18 @@ private:
 private:
   void delete_track(const std::string& id)
   {
+    if ( id.length() != 6 )
+    {
+      unprocessable_entity();
+      return;
+    }
+
+    if ( !(id[0] == 't') )
+    {
+      unprocessable_entity();
+      return;
+    }
+
     auto tracks = musciteer::dm::tracks();
     auto albums = musciteer::dm::albums();
 
@@ -144,6 +156,13 @@ protected:
   void method_not_allowed()
   {
     response << "HTTP/1.1 405 Method Not Allowed" << crlf
+      << "Content-Length: 0" << crlf
+      << crlf;
+  }
+protected:
+  void unprocessable_entity()
+  {
+    response << "HTTP/1.1 422 Unprocessable Entity" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }

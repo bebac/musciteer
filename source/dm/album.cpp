@@ -38,6 +38,11 @@ namespace musciteer
       return track_ids_;
     }
 
+    const std::string& album::artist_id() const
+    {
+      return artist_id_;
+    }
+
     dm::artist album::artist() const
     {
       auto artists = dm::artists();

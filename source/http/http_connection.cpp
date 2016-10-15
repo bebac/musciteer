@@ -452,7 +452,6 @@ void http_connection::loop(std::streambuf* sbuf)
               if ( !send_task->done() ) {
                 send_task->stop();
               }
-
             }
           }
           else

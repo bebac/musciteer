@@ -68,6 +68,7 @@ namespace musciteer
             else
             {
               // ERROR!
+              std::cerr << "failed to read album!" << std::endl;
             }
             return true;
           }

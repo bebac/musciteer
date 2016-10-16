@@ -20,9 +20,7 @@ A somewhat prioritized list of features / tasks.
 - [x] Configurable through the desktop web interface.
 - [x] FLAC local files
 - [x] Spotify playback
-- [ ] Spotify - Search and add music from spotify to local library. For now
-      use spotify_import tool. (new libspotify coming soon I hope. Until then
-      at least some simple input field from the web interface)
+- [x] Import Spotify albums/tracks from web interface. Not optimal, but will have to do for now.
 - [x] Continuous playback. If nothing is explictly queued, play songs at random
       from the entire collection. Can be turned on/off from settings.
 - [x] Mobile web application. For android open in browser and choose add to home
@@ -36,6 +34,7 @@ A somewhat prioritized list of features / tasks.
 - [ ] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify.
 - [ ] Tagging
 - [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
+- [ ] Improve Spotify integration
 - [ ] Remove content on rescan when local flac files are removed
 - [ ] Play albums
 - [ ] Playlists
@@ -71,6 +70,8 @@ API
 | GET          | /api/player
 | GET, POST    | /api/player/ctpb
 | GET, POST    | /api/player/output
+| POST         | /api/spotify/import
+
 
 Player control and notifications are done over a websocket.
 

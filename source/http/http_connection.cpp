@@ -494,7 +494,10 @@ void http_connection::dispatch(http::request& request, http::response& response)
 
   //std::cout << "dispatch uri " << uri << std::endl;
 
-  if ( uri == "/" || uri == "/albums" || uri == "/tracks" || uri == "/player" )
+  if (
+    uri == "/" || uri == "/albums" || uri == "/tracks" || uri == "/player" ||
+    uri == "/spotify"
+  )
   {
     static_file_handler handler(request, response);
     handler.call("index.html");

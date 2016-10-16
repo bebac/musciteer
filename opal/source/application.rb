@@ -37,6 +37,7 @@ class Application
           notification:            nil,
           stream_sync:             false,
           stream:                  {},
+          spotify_importing:       false,
         }
       else
         case action[:type]
@@ -147,6 +148,14 @@ class Application
         when :notification
           state.merge({
             notification: action[:data]
+          })
+        when :spotify_import
+          state.merge({
+            spotify_importing: true
+          })
+        when :spotify_import_success
+          state.merge({
+            spotify_importing: false
           })
         else
           puts "unhandled action #{action[:type]}, data #{action[:data]}"

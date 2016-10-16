@@ -4,9 +4,10 @@ class Router < Maquette::Component
   def initialize(store)
     @store = store
     @paths = {
-      '/albums' => Albums.new(store),
-      '/tracks' => TrackList.new(store),
-      '/player' => Player.new(store)
+      '/albums'  => Albums.new(store),
+      '/tracks'  => TrackList.new(store),
+      '/player'  => Player.new(store),
+      '/spotify' => Spotify.new(store)
     }
     $window.on 'pop:state' do |evt|
       set_path($document.location.path)
@@ -41,7 +42,8 @@ class Router < Maquette::Component
         [
           (h 'li', { key: 1 }, link('/albums', 'Albums')),
           (h 'li', { key: 2 }, link('/tracks', 'Tracks')),
-          (h 'li', { key: 3 }, link('/player', 'Player'))
+          (h 'li', { key: 3 }, link('/player', 'Player')),
+          (h 'li', { key: 4 }, link('/spotify', 'Spotify'))
         ]
       end
     end

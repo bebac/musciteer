@@ -9,6 +9,7 @@
 
 // ----------------------------------------------------------------------------
 #include "api.h"
+#include "api_handler_base.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/source_local.h"
@@ -22,15 +23,13 @@
 #include "../player/sources.h"
 
 // ----------------------------------------------------------------------------
-#include <http/request.h>
-#include <http/response.h>
-
-// ----------------------------------------------------------------------------
-class sources_handler
+class sources_handler : public api_handler_base
 {
 public:
   sources_handler(http::request& request, http::response& response, dripcore::task* task)
-    : request(request), response(response), task_(task), route_re_("^/?([^/]*)?/?([^/]*)?")
+    :
+    api_handler_base(request, response),
+    task_(task)
   {
   }
 public:
@@ -258,27 +257,7 @@ protected:
       << crlf;
   }
 protected:
-  void method_not_allowed()
-  {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void not_found()
-  {
-    response << "HTTP/1.1 404 Not Found" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  http::request& request;
-  http::response& response;
   dripcore::task* task_;
-private:
-  std::regex route_re_;
-private:
-  static constexpr const char* crlf = "\r\n";
 };
 
 // ----------------------------------------------------------------------------

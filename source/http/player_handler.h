@@ -9,24 +9,20 @@
 
 // ----------------------------------------------------------------------------
 #include "api.h"
+#include "api_handler_base.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/player.h"
 #include "../player/player.h"
 
 // ----------------------------------------------------------------------------
-#include <http/request.h>
-#include <http/response.h>
-
-// ----------------------------------------------------------------------------
-#include <regex>
-
-// ----------------------------------------------------------------------------
-class player_handler
+class player_handler : public api_handler_base
 {
 public:
   player_handler(http::request& request, http::response& response, dripcore::task* task)
-    : request(request), response(response), task_(task), route_re_("^/?([^/]*)?/?([^/]*)?")
+    :
+    api_handler_base(request, response),
+    task_(task)
   {
   }
 public:
@@ -237,27 +233,6 @@ private:
       << crlf
       << payload;
   }
-protected:
-  void method_not_allowed()
-  {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void not_found()
-  {
-    response << "HTTP/1.1 404 Not Found" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void internal_error()
-  {
-    response << "HTTP/1.1 500 Internal Error" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
 private:
   json get_output_json()
   {
@@ -287,13 +262,7 @@ private:
     return ctpb;
   }
 protected:
-  http::request& request;
-  http::response& response;
   dripcore::task* task_;
-private:
-  std::regex route_re_;
-private:
-  static constexpr const char* crlf = "\r\n";
 };
 
 // ----------------------------------------------------------------------------

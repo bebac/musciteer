@@ -9,26 +9,17 @@
 
 // ----------------------------------------------------------------------------
 #include "api.h"
+#include "api_handler_base.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/albums.h"
 #include "../dm/album_cover.h"
 
 // ----------------------------------------------------------------------------
-#include <http/request.h>
-#include <http/response.h>
-
-// ----------------------------------------------------------------------------
-#include <regex>
-
-// ----------------------------------------------------------------------------
-class albums_handler
+class albums_handler : public api_handler_base
 {
 public:
-  albums_handler(http::request& request, http::response& response)
-    : request(request), response(response), route_re_("^/?([^/]*)?/?([^/]*)?")
-  {
-  }
+  using api_handler_base::api_handler_base;
 public:
   void call(const std::string& path)
   {
@@ -231,34 +222,6 @@ private:
       not_found();
     }
   }
-protected:
-  void method_not_allowed()
-  {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void unprocessable_entity()
-  {
-    response << "HTTP/1.1 422 Unprocessable Entity" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void not_found()
-  {
-    response << "HTTP/1.1 404 Not Found" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  http::request& request;
-  http::response& response;
-private:
-  std::regex route_re_;
-private:
-  static constexpr const char* crlf = "\r\n";
 };
 
 // ----------------------------------------------------------------------------

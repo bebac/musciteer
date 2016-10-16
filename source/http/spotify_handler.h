@@ -8,16 +8,21 @@
 #define __http_server__spotify_handler_h__
 
 // ----------------------------------------------------------------------------
+#include "api_handler_base.h"
+
+// ----------------------------------------------------------------------------
 #include "../spotify_web/http_client.h"
 #include "../spotify_web/track_importer.h"
 
 // ----------------------------------------------------------------------------
-class spotify_handler
+class spotify_handler : public api_handler_base
 {
 public:
   spotify_handler(http::request& request, http::response& response, dripcore::task* task)
     :
-    http_client_(task), request(request), response(response), task_(task), route_re_("^/?([^/]*)?/?([^/]*)?")
+    api_handler_base(request, response),
+    http_client_(task),
+    task_(task)
   {
   }
 public:
@@ -115,29 +120,9 @@ protected:
       << crlf;
   }
 protected:
-  void method_not_allowed()
-  {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
-  void not_found()
-  {
-    response << "HTTP/1.1 404 Not Found" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
-  }
-protected:
   spotify_web::http_client http_client_;
 protected:
-  http::request& request;
-  http::response& response;
   dripcore::task* task_;
-private:
-  std::regex route_re_;
-private:
-  static constexpr const char* crlf = "\r\n";
 };
 
 // ----------------------------------------------------------------------------

@@ -53,6 +53,7 @@ task :dpkg do
   # Copy binaries.
   sh "cp ../../build/musciteer stage/usr/share/musciteer/bin/"
   sh "cp ../../build/spotify_import stage/usr/share/musciteer/bin/"
+  sh "cp ../../build/flac_rg_tagger stage/usr/share/musciteer/bin/"
   sh "cp #{Dir['../../lib/libspotify*'].first}/lib/libspotify.so* stage/usr/share/musciteer/lib/"
 
   # Copy public.

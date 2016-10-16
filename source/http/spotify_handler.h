@@ -115,9 +115,7 @@ protected:
       throw std::runtime_error("don't know how to import that");
     }
 
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << 0 << crlf
-      << crlf;
+    ok();
   }
 protected:
   spotify_web::http_client http_client_;

@@ -115,12 +115,7 @@ protected:
 
     j = source_local.directories();
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 protected:
   void post_sources_local_directories()
@@ -156,12 +151,8 @@ protected:
     source_local.directories(j.get<std::vector<std::string>>());
 
     json res = source_local.directories();
-    auto payload = res.dump();
 
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(res));
   }
 protected:
   void post_sources_local_scan()
@@ -186,9 +177,7 @@ protected:
       });
     }
 
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
+    ok();
   }
 protected:
   void get_sources_spotify_settings()
@@ -201,12 +190,7 @@ protected:
     // Maybe we should'nt send the password.
     //j["password"] = settings.password();
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 protected:
   void post_sources_spotify_settings()
@@ -252,9 +236,7 @@ protected:
     auto sources = musciteer::sources();
     sources.settings_changed("spotify");
 
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: 0" << crlf
-      << crlf;
+    ok();
   }
 protected:
   dripcore::task* task_;

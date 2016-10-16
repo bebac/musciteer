@@ -96,24 +96,14 @@ private:
     j["output"] = get_output_json();
     j["ctpb"] = get_ctpb_json();
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 private:
   void get_player_output()
   {
     json j = get_output_json();
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 private:
   void post_player_output()
@@ -156,12 +146,7 @@ private:
 
       json j = get_output_json();
 
-      auto payload = j.dump();
-
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << payload.length() << crlf
-        << crlf
-        << payload;
+      ok(std::move(j));
     }
     else
     {
@@ -173,12 +158,7 @@ private:
   {
     json j = get_ctpb_json();
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 private:
   void post_player_ctpb()
@@ -226,12 +206,7 @@ private:
 
     json r = get_ctpb_json();
 
-    auto payload = r.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(r));
   }
 private:
   json get_output_json()

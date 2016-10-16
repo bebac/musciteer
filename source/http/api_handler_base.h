@@ -30,6 +30,26 @@ public:
   {
   }
 protected:
+  void ok()
+  {
+    response << "HTTP/1.1 200 OK" << crlf
+      << "Content-Length: " << 0 << crlf
+      << crlf
+      << std::flush;
+  }
+protected:
+  void ok(json body)
+  {
+    auto payload = body.dump();
+
+    response << "HTTP/1.1 200 OK" << crlf
+      << "Content-Type: " << "application/json" << crlf
+      << "Content-Length: " << payload.length() << crlf
+      << crlf
+      << payload
+      << std::flush;
+  }
+protected:
   void method_not_allowed()
   {
     response << "HTTP/1.1 405 Method Not Allowed" << crlf

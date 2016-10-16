@@ -103,12 +103,7 @@ protected:
       return true;
     });
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 private:
   void get_album(const std::string& id)
@@ -118,14 +113,7 @@ private:
 
     if ( !album.id_is_null() )
     {
-      json j = musciteer::to_json(album);
-
-      auto payload = j.dump();
-
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << payload.length() << crlf
-        << crlf
-        << payload;
+      ok(musciteer::to_json(album));
     }
     else
     {
@@ -162,9 +150,7 @@ private:
       kvstore.remove(album.id()+"/cover");
       albums.remove(album);
 
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << 0 << crlf
-        << crlf;
+      ok();
     }
     else
     {
@@ -188,12 +174,7 @@ private:
         }
       });
 
-      auto payload = j.dump();
-
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << payload.length() << crlf
-        << crlf
-        << payload;
+      ok(std::move(j));
     }
     else
     {

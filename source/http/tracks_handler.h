@@ -82,12 +82,7 @@ protected:
       return true;
     });
 
-    auto payload = j.dump();
-
-    response << "HTTP/1.1 200 OK" << crlf
-      << "Content-Length: " << payload.length() << crlf
-      << crlf
-      << payload;
+    ok(std::move(j));
   }
 private:
   void get_track(const std::string& id)
@@ -97,14 +92,7 @@ private:
 
     if ( !track.id_is_null() )
     {
-      json j = musciteer::to_json(track);
-
-      auto payload = j.dump();
-
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << payload.length() << crlf
-        << crlf
-        << payload;
+      ok(musciteer::to_json(track));
     }
     else
     {
@@ -139,9 +127,7 @@ private:
       tracks.remove(track);
       albums.save(album);
 
-      response << "HTTP/1.1 200 OK" << crlf
-        << "Content-Length: " << 0 << crlf
-        << crlf;
+      ok();
     }
     else
     {

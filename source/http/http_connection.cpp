@@ -483,11 +483,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
 {
   auto uri = request.uri();
 
-  std::regex track_re("^/api/tracks(/.*)?");
-  std::regex albums_re("^/api/albums(/.*)?");
-  std::regex player_re("^/api/player(/.*)?");
-  std::regex sources_re("^/api/sources(/.*)?");
-  std::regex spotify_re("^/api/spotify(/.*)?");
+  std::regex api_re ("^/api/([^/]*)(/.*)?");
   std::regex assets_re("^/(assets/.+)");
 
   std::smatch match;
@@ -502,56 +498,43 @@ void http_connection::dispatch(http::request& request, http::response& response)
     static_file_handler handler(request, response);
     handler.call("index.html");
   }
-  else if ( std::regex_match(uri, match, track_re) )
+  else if ( std::regex_match(uri, match, api_re) )
   {
-    tracks_handler handler(request, response, this);
-
-    if ( match.size() == 2 )
+    if ( match.size() == 3 )
     {
-      handler.call(match[1]);
+      if ( match[1] == "tracks" )
+      {
+        tracks_handler handler(request, response, this);
+        handler.call(match[2]);
+      }
+      else if ( match[1] == "albums" )
+      {
+        albums_handler handler(request, response);
+        handler.call(match[2]);
+      }
+      else if ( match[1] == "player" )
+      {
+        player_handler handler(request, response, this);
+        handler.call(match[2]);
+      }
+      else if ( match[1] == "sources" )
+      {
+        sources_handler handler(request, response, this);
+        handler.call(match[2]);
+      }
+      else if ( match[1] == "spotify" )
+      {
+        spotify_handler handler(request, response, this);
+        handler.call(match[2]);
+      }
+      else
+      {
+        not_found(response);
+      }
     }
     else
     {
-      // ERROR!
-    }
-  }
-  else if ( std::regex_match(uri, match, albums_re) )
-  {
-    albums_handler handler(request, response);
-
-    if ( match.size() == 2 )
-    {
-      handler.call(match[1]);
-    }
-    else
-    {
-      // ERROR!
-    }
-  }
-  else if ( std::regex_match(uri, match, player_re) )
-  {
-    player_handler handler(request, response, this);
-
-    if ( match.size() == 2 )
-    {
-      handler.call(match[1]);
-    }
-    else
-    {
-      // ERROR!
-    }
-  }
-  else if ( std::regex_match(uri, match, sources_re) )
-  {
-    sources_handler handler(request, response, this);
-
-    if ( match.size() == 2 )
-    {
-      handler.call(match[1]);
-    }
-    else
-    {
-      // ERROR!
+      not_found(response);
     }
   }
   else if ( std::regex_match(uri, match, assets_re) )
@@ -563,19 +546,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
     }
     else
     {
-      // ERROR!
-    }
-  }
-  else if ( std::regex_match(uri, match, spotify_re) )
-  {
-    if ( match.size() == 2 )
-    {
-      spotify_handler handler(request, response, this);
-      handler.call(match[1]);
-    }
-    else
-    {
-      // ERROR!
+      not_found(response);
     }
   }
   else

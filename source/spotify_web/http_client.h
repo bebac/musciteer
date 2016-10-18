@@ -81,10 +81,12 @@ namespace spotify_web
 
       if ( scheme == "https" )
       {
+        socket.task_detach(task_);
+
         spotify_web::ssl_socket ssl_socket(std::move(socket));
 
-        task_->attach_eventable(ssl_socket);
-        // Create streambuf before connecting as streambuf does attach_eventable.
+        ssl_socket.task_attach(task_);
+
         dripcore::streambuf sbuf(ssl_socket, *task_);
 
         // Perform ssl handshake.
@@ -103,13 +105,9 @@ namespace spotify_web
         response >> response;
 
         cb(response);
-
-        task_->detach_eventable(ssl_socket);
       }
       else
       {
-        task_->attach_eventable(socket);
-
         dripcore::streambuf sbuf(socket, *task_);
 
         http::request request(&sbuf);
@@ -125,8 +123,6 @@ namespace spotify_web
         response >> response;
 
         cb(response);
-
-        task_->detach_eventable(socket);
       }
     }
   public:
@@ -169,12 +165,10 @@ namespace spotify_web
   private:
     void connect(dripcore::socket& socket)
     {
+      socket.task_attach(task_);
       socket.nonblocking(true);
       socket.connect((struct sockaddr *)&sock_addr_, sizeof(sock_addr_));
-
-      task_->attach_eventable(socket);
-      task_->wait_writable(socket);
-      task_->detach_eventable(socket);
+      socket.wait_writable();
     }
   private:
     void init_sock_addr(const std::string& hostname, unsigned port)

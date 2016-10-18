@@ -128,8 +128,9 @@ namespace dripcore
       }
     }
   public:
-    void close()
+    void close() override
     {
+      io::close();
       if ( fd_ != -1 ) {
         ::close(fd_);
       }

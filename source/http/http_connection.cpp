@@ -363,19 +363,17 @@ http_connection::http_connection(dripcore::socket socket)
 http_connection::~http_connection()
 {
   std::cout << "~connection " << size_t(this) << std::endl;
-  detach_eventable(socket_);
 }
 
 void http_connection::init()
 {
-  attach_eventable(socket_);
+  socket_.task_attach(this);
+  streambuf_.reset(new dripcore::streambuf(socket_, *this));
 }
 
 // ----------------------------------------------------------------------------
 void http_connection::main()
 {
-  streambuf_.reset(new dripcore::streambuf(socket_, *this));
-
   try
   {
     loop(streambuf_.get());

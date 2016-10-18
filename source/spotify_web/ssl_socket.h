@@ -43,6 +43,7 @@ namespace spotify_web
     {
       SSL_free(ssl_);
       SSL_CTX_free(ctx_);
+      close();
     }
   public:
     void connect(dripcore::task* task)

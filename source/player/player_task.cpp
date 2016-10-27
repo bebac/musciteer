@@ -500,6 +500,15 @@ namespace musciteer
 
     auto r = ch.recv(this);
 
-    std::cout << "audio output open response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
+    if ( r.open_res.error_code == 0 )
+    {
+      std::cout << "audio output " << audio_output_device_ << " open ok" << std::endl;
+    }
+    else
+    {
+      std::cout << "audio output open response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
+      // TODO: Send some sort of notification.
+      become_stopped();
+    }
   }
 }

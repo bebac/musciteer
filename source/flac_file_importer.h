@@ -94,7 +94,7 @@ namespace musciteer
         else if ( name == "REPLAYGAIN_ALBUM_GAIN" ) {
           tag_rg_album_gain = value;
         }
-        else if ( name == "REPLAYGAIN_ALBUM_GAIN" ) {
+        else if ( name == "REPLAYGAIN_ALBUM_PEAK" ) {
           tag_rg_album_peak = value;
         }
         else

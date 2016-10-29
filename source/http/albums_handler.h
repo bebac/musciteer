@@ -140,14 +140,12 @@ private:
 
     if ( !album.id_is_null() )
     {
-      auto kvstore = musciteer::kvstore();
       auto tracks = musciteer::dm::tracks();
 
       album.tracks_each([&](const musciteer::dm::track& t) {
         tracks.remove(t);
       });
 
-      kvstore.remove(album.id()+"/cover");
       albums.remove(album);
 
       ok();

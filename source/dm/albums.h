@@ -43,6 +43,7 @@ namespace musciteer
       void remove(const dm::album& album)
       {
         kvstore_.remove(album.id());
+        kvstore_.remove(album.id()+"/cover");
       }
     public:
       void each(std::function<bool(dm::album& album)> value_cb)

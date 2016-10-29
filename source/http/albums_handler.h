@@ -96,7 +96,7 @@ protected:
   {
     auto albums = musciteer::dm::albums();
 
-    json j;
+    json j = json::array();
 
     albums.each([&](musciteer::dm::album& album) {
       j.push_back(musciteer::to_json(album));

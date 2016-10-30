@@ -78,7 +78,7 @@ namespace dripcore
   public:
     task()
       :
-      stack_(0x10000),
+      stack_(0x40000),
       rdy_(),
       state_(task_state::init),
       loop_(nullptr)

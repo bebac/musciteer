@@ -50,6 +50,13 @@ protected:
       << std::flush;
   }
 protected:
+  void redirect(const std::string& location)
+  {
+    response << "HTTP/1.1 301 Moved Permanently" << crlf
+      << "location: " << location << crlf
+      << crlf;
+  }
+protected:
   void method_not_allowed()
   {
     response << "HTTP/1.1 405 Method Not Allowed" << crlf

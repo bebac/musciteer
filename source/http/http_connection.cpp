@@ -22,9 +22,6 @@
 // ----------------------------------------------------------------------------
 #include <crypto++/sha.h>
 
-// ----------------------------------------------------------------------------
-#include <regex>
-
 /////
 // Websocket send task.
 
@@ -354,7 +351,11 @@ void websocket_recv_task::on_message(const std::string& message)
 
 // ----------------------------------------------------------------------------
 http_connection::http_connection(dripcore::socket socket)
-  : socket_(std::move(socket))
+  :
+  socket_(std::move(socket)),
+  streambuf_(),
+  api_re_("^/api/([^/]*)(/.*)?", std::regex::optimize),
+  assets_re_("^/(assets/.+)", std::regex::optimize)
 {
   std::cout << "connection " << size_t(this) << std::endl;
 }
@@ -479,24 +480,28 @@ void http_connection::loop(std::streambuf* sbuf)
 // ----------------------------------------------------------------------------
 void http_connection::dispatch(http::request& request, http::response& response)
 {
-  auto uri = request.uri();
+  auto uri       = request.uri();
+  auto path      = uri;
+  auto query     = std::string{};
+  auto query_pos = path.find_first_of('?');
 
-  std::regex api_re ("^/api/([^/]*)(/.*)?");
-  std::regex assets_re("^/(assets/.+)");
+  if ( query_pos != std::string::npos )
+  {
+    path  = uri.substr(0, query_pos);
+    query = uri.substr(query_pos+1);
+  }
 
   std::smatch match;
 
-  //std::cout << "dispatch uri " << uri << std::endl;
-
   if (
-    uri == "/" || uri == "/albums" || uri == "/tracks" || uri == "/player" ||
-    uri == "/spotify"
+    path == "/" || path == "/albums" || path == "/tracks" || path == "/player" ||
+    path == "/spotify"
   )
   {
     static_file_handler handler(request, response);
     handler.call("index.html");
   }
-  else if ( std::regex_match(uri, match, api_re) )
+  else if ( std::regex_match(path, match, api_re_) )
   {
     if ( match.size() == 3 )
     {
@@ -523,7 +528,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
       else if ( match[1] == "spotify" )
       {
         spotify_handler handler(request, response, this);
-        handler.call(match[2]);
+        handler.call(match[2], query);
       }
       else
       {
@@ -535,7 +540,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
       not_found(response);
     }
   }
-  else if ( std::regex_match(uri, match, assets_re) )
+  else if ( std::regex_match(path, match, assets_re_) )
   {
     if ( match.size() == 2 )
     {

@@ -22,11 +22,12 @@ public:
     :
     api_handler_base(request, response),
     http_client_(task),
+    code_re_("code=(.*)"),
     task_(task)
   {
   }
 public:
-  void call(const std::string& path)
+  void call(const std::string& path, const std::string& query)
   {
     std::smatch match;
 
@@ -41,6 +42,18 @@ public:
         if ( request.method() == http::method::post )
         {
           post_spotify_import();
+        }
+        else
+        {
+          method_not_allowed();
+        }
+      }
+      else if ( match[1] == "authorize" )
+      {
+        if ( request.method() == http::method::get )
+        {
+          get_spotify_auhtorize(query);
+          redirect("/");
         }
         else
         {
@@ -118,7 +131,24 @@ protected:
     ok();
   }
 protected:
+  void get_spotify_auhtorize(const std::string& query)
+  {
+    std::smatch match;
+
+    if ( std::regex_search(query, match, code_re_) )
+    {
+      // TODO: Need some kind of spotify web api worker.
+      std::cerr << "spotify_handler - authorize code=" << match[1] << std::endl;
+    }
+    else
+    {
+      std::cerr << "spotify_handler - failed to read authorization code" << std::endl;
+    }
+  }
+protected:
   spotify_web::http_client http_client_;
+protected:
+  std::regex code_re_;
 protected:
   dripcore::task* task_;
 };

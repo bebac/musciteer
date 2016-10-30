@@ -93,10 +93,10 @@ protected:
           auto lm_t = std::chrono::system_clock::to_time_t(status.mtime());
 
           response << "HTTP/1.1 200 OK" << crlf
-             << "Content-Type: " << mime_type(path) << crlf
-             << "Content-Length: " << size << crlf
-             << "Last-Modified:" << std::put_time(std::gmtime(&lm_t), "%a, %d %b %Y %H:%M:%S %Z") << crlf
-             << crlf;
+            << "Content-Type: " << mime_type(path) << crlf
+            << "Content-Length: " << size << crlf
+            << "Last-Modified:" << std::put_time(std::gmtime(&lm_t), "%a, %d %b %Y %H:%M:%S %Z") << crlf
+            << crlf;
 
           f.seekg(0);
 
@@ -147,8 +147,8 @@ protected:
   void not_modified()
   {
     response << "HTTP/1.1 304 Not Modified" << crlf
-       << "Content-Length: " << 0 << crlf
-       << crlf;
+      << "Content-Length: " << 0 << crlf
+      << crlf;
   }
 protected:
   void method_not_allowed()

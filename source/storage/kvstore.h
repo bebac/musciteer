@@ -141,7 +141,6 @@ namespace musciteer
   public:
     kvstore()
     {
-      assert(instance_);
     }
   public:
     int64_t increment(const std::string& key, int64_t num, int64_t orig=0)
@@ -189,6 +188,7 @@ namespace musciteer
 
   public:
     static void start(const std::string& filename);
+    static void stop();
   private:
     static instance_ptr instance_;
   };

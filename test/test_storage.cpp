@@ -24,6 +24,7 @@ public:
 public:
   ~TestStorageFixture()
   {
+    musciteer::kvstore::stop();
     std::remove("testdb");
   }
 protected:

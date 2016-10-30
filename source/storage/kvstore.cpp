@@ -19,4 +19,10 @@ namespace musciteer
     assert(!instance_);
     instance_.reset(new kvstore_impl(filename));
   }
+
+  void kvstore::stop()
+  {
+    assert(instance_);
+    instance_.reset();
+  }
 }

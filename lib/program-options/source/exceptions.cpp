@@ -40,7 +40,8 @@ const char* unrecognized_option_error::what() const noexcept
     {
         std::stringstream e;
         e << "unrecognized option '" << name << "'";
-        return (msg = std::move(e.str())).c_str();
+        msg = e.str();
+        return msg.c_str();
     }
     catch (...) {
         return "unrecognized_option_error::what() error";
@@ -70,7 +71,8 @@ const char* invalid_option_value_error::what() const noexcept
     {
         std::stringstream e;
         e << "invalid option value '" << value << "' for option '" << name << "'";
-        return (msg = std::move(e.str())).c_str();
+        msg = e.str();
+        return msg.c_str();
     }
     catch (...) {
         return "invalid_option_value_error::what() error";

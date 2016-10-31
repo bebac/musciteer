@@ -13,8 +13,12 @@
 #define __msgpack__istream_h__
 
 // ----------------------------------------------------------------------------
+#include "msgpack.h"
+
+// ----------------------------------------------------------------------------
 #include <iostream>
 #include <string>
+#include <chrono>
 
 // ----------------------------------------------------------------------------
 namespace msgpack
@@ -179,6 +183,31 @@ namespace msgpack
     {
       throw std::runtime_error("msgpack istream read sizeof(T) > 8");
     }
+  }
+
+  inline istream& operator>>(msgpack::istream& is, std::chrono::system_clock::time_point& value)
+  {
+    auto c = is.get();
+
+    if ( c == 0xd7 )
+    {
+      c = is.get();
+
+      if ( c == time_point_tag )
+      {
+        value = std::chrono::system_clock::time_point(std::chrono::nanoseconds(is.read<long long>()));
+      }
+      else
+      {
+        is.setstate(std::ios_base::failbit);
+      }
+    }
+    else
+    {
+      is.setstate(std::ios_base::failbit);
+    }
+
+    return is;
   }
 }
 

@@ -4,9 +4,6 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
-#include "../source/time_point.h"
-
-// ----------------------------------------------------------------------------
 #include <msgpack/istream.h>
 #include <msgpack/ostream.h>
 #include <msgpack/map.h>
@@ -262,8 +259,8 @@ TEST_CASE("msgpack streaming")
 
   SUBCASE("it streams time_point")
   {
-    auto now = musciteer::clock::now();
-    auto x = musciteer::clock::time_point();
+    auto now = std::chrono::system_clock::now();
+    auto x = std::chrono::system_clock::time_point();
 
     os << now;
     is >> x;
@@ -387,7 +384,7 @@ TEST_CASE("msgpack streaming")
   {
     unsigned marker = 0xa5a5;
 
-    auto now = musciteer::clock::now();
+    auto now = std::chrono::system_clock::now();
     os << now << marker;
 
     unsigned x = 0;

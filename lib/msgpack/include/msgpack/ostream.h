@@ -13,9 +13,13 @@
 #define __msgpack__ostream_h__
 
 // ----------------------------------------------------------------------------
+#include "msgpack.h"
+
+// ----------------------------------------------------------------------------
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <chrono>
 
 // ----------------------------------------------------------------------------
 #include <endian.h>
@@ -174,6 +178,16 @@ namespace msgpack
   inline ostream& operator<<(ostream& os, const std::string& value)
   {
     os.write_string(value.data(), value.length());
+    return os;
+  }
+
+  inline ostream& operator<<(ostream& os, const std::chrono::system_clock::time_point& value)
+  {
+    auto d = std::chrono::duration_cast<std::chrono::nanoseconds>(value.time_since_epoch());
+
+    os.put(0xd7);
+    os.put(time_point_tag, d.count());
+
     return os;
   }
 }

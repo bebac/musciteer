@@ -19,22 +19,24 @@
 class tracks_handler :public api_handler_base
 {
 public:
-  tracks_handler(http::request& request, http::response& response, dripcore::task* task)
+  tracks_handler(http::request_environment& env, dripcore::task* task)
     :
-    api_handler_base(request, response),
+    api_handler_base(env),
     task_(task)
   {
   }
 public:
   void call(const std::string& path)
   {
+    auto method = env.method();
+
     std::smatch match;
 
     if ( std::regex_match(path, match, route_re_) )
     {
       if ( match[0].length() == 0 || (match[0] == "/" && match[1].length() == 0 ))
       {
-        if ( request.method() == http::method::get ) {
+        if ( method == http::method::get ) {
           get_tracks(path);
         }
         else {
@@ -45,10 +47,10 @@ public:
       {
         if ( match[2].length() == 0 )
         {
-          if ( request.method() == http::method::get ) {
+          if ( method == http::method::get ) {
             get_track(match[1]);
           }
-          else if ( request.method() == http::method::delete_ ) {
+          else if ( method == http::method::delete_ ) {
             delete_track(match[1]);
           }
           else {

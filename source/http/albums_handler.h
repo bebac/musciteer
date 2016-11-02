@@ -23,7 +23,7 @@ public:
 public:
   void call(const std::string& path)
   {
-    auto method = request.method();
+    auto method = env.method();
 
     std::smatch match;
 
@@ -190,7 +190,7 @@ private:
     {
       auto& data = cover.data();
 
-      response << "HTTP/1.1 200 OK" << crlf
+      env.os << "HTTP/1.1 200 OK" << crlf
         << "Content-Type: " << cover.mime_type() << crlf
         << "Content-Length: " << data.length() << crlf
         << crlf

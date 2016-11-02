@@ -398,20 +398,19 @@ void http_connection::loop(std::streambuf* sbuf)
 {
   while ( true )
   {
-    http::request request(sbuf);
-    http::response response(sbuf);
+    http::request_environment env(sbuf);
 
-    if ( request >> request )
+    if ( env.is >> env )
     {
       std::string upgrade;
 
-      if ( request.get_header("Upgrade", upgrade) )
+      if ( env.get_header("Upgrade", upgrade) )
       {
         if ( upgrade == "websocket" )
         {
           std::string sec_websocket_key;
 
-          if ( request.get_header("Sec-WebSocket-Key", sec_websocket_key) )
+          if ( env.get_header("Sec-WebSocket-Key", sec_websocket_key) )
           {
             std::string sec_websocket_accept = sec_websocket_key+guid;
 
@@ -423,7 +422,7 @@ void http_connection::loop(std::streambuf* sbuf)
               sec_websocket_accept.length()
             );
 
-            response << "HTTP/1.1 101 Switching Protocols" << crlf
+            env.os << "HTTP/1.1 101 Switching Protocols" << crlf
               << "Upgrade: websocket" << crlf
               << "Connection: Upgrade" << crlf
               << "Sec-WebSocket-Accept: " << base64::encode(digest, sizeof(digest)) << crlf
@@ -466,7 +465,9 @@ void http_connection::loop(std::streambuf* sbuf)
       }
       else
       {
-        dispatch(request, response);
+        dispatch(env);
+        // Write anything in the output buffer onto the wire.
+        env.os.flush();
       }
     }
     else
@@ -478,9 +479,9 @@ void http_connection::loop(std::streambuf* sbuf)
 }
 
 // ----------------------------------------------------------------------------
-void http_connection::dispatch(http::request& request, http::response& response)
+void http_connection::dispatch(http::request_environment& env)
 {
-  auto uri       = request.uri();
+  auto uri       = env.uri();
   auto path      = uri;
   auto query     = std::string{};
   auto query_pos = path.find_first_of('?');
@@ -498,7 +499,7 @@ void http_connection::dispatch(http::request& request, http::response& response)
     path == "/spotify"
   )
   {
-    static_file_handler handler(request, response);
+    static_file_handler handler(env);
     handler.call("index.html");
   }
   else if ( std::regex_match(path, match, api_re_) )
@@ -507,61 +508,61 @@ void http_connection::dispatch(http::request& request, http::response& response)
     {
       if ( match[1] == "tracks" )
       {
-        tracks_handler handler(request, response, this);
+        tracks_handler handler(env, this);
         handler.call(match[2]);
       }
       else if ( match[1] == "albums" )
       {
-        albums_handler handler(request, response);
+        albums_handler handler(env);
         handler.call(match[2]);
       }
       else if ( match[1] == "player" )
       {
-        player_handler handler(request, response, this);
+        player_handler handler(env, this);
         handler.call(match[2]);
       }
       else if ( match[1] == "sources" )
       {
-        sources_handler handler(request, response, this);
+        sources_handler handler(env, this);
         handler.call(match[2]);
       }
       else if ( match[1] == "spotify" )
       {
-        spotify_handler handler(request, response, this);
+        spotify_handler handler(env, this);
         handler.call(match[2], query);
       }
       else
       {
-        not_found(response);
+        not_found(env);
       }
     }
     else
     {
-      not_found(response);
+      not_found(env);
     }
   }
   else if ( std::regex_match(path, match, assets_re_) )
   {
     if ( match.size() == 2 )
     {
-      static_file_handler handler(request, response);
+      static_file_handler handler(env);
       handler.call(match[1]);
     }
     else
     {
-      not_found(response);
+      not_found(env);
     }
   }
   else
   {
-    not_found(response);
+    not_found(env);
   }
 }
 
 // ----------------------------------------------------------------------------
-void http_connection::not_found(http::response& response)
+void http_connection::not_found(http::request_environment& env)
 {
-  response << "HTTP/1.1 404 Not Found" << crlf
+  env.os << "HTTP/1.1 404 Not Found" << crlf
     << "Content-Length: 0" << crlf
     << crlf;
 }

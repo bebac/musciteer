@@ -40,7 +40,7 @@ namespace http
   class response
   {
   public:
-    response(std::basic_streambuf<char>* sbuf);
+    response();
   public:
     virtual ~response();
   public:
@@ -55,28 +55,26 @@ namespace http
     bool get_header(const std::string& key, std::string& value);
   public:
     void read(std::istream& is);
-  public:
-    template<typename T>
-    std::istream& operator>>(T& value)
-    {
-      ios_ >> value;
-      return ios_;
-    }
-  public:
-    template<typename T>
-    std::ostream& operator<<(T value)
-    {
-      ios_ << std::forward<T>(value);
-      return ios_;
-    }
-  public:
-    std::basic_streambuf<char>* rdbuf();
   protected:
     http::version version_;
     http::status status_;
     http::headers headers_;
-  private:
-    std::iostream ios_;
+  };
+
+  class response_environment : public response
+  {
+  public:
+    response_environment(std::basic_streambuf<char>* sbuf)
+      :
+      is(sbuf),
+      os(sbuf)
+    {
+      is.exceptions(std::iostream::failbit);
+      os.exceptions(std::iostream::failbit);
+    }
+  public:
+    std::istream is;
+    std::ostream os;
   };
 
   inline std::istream& operator>>(std::istream& is, http::response& response)

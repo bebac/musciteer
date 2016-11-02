@@ -15,12 +15,15 @@
 #include "../spotify_web/track_importer.h"
 
 // ----------------------------------------------------------------------------
+#include "../dm/spotify_web_api.h"
+
+// ----------------------------------------------------------------------------
 class spotify_handler : public api_handler_base
 {
 public:
-  spotify_handler(http::request& request, http::response& response, dripcore::task* task)
+  spotify_handler(http::request_environment& env, dripcore::task* task)
     :
-    api_handler_base(request, response),
+    api_handler_base(env),
     http_client_(task),
     code_re_("code=(.*)"),
     task_(task)
@@ -29,6 +32,8 @@ public:
 public:
   void call(const std::string& path, const std::string& query)
   {
+    auto method = env.method();
+
     std::smatch match;
 
     if ( std::regex_match(path, match, route_re_) )
@@ -39,7 +44,7 @@ public:
       }
       else if ( match[1] == "import" )
       {
-        if ( request.method() == http::method::post )
+        if ( method == http::method::post )
         {
           post_spotify_import();
         }
@@ -50,7 +55,7 @@ public:
       }
       else if ( match[1] == "authorize" )
       {
-        if ( request.method() == http::method::get )
+        if ( method == http::method::get )
         {
           get_spotify_auhtorize(query);
           redirect("/");
@@ -77,20 +82,19 @@ protected:
     std::string content_length_s;
     std::string content;
 
-    if ( !request.get_header("content-type", content_type) ) {
+    if ( !env.get_header("content-type", content_type) ) {
       throw std::runtime_error("no content-type header");
     }
 
-    if ( !request.get_header("content-length", content_length_s) ) {
+    if ( !env.get_header("content-length", content_length_s) ) {
       throw std::runtime_error("no content-length header");
     }
 
     auto pos = std::size_t{0};
     auto len = std::stoul(content_length_s, &pos);
-    auto buf = request.rdbuf();
 
     for ( size_t i=0; i<len; ++i) {
-      content += buf->sbumpc();
+      content += env.is.get();
     }
 
     json j = json::parse(content);

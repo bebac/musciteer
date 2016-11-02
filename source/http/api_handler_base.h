@@ -9,7 +9,6 @@
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
-#include <http/response.h>
 
 // ----------------------------------------------------------------------------
 #include <regex>
@@ -18,10 +17,9 @@
 class api_handler_base
 {
 public:
-  api_handler_base(http::request& request, http::response& response)
+  api_handler_base(http::request_environment& env)
     :
-    request(request),
-    response(response),
+    env(env),
     route_re_("^/?([^/]*)?/?([^/]*)?")
   {
   }
@@ -32,61 +30,58 @@ public:
 protected:
   void ok()
   {
-    response << "HTTP/1.1 200 OK" << crlf
+    env.os << "HTTP/1.1 200 OK" << crlf
       << "Content-Length: " << 0 << crlf
-      << crlf
-      << std::flush;
+      << crlf;
   }
 protected:
   void ok(json body)
   {
     auto payload = body.dump();
 
-    response << "HTTP/1.1 200 OK" << crlf
+    env.os << "HTTP/1.1 200 OK" << crlf
       << "Content-Type: " << "application/json" << crlf
       << "Content-Length: " << payload.length() << crlf
       << crlf
-      << payload
-      << std::flush;
+      << payload;
   }
 protected:
   void redirect(const std::string& location)
   {
-    response << "HTTP/1.1 301 Moved Permanently" << crlf
+    env.os << "HTTP/1.1 301 Moved Permanently" << crlf
       << "location: " << location << crlf
       << crlf;
   }
 protected:
   void method_not_allowed()
   {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
+    env.os << "HTTP/1.1 405 Method Not Allowed" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
   void unprocessable_entity()
   {
-    response << "HTTP/1.1 422 Unprocessable Entity" << crlf
+    env.os << "HTTP/1.1 422 Unprocessable Entity" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
   void not_found()
   {
-    response << "HTTP/1.1 404 Not Found" << crlf
+    env.os << "HTTP/1.1 404 Not Found" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
   void internal_error()
   {
-    response << "HTTP/1.1 500 Internal Error" << crlf
+    env.os << "HTTP/1.1 500 Internal Error" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
-  http::request& request;
-  http::response& response;
+  http::request_environment& env;
 protected:
   std::regex route_re_;
 protected:

@@ -17,7 +17,6 @@
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
-#include <http/response.h>
 #include <http/websocket.h>
 
 // ----------------------------------------------------------------------------
@@ -81,9 +80,9 @@ public:
 protected:
   void loop(std::streambuf* sbuf);
 protected:
-  void dispatch(http::request& request, http::response& response);
+  void dispatch(http::request_environment& env);
 protected:
-  void not_found(http::response& response);
+  void not_found(http::request_environment& env);
 private:
   dripcore::socket socket_;
   std::unique_ptr<dripcore::streambuf> streambuf_;

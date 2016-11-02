@@ -9,13 +9,25 @@
 // ----------------------------------------------------------------------------
 namespace http
 {
-  request::request(std::basic_streambuf<char>* sbuf)
-    : ios_(sbuf)
+  request::request()
+    :
+    port_(80),
+    method_(http::method::get),
+    version_(http::version::v1_1)
   {
-    ios_.exceptions(std::iostream::failbit);
   }
 
-  http::method request::method()
+  int request::port() const
+  {
+    return port_;
+  }
+
+  void request::port(int port)
+  {
+    port_ = port;
+  }
+
+  http::method request::method() const
   {
     return method_;
   }
@@ -45,22 +57,89 @@ namespace http
     }
   }
 
+  void request::set_header(const std::string& key, const std::string& value)
+  {
+    headers_.emplace(key, value);
+  }
+
+  void request::set_header(const std::string& key, std::string&& value)
+  {
+    headers_.emplace(key, std::move(value));
+  }
+
+  void request::method(http::method method)
+  {
+    method_ = method;
+  }
+
+  void request::uri(const std::string& uri)
+  {
+    uri_ = uri;
+  }
+
+  void request::uri(std::string&& uri)
+  {
+    uri_ = std::move(uri);
+  }
+
   void request::read(std::istream& is)
   {
     is >> method_ >> uri_ >> version_ >> headers_;
   }
 
-  void request::write(std::ostream& os)
+  void request::write(std::ostream& os) const
   {
-    std::cout << "method " << int(method_) << ", path " << uri_ << ", version " << int(version_) << std::endl;
+    switch ( method_ )
+    {
+      case http::method::options:
+        os << "OPTIONS ";
+        break;
+      case http::method::get:
+        os << "GET ";
+        break;
+      case http::method::head:
+        os << "HEAD ";
+        break;
+      case http::method::post:
+        os << "POST ";
+        break;
+      case http::method::put:
+        os << "PUT ";
+        break;
+      case http::method::delete_:
+        os << "DELETE ";
+        break;
+      case http::method::trace:
+        os << "TRACE ";
+        break;
+      case http::method::connect:
+        os << "CONNECT ";
+        break;
+      case http::method::not_implemented:
+        // ERROR!
+        break;
+    };
+
+    os << uri_ << " ";
+
+    switch ( version_ )
+    {
+      case http::version::v1_0:
+        os << "HTTP/1.0";
+        break;
+      case http::version::v1_1:
+        os << "HTTP/1.1";
+        break;
+      default:
+        // ERROR!
+        break;
+    };
+
+    os << "\r\n";
+
     for ( auto& hdr : headers_ )
     {
-      std::cout << hdr.first << ": " << hdr.second << "\r\n";
+      os << hdr.first << ": " << hdr.second << "\r\n";
     }
-  }
-
-  std::basic_streambuf<char>* request::rdbuf()
-  {
-    return ios_.rdbuf();
   }
 }

@@ -238,7 +238,7 @@ namespace spotify_web
     {
       auto cover = musciteer::dm::album_cover();
 
-      http_client_.get(url, [&](http::response& response)
+      http_client_.get(url, [&](http::response_environment& response)
       {
         std::string content_type;
         std::string content_length_s;
@@ -254,10 +254,9 @@ namespace spotify_web
 
         auto pos = std::size_t{0};
         auto len = std::stoul(content_length_s, &pos);
-        auto buf = response.rdbuf();
 
         for ( size_t i=0; i<len; ++i) {
-          content += buf->sbumpc();
+          content += response.is.get();
         }
 
         cover.mime_type(content_type);

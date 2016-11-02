@@ -15,7 +15,6 @@
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
-#include <http/response.h>
 
 // ----------------------------------------------------------------------------
 #include <fstream>
@@ -25,10 +24,9 @@
 class static_file_handler
 {
 public:
-  static_file_handler(http::request& request, http::response& response)
+  static_file_handler(http::request_environment& env)
     :
-    request(request),
-    response(response)
+    env(env)
   {
     const char* snap_path = getenv("SNAP");
 
@@ -43,7 +41,7 @@ public:
 public:
   void call(const std::string& path)
   {
-    if ( request.method() == http::method::get )
+    if ( env.method() == http::method::get )
     {
       get(path);
     }
@@ -66,7 +64,7 @@ protected:
       auto ims_s = std::string();
       auto ims_t = std::chrono::system_clock::time_point();
 
-      if ( request.get_header("If-Modified-Since", ims_s) )
+      if ( env.get_header("If-Modified-Since", ims_s) )
       {
         auto is = std::istringstream{ims_s};
         auto tm = std::tm{};
@@ -92,7 +90,7 @@ protected:
           auto size = f.tellg();
           auto lm_t = std::chrono::system_clock::to_time_t(status.mtime());
 
-          response << "HTTP/1.1 200 OK" << crlf
+          env.os << "HTTP/1.1 200 OK" << crlf
             << "Content-Type: " << mime_type(path) << crlf
             << "Content-Length: " << size << crlf
             << "Last-Modified:" << std::put_time(std::gmtime(&lm_t), "%a, %d %b %Y %H:%M:%S %Z") << crlf
@@ -100,7 +98,7 @@ protected:
 
           f.seekg(0);
 
-          response << f.rdbuf();
+          env.os << f.rdbuf();
         }
         else
         {
@@ -146,27 +144,26 @@ protected:
 protected:
   void not_modified()
   {
-    response << "HTTP/1.1 304 Not Modified" << crlf
+    env.os << "HTTP/1.1 304 Not Modified" << crlf
       << "Content-Length: " << 0 << crlf
       << crlf;
   }
 protected:
   void method_not_allowed()
   {
-    response << "HTTP/1.1 405 Method Not Allowed" << crlf
+    env.os << "HTTP/1.1 405 Method Not Allowed" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
   void not_found()
   {
-    response << "HTTP/1.1 404 Not Found" << crlf
+    env.os << "HTTP/1.1 404 Not Found" << crlf
       << "Content-Length: 0" << crlf
       << crlf;
   }
 protected:
-  http::request& request;
-  http::response& response;
+  http::request_environment& env;
 protected:
   std::string root_;
 private:

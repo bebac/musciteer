@@ -30,12 +30,11 @@ TEST_CASE("Parse http status")
 // ----------------------------------------------------------------------------
 TEST_CASE("Write http response")
 {
-  std::stringbuf buf;
-  http::response response(&buf);
+  std::stringstream os;
 
-  response << "HTTP/1.1 200 OK\r\n";
+  os << "HTTP/1.1 200 OK\r\n";
 
-  CHECK(buf.str() == "HTTP/1.1 200 OK\r\n");
+  CHECK(os.str() == "HTTP/1.1 200 OK\r\n");
 }
 
 // ----------------------------------------------------------------------------
@@ -48,9 +47,9 @@ TEST_CASE("Read http response (ok)")
     "\r\n"
   );
 
-  http::response response(is.rdbuf());
+  http::response response;
 
-  response >> response;
+  is >> response;
 
   CHECK(response.version() == http::version::v1_1);
   CHECK(response.status_code() == 200u);
@@ -79,9 +78,9 @@ TEST_CASE("Read http response (bad request)")
     "\r\n"
   );
 
-  http::response response(is.rdbuf());
+  http::response response;
 
-  response >> response;
+  is >> response;
 
   CHECK(response.version() == http::version::v1_1);
   CHECK(response.status_code() == 400u);

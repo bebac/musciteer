@@ -44,16 +44,12 @@ namespace http
   /////
   // response.
 
-  response::response(std::basic_streambuf<char>* sbuf)
-    :
-    ios_(sbuf)
+  response::response()
   {
-    ios_.exceptions(std::iostream::failbit);
   }
 
   response::~response()
   {
-    ios_.flush();
   }
 
   http::version response::version()
@@ -94,10 +90,5 @@ namespace http
   void response::read(std::istream& is)
   {
     is >> version_ >> status_ >> headers_;
-  }
-
-  std::basic_streambuf<char>* response::rdbuf()
-  {
-    return ios_.rdbuf();
   }
 }

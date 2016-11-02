@@ -15,8 +15,9 @@
 // ----------------------------------------------------------------------------
 namespace http
 {
-  websocket_handler_base::websocket_handler_base(http::request& request,
-    http::response& response) : request(request), response(response)
+  websocket_handler_base::websocket_handler_base(http::request_environment& env)
+    :
+    env(env)
   {
   }
 
@@ -28,7 +29,7 @@ namespace http
   {
     std::string sec_websocket_key;
 
-    if ( request.get_header("Sec-WebSocket-Key", sec_websocket_key) )
+    if ( env.get_header("Sec-WebSocket-Key", sec_websocket_key) )
     {
       std::string sec_websocket_accept = sec_websocket_key+guid;
 
@@ -40,7 +41,7 @@ namespace http
         sec_websocket_accept.length()
       );
 
-      response << "HTTP/1.1 101 Switching Protocols" << crlf
+      env.os << "HTTP/1.1 101 Switching Protocols" << crlf
         << "Upgrade: websocket" << crlf
         << "Connection: Upgrade" << crlf
         << "Sec-WebSocket-Accept: " << base64::encode(digest, sizeof(digest)) << crlf
@@ -51,7 +52,7 @@ namespace http
       // We are done with the request object. Pass the stream buffer
       // to switch_protocol.
       //
-      switch_protocol(request.rdbuf());
+      switch_protocol(env);
     }
     else
     {
@@ -59,17 +60,15 @@ namespace http
     }
   }
 
-  void websocket_handler_base::switch_protocol(std::basic_streambuf<char>* sbuf)
+  void websocket_handler_base::switch_protocol(http::request_environment& env)
   {
-    std::istream is(sbuf);
-
     on_connect();
 
-    while ( is.good() )
+    while ( env.is.good() )
     {
       websocket::header header;
 
-      if ( is >> header )
+      if ( env.is >> header )
       {
         if ( header.rsv() != 0 )
         {
@@ -85,7 +84,7 @@ namespace http
           << "  len : " << header.payload_length() << std::endl;
 #endif
 
-        dispatch(header, is);
+        dispatch(header, env.is);
       }
       else
       {
@@ -137,6 +136,6 @@ namespace http
     header.mask(false);
     header.payload_length(message.length());
 
-    response << header << message << std::flush;
+    env.os << header << message << std::flush;
   }
 }

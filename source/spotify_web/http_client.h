@@ -39,7 +39,7 @@ namespace spotify_web
     {
     }
   public:
-    void get(const std::string url, std::function<void(http::response&)> cb)
+    void get(const std::string url, std::function<void(http::response_environment&)> cb)
     {
       auto scheme = std::string{};
       auto hostname = std::string{};
@@ -92,45 +92,94 @@ namespace spotify_web
         // Perform ssl handshake.
         ssl_socket.connect(task_);
 
-        http::request request(&sbuf);
+        http::response_environment env(&sbuf);
 
-        request
+        //http::request request(&sbuf);
+
+        //request
+        env.os
           << "GET " << path << " HTTP/1.1\r\n"
           << "Host: " << hostname << "\r\n"
           << "\r\n"
           << std::flush;
 
-        http::response response(&sbuf);
+        env.is >> env;
 
-        response >> response;
-
-        cb(response);
+        cb(env);
       }
       else
       {
         dripcore::streambuf sbuf(socket, *task_);
 
-        http::request request(&sbuf);
+        http::response_environment env(&sbuf);
 
-        request
+        env.os
           << "GET " << path << " HTTP/1.1\r\n"
           << "Host: " << hostname << "\r\n"
           << "\r\n"
           << std::flush;
 
-        http::response response(&sbuf);
+        env.is >> env;
 
-        response >> response;
-
-        cb(response);
+        cb(env);
       }
     }
+  public:
+#if 0
+    void get(http::request& req, std::function<void(http::response_environment&)> res_cb, bool tls = false)
+    {
+      auto port = req.port();
+      auto path = req.uri();
+      auto host = std::string{};
+
+      if ( !req.get_header("Host", host) ) {
+        throw std::runtime_error("http request requires a host header");
+      }
+
+      auto socket = dripcore::ipv4::tcp::socket();
+
+      init_sock_addr(host, port);
+      connect(socket);
+
+      if ( tls )
+      {
+        socket.task_detach(task_);
+
+        spotify_web::ssl_socket ssl_socket(std::move(socket));
+
+        ssl_socket.task_attach(task_);
+
+        dripcore::streambuf sbuf(ssl_socket, *task_);
+
+        // Perform ssl handshake.
+        ssl_socket.connect(task_);
+
+        http::response_environment env(&sbuf);
+
+        env.os << req;
+        env.is >> env;
+
+        res_cb(env);
+      }
+      else
+      {
+        dripcore::streambuf sbuf(socket, *task_);
+
+        http::response_environment env(&sbuf);
+
+        env.os << req;
+        env.is >> env;
+
+        res_cb(env);
+      }
+    }
+#endif
   public:
     json get_json(const std::string& url)
     {
       json j;
 
-      get(url, [&](http::response& response)
+      get(url, [&](http::response_environment& response)
       {
         std::string content_type;
         std::string content_length_s;
@@ -151,10 +200,9 @@ namespace spotify_web
 
         auto pos = std::size_t{0};
         auto len = std::stoul(content_length_s, &pos);
-        auto buf = response.rdbuf();
 
         for ( size_t i=0; i<len; ++i) {
-          content += buf->sbumpc();
+          content += response.is.get();
         }
 
         j = json::parse(content);

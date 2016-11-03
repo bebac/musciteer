@@ -5,7 +5,6 @@
 //
 // ----------------------------------------------------------------------------
 #include <http/request.h>
-//#include <http/environment.h>
 
 // ----------------------------------------------------------------------------
 #include <sstream>
@@ -16,8 +15,6 @@
 // ----------------------------------------------------------------------------
 TEST_CASE("Build request")
 {
-  //std::stringbuf buf;
-  //http::request request(&buf);
   http::request request;
 
   SUBCASE("Default constructed")
@@ -38,9 +35,6 @@ TEST_CASE("Http environemnt")
 // ----------------------------------------------------------------------------
 TEST_CASE("Write http request")
 {
-  //std::stringbuf buf;
-  //http::request request(&buf);
-
   http::request request;
 
   //request.get("http://jsonplaceholder.typicode.com/posts");
@@ -49,14 +43,7 @@ TEST_CASE("Write http request")
 
   std::stringstream os;
 
-  //request.write_header();
-  //request.write(os);
   os << request << "\r\n";
-
-  //request
-  //  << "GET / HTTP/1.1\r\n"
-  //  << "Host: host.com\r\n"
-  //  << "\r\n";
 
   CHECK(os.str() == "GET / HTTP/1.1\r\nHost: host.com\r\n\r\n");
 }
@@ -70,10 +57,8 @@ TEST_CASE("Read http request")
     "\r\n"
   );
 
-  //http::request request(is.rdbuf());
   http::request request;
 
-  //request >> request;
   is >> request;
 
   CHECK(request.version() == http::version::v1_1);

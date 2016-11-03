@@ -32,9 +32,24 @@ namespace http
     return method_;
   }
 
+  void request::method(http::method method)
+  {
+    method_ = method;
+  }
+
   const std::string& request::uri()
   {
     return uri_;
+  }
+
+  void request::uri(const std::string& uri)
+  {
+    uri_ = uri;
+  }
+
+  void request::uri(std::string&& uri)
+  {
+    uri_ = std::move(uri);
   }
 
   http::version request::version()
@@ -65,21 +80,6 @@ namespace http
   void request::set_header(const std::string& key, std::string&& value)
   {
     headers_.emplace(key, std::move(value));
-  }
-
-  void request::method(http::method method)
-  {
-    method_ = method;
-  }
-
-  void request::uri(const std::string& uri)
-  {
-    uri_ = uri;
-  }
-
-  void request::uri(std::string&& uri)
-  {
-    uri_ = std::move(uri);
   }
 
   void request::read(std::istream& is)

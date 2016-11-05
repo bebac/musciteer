@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opal/opal-browser.git
-  revision: 815348e913ea79d65044db4dee3bbeea87be763d
+  revision: 2c0179927ea811df282c35e57d0512f6a2d3b8e3
   specs:
     opal-browser (0.2.0)
       opal
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: git://github.com/opal/opal.git
-  revision: 4506348aa6d8ba63768f69f0e09578a315d3eadd
-  tag: v0.10.2
+  revision: d45542ff85edcfbb01934300351aad232bacfd54
+  tag: v0.10.3
   specs:
-    opal (0.10.2)
+    opal (0.10.3)
       hike (~> 1.2)
       sourcemap (~> 0.1.0)
       sprockets (~> 3.1)
@@ -22,11 +22,11 @@ GEM
   specs:
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
-    ffi (1.9.10)
+    ffi (1.9.14)
     formatador (0.2.5)
-    guard (2.13.0)
+    guard (2.14.0)
       formatador (>= 0.2.4)
-      listen (>= 2.7, <= 4.0)
+      listen (>= 2.7, < 4.0)
       lumberjack (~> 1.0)
       nenv (~> 0.1)
       notiffany (~> 0.0)
@@ -37,27 +37,27 @@ GEM
       guard
       rake
     hike (1.2.3)
-    listen (3.1.3)
-      rb-fsevent (~> 0.9, >= 0.9.7)
+    listen (3.1.5)
+      rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
     lumberjack (1.0.10)
     method_source (0.8.2)
     nenv (0.3.0)
-    notiffany (0.0.8)
+    notiffany (0.1.1)
       nenv (~> 0.1)
       shellany (~> 0.0)
     paggio (0.2.6)
-    pry (0.10.3)
+    pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
     rack (2.0.1)
-    rake (11.1.2)
-    rb-fsevent (0.9.7)
+    rake (11.3.0)
+    rb-fsevent (0.9.8)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
-    ruby_dep (1.3.1)
+    ruby_dep (1.5.0)
     sass (3.4.22)
     shellany (0.0.1)
     slop (3.6.0)

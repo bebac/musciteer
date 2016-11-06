@@ -13,9 +13,17 @@
 // ----------------------------------------------------------------------------
 #include "../spotify_web/http_client.h"
 #include "../spotify_web/track_importer.h"
+#if 0
+#include "../spotify_web/id.h"
+#endif
 
 // ----------------------------------------------------------------------------
+#if 0
 #include "../dm/spotify_web_api.h"
+#endif
+
+// ----------------------------------------------------------------------------
+#include <http/base64.h>
 
 // ----------------------------------------------------------------------------
 class spotify_handler : public api_handler_base
@@ -141,8 +149,63 @@ protected:
 
     if ( std::regex_search(query, match, code_re_) )
     {
+      std::string code = match[1];
+
       // TODO: Need some kind of spotify web api worker.
-      std::cerr << "spotify_handler - authorize code=" << match[1] << std::endl;
+      std::cerr << "spotify_handler - authorize code=" << code << std::endl;
+#if 0
+      std::string client_code = spotify_web::client_id + ":" + spotify_web::client_secret;
+
+      std::stringstream pos;
+
+      pos
+        << "grant_type=authorization_code" << "&"
+        << "code=" << code << "&"
+        << "redirect_uri=http%3A%2F%2Flocalhost:8214%2Fapi%2Fspotify%2Fauthorize";
+
+      auto params = pos.str();
+
+      http::request req;
+
+      req.method(http::method::post);
+      req.uri("/api/token");
+      req.port(443);
+      req.set_header("Host", "accounts.spotify.com");
+      req.set_header("Content-Type", "application/x-www-form-urlencoded");
+      req.set_header("Content-Length", std::to_string(params.length()));
+      req.set_header("Authorization", "Basic " + http::base64::encode(client_code.data(), client_code.length()));
+
+      http_client_.get(req,
+        [&](std::ostream& os)
+        {
+          os << params;
+        },
+        [&](http::response_environment& response)
+        {
+          std::string content_length_s;
+          std::string content;
+
+          std::cerr << "spotify_handler - authorize response status " << response.status_code() << " " << response.status_message() << std::endl;
+
+          if ( response.get_header("content-length", content_length_s) )
+          {
+            auto pos = std::size_t{0};
+            auto len = std::stoul(content_length_s, &pos);
+
+            std::cerr << "spotify_handler - content length " << len << std::endl;
+
+            for ( size_t i=0; i<len; ++i) {
+              content += response.is.get();
+            }
+
+            json j = json::parse(content);
+
+            std::cerr << "spotify_handler - content " << j << std::endl;
+          }
+        },
+        true
+      );
+#endif
     }
     else
     {

@@ -82,6 +82,14 @@ namespace http
     response.read(is);
     return is;
   }
+
+#if 0
+  inline std::ostream& operator<<(std::ostream& os, http::response& response)
+  {
+    response.write(os);
+    return os;
+  }
+#endif
 }
 
 // ----------------------------------------------------------------------------

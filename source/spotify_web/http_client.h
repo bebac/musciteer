@@ -72,7 +72,7 @@ namespace spotify_web
           request.port(atoi(port_s.c_str()));
         }
 
-        get(request, cb, tls);
+        get(request, [](std::ostream& os){}, cb, tls);
       }
       else
       {
@@ -80,7 +80,11 @@ namespace spotify_web
       }
     }
   public:
-    void get(http::request& req, std::function<void(http::response_environment&)> res_cb, bool tls = false)
+    void get(
+      http::request& req,
+      std::function<void(std::ostream& os)> body,
+      std::function<void(http::response_environment&)> res_cb,
+      bool tls = false)
     {
       auto port = req.port();
       auto path = req.uri();
@@ -112,7 +116,10 @@ namespace spotify_web
 
         //std::cerr << "http_client request (https) : " << req;
 
-        env.os << req << "\r\n" << std::flush;
+        env.os << req;
+        body(env.os);
+        env.os << std::flush;
+
         env.is >> env;
 
         //std::cerr << "http_client response        : status " << env.status_code() << std::endl;
@@ -127,7 +134,10 @@ namespace spotify_web
 
         //std::cerr << "http_client request (http) : " << req;
 
-        env.os << req << "\r\n" << std::flush;
+        env.os << req;
+        body(env.os);
+        env.os << std::flush;
+
         env.is >> env;
 
         //std::cerr << "http_client response       : status " << env.status_code() << std::endl;

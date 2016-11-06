@@ -43,7 +43,7 @@ TEST_CASE("Write http request")
 
   std::stringstream os;
 
-  os << request << "\r\n";
+  os << request;
 
   CHECK(os.str() == "GET / HTTP/1.1\r\nHost: host.com\r\n\r\n");
 }

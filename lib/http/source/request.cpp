@@ -141,5 +141,7 @@ namespace http
     {
       os << hdr.first << ": " << hdr.second << "\r\n";
     }
+
+    os << "\r\n";
   }
 }

@@ -425,7 +425,7 @@ void http_connection::loop(std::streambuf* sbuf)
             env.os << "HTTP/1.1 101 Switching Protocols" << crlf
               << "Upgrade: websocket" << crlf
               << "Connection: Upgrade" << crlf
-              << "Sec-WebSocket-Accept: " << base64::encode(digest, sizeof(digest)) << crlf
+              << "Sec-WebSocket-Accept: " << http::base64::encode(digest, sizeof(digest)) << crlf
               << crlf
               << std::flush;
 

@@ -11,10 +11,13 @@
 #include <string>
 
 // ----------------------------------------------------------------------------
-namespace base64
+namespace http
 {
-  std::string encode(const void* data, size_t len);
-  std::string decode(const void* data, size_t len);
+  namespace base64
+  {
+    std::string encode(const void* data, size_t len);
+    std::string decode(const void* data, size_t len);
+  }
 }
 
 // ----------------------------------------------------------------------------

@@ -31,17 +31,18 @@ namespace dripcore
   class socket : public io
   {
   public:
+    socket() : fd_(-1)
+    {
+    }
     socket(int fd) : fd_(fd)
     {
     }
-  public:
     socket(int domain, int type, int protocol) : fd_(-1)
     {
       if ( (fd_ = ::socket(domain, type, protocol)) < 0 ) {
         throw socket_error(errno);
       }
     }
-  public:
     socket(socket&& other)
     {
       *this = std::move(other);

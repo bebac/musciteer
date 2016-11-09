@@ -14,6 +14,7 @@ public/index.html
 public/android.html
 
 source/player/source_spotify_app_key.cpp
+source/spotify_web/id.h
 
 lib/json/nlohmann
 lib/libspotify-12.1.51-Linux-x86_64-release

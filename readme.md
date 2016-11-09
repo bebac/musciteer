@@ -137,6 +137,37 @@ To build you will need a spotify application key which is not included in the
 repository. Register a new application on the spotify developer site and place
 it in `source/player/source_spotify_app_key.cpp`
 
+```c
+#include <stdint.h>
+#include <stdlib.h>
+
+extern "C" const uint8_t g_appkey[] = {
+  0x01, 0xB1, 0xA2, 0x29, ...
+};
+
+extern "C" const size_t g_appkey_size = sizeof(g_appkey);
+
+```
+
+For the spotify web api you will need the client id and client secret in `source/spotify_web/id.h`
+
+```c
+#ifndef __spotify_web__id_h__
+#define __spotify_web__id_h__
+
+// ----------------------------------------------------------------------------
+namespace spotify_web
+{
+  const std::string client_id     = "................................";
+  const std::string client_secret = "................................";
+}
+
+// ----------------------------------------------------------------------------
+#endif
+
+```
+
+
 Install needed dependencies
 
 ```sh

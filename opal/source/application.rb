@@ -38,6 +38,7 @@ class Application
           stream_sync:             false,
           stream:                  {},
           spotify_importing:       false,
+          spotify_web:             { authorized: false }
         }
       else
         case action[:type]
@@ -117,6 +118,10 @@ class Application
           settings = state[:spotify_source_settings]
           state.merge({
             spotify_source_settings: settings.merge({ status: action[:data] })
+          })
+        when :spotify_web_settings_success
+          state.merge({
+            spotify_web: action[:data]
           })
         when :stream_begin
           state.merge({

@@ -7,6 +7,7 @@ class Settings < Maquette::Component
     @audio = AudioSettings.new(store)
     @local_source = LocalSourceSettings.new(store)
     @spotify_source = SpotifySourceSettings.new(store)
+    @spotify_web = SpotifyWebSettings.new(store)
   end
 
   def render_header
@@ -28,7 +29,8 @@ class Settings < Maquette::Component
         render_section(@ctpb),
         render_section(@audio),
         render_section(@local_source),
-        render_section(@spotify_source)
+        render_section(@spotify_source),
+        render_section(@spotify_web)
       ]
     end
   end

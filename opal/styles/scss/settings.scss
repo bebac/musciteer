@@ -167,6 +167,11 @@
           border: none;
           background: darken($background-color, 8%);
         }
+
+        a {
+          color: $text-color;
+          text-decoration: none;
+        }
       }
     }
 

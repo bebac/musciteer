@@ -11,15 +11,11 @@
 #include "api_handler_base.h"
 
 // ----------------------------------------------------------------------------
-#include "../spotify_web/http_client.h"
 #include "../spotify_web/track_importer.h"
-#include "../spotify_web/id.h"
+#include "../spotify_web/api.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/spotify_web_api.h"
-
-// ----------------------------------------------------------------------------
-#include <http/base64.h>
 
 // ----------------------------------------------------------------------------
 class spotify_handler : public api_handler_base
@@ -28,7 +24,6 @@ public:
   spotify_handler(http::request_environment& env, dripcore::task* task)
     :
     api_handler_base(env),
-    http_client_(task),
     host_re_("host=([^&]*)"),
     code_re_("code=([^&]*)"),
     state_re_("state=([^&]*)"),
@@ -146,21 +141,23 @@ protected:
       throw std::runtime_error("spotify import url must be a string");
     }
 
-    std::string url = j["url"];
+    spotify_web::api spotify(task_);
 
-    auto spotify_json = http_client_.get_json("https://api.spotify.com"+url);
+    json body;
 
-    if ( spotify_json["type"] == "track" )
+    spotify.get(j["url"], body);
+
+    if ( body["type"] == "track" )
     {
-      spotify_web::track_importer importer(http_client_);
+      spotify_web::track_importer importer(spotify);
 
-      importer.import_track(spotify_json);
+      importer.import_track(body);
     }
-    else if ( spotify_json["type"] == "album" )
+    else if ( body["type"] == "album" )
     {
-      spotify_web::track_importer importer(http_client_);
+      spotify_web::track_importer importer(spotify);
 
-      for ( auto item : spotify_json["tracks"]["items"] )
+      for ( auto item : body["tracks"]["items"] )
       {
         std::string track_url = item["href"];
         importer.import_track(track_url);
@@ -223,87 +220,9 @@ protected:
 
     if ( !code.empty() && !state.empty() )
     {
-      std::string client_code = spotify_web::client_id + ":" + spotify_web::client_secret;
+      spotify_web::api spotify(task_);
 
-      std::stringstream pos;
-
-      pos
-        << "grant_type=authorization_code"
-        << "&code=" << code
-        << "&redirect_uri=" << state;
-
-      auto params = pos.str();
-
-      http::request req;
-
-      req.method(http::method::post);
-      req.uri("/api/token");
-      req.port(443);
-      req.set_header("Host", "accounts.spotify.com");
-      req.set_header("Content-Type", "application/x-www-form-urlencoded");
-      req.set_header("Content-Length", std::to_string(params.length()));
-      req.set_header("Authorization", "Basic " + http::base64::encode(client_code.data(), client_code.length()));
-
-      http_client_.get(
-        req,
-        [&](std::ostream& os)
-        {
-          os << params;
-        },
-        [&](http::response_environment& response)
-        {
-          std::string content_length_s;
-          std::string content;
-
-          if ( response.status_code() != 200 )
-          {
-            std::cerr << "spotify_handler - failed to authorize " << response.status_message() << std::endl;
-            return;
-          }
-
-          if ( response.get_header("content-length", content_length_s) )
-          {
-            auto pos = std::size_t{0};
-            auto len = std::stoul(content_length_s, &pos);
-
-            for ( size_t i=0; i<len; ++i) {
-              content += response.is.get();
-            }
-
-            json j = json::parse(content);
-
-            if ( !j.is_object() ) {
-              throw std::runtime_error("spotify handler - authorization must be an object");
-            }
-
-            musciteer::dm::spotify_web_api api{};
-
-            if ( j["access_token"].is_string() ) {
-              api.access_token(j["access_token"]);
-            }
-
-            if ( j["refresh_token"].is_string() ) {
-              api.refresh_token(j["refresh_token"]);
-            }
-
-            if ( j["expires_in"].is_number() ) {
-              api.expires_at(j["expires_in"]);
-            }
-
-            api.save();
-#if 0
-            std::time_t t = std::chrono::system_clock::to_time_t(api_data.expires_at());
-
-            std::cerr
-              << "spotify_handler - data" << std::endl
-              << "  access_token  : " << api_data.access_token() << std::endl
-              << "  refresh_token : " << api_data.refresh_token() << std::endl
-              << "  expire_at     : " << std::put_time(std::localtime(&t), "%F %T") << std::endl;
-#endif
-          }
-        },
-        true
-      );
+      spotify.authorize(code, state);
     }
     else
     {
@@ -333,8 +252,6 @@ protected:
 
     return j;
   }
-protected:
-  spotify_web::http_client http_client_;
 protected:
   std::regex host_re_;
   std::regex code_re_;

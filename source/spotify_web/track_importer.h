@@ -17,7 +17,7 @@
 #include "../dm/album_cover.h"
 
 // ----------------------------------------------------------------------------
-#include "http_client.h"
+#include "api.h"
 
 // ----------------------------------------------------------------------------
 namespace spotify_web
@@ -25,19 +25,21 @@ namespace spotify_web
   class track_importer
   {
   public:
-    track_importer(http_client& http_client) : http_client_(http_client)
+    track_importer(api& spotify) : spotify_(spotify)
     {
     }
   public:
     std::string import_track(const std::string& url)
     {
-      auto track_json = http_client_.get_json(url);
+      json track;
 
-      if ( !track_json.is_object() ) {
+      spotify_.get(url, track);
+
+      if ( !track.is_object() ) {
         throw std::runtime_error("track json not an object");
       }
 
-      return import_track(track_json);
+      return import_track(track);
     }
   public:
     std::string import_track(json& track_json)
@@ -152,13 +154,15 @@ namespace spotify_web
         throw std::runtime_error("album json not an object");
       }
 
-      auto details_json = http_client_.get_json(album_json["href"]);
+      json details;
 
-      if ( !details_json["artists"].is_array() ) {
+      spotify_.get(album_json["href"], details);
+
+      if ( !details["artists"].is_array() ) {
         throw std::runtime_error("album artists json not an array");
       }
 
-      auto artist_json = details_json["artists"][0];
+      auto artist_json = details["artists"][0];
 
       if ( !artist_json.is_object() ) {
         throw std::runtime_error("artist json not an object");
@@ -238,35 +242,12 @@ namespace spotify_web
     {
       auto cover = musciteer::dm::album_cover();
 
-      http_client_.get(url, [&](http::response_environment& response)
-      {
-        std::string content_type;
-        std::string content_length_s;
-        std::string content;
-
-        if ( !response.get_header("content-type", content_type) ) {
-          throw std::runtime_error("no content-type header");
-        }
-
-        if ( !response.get_header("content-length", content_length_s) ) {
-          throw std::runtime_error("no content-length header");
-        }
-
-        auto pos = std::size_t{0};
-        auto len = std::stoul(content_length_s, &pos);
-
-        for ( size_t i=0; i<len; ++i) {
-          content += response.is.get();
-        }
-
-        cover.mime_type(content_type);
-        cover.data(reinterpret_cast<const unsigned char*>(content.data()), content.length());
-      });
+      spotify_.get(url, cover);
 
       return cover;
     }
   private:
-    http_client& http_client_;
+    spotify_web::api& spotify_;
   private:
     musciteer::dm::artists artists_;
     musciteer::dm::albums albums_;

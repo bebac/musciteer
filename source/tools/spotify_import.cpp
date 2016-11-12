@@ -13,7 +13,7 @@
 #include "../dm/album_cover.h"
 
 // ----------------------------------------------------------------------------
-#include "../spotify_web/http_client.h"
+#include "../spotify_web/api.h"
 #include "../spotify_web/track_importer.h"
 
 // ----------------------------------------------------------------------------
@@ -63,26 +63,28 @@ void print_track(const std::string& track_id)
 class spotify_importer : public dripcore::task
 {
 public:
-  spotify_importer(std::vector<std::string> urls) : http_client_(this), urls_(urls)
+  spotify_importer(std::vector<std::string> urls) : spotify_(this), urls_(urls)
   {
   }
 private:
   void main() override
   {
-    spotify_web::track_importer importer(http_client_);
+    spotify_web::track_importer importer(spotify_);
 
     for ( const auto& url : urls_ )
     {
-      auto j = http_client_.get_json(url);
+      json object;
 
-      if ( j["type"] == "track" )
+      spotify_.get(url, object);
+
+      if ( object["type"] == "track" )
       {
-        auto track_id = importer.import_track(j);
+        auto track_id = importer.import_track(object);
         print_track(track_id);
       }
-      else if ( j["type"] == "album" )
+      else if ( object["type"] == "album" )
       {
-        for ( auto item : j["tracks"]["items"] )
+        for ( auto item : object["tracks"]["items"] )
         {
           std::string track_url = item["href"];
           auto track_id = importer.import_track(track_url);
@@ -96,7 +98,7 @@ private:
     }
   }
 private:
-  spotify_web::http_client http_client_;
+  spotify_web::api spotify_;
 private:
   std::vector<std::string> urls_;
 };

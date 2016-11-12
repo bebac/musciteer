@@ -91,7 +91,7 @@ namespace musciteer
         kvstore_.get(spotify_web_api_key, data_);
       }
     public:
-      const std::string& access_token()
+      const std::string& access_token() const
       {
         return data_.access_token;
       }

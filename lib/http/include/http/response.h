@@ -37,7 +37,7 @@ namespace http
     return is;
   }
 
-  class response
+  class response : public message
   {
   public:
     response();
@@ -52,15 +52,10 @@ namespace http
   public:
     bool ok();
   public:
-    bool get_content_length(size_t& value);
-  public:
-    bool get_header(const std::string& key, std::string& value);
-  public:
     void read(std::istream& is);
   protected:
     http::version version_;
     http::status status_;
-    http::headers headers_;
   };
 
   class response_environment : public response

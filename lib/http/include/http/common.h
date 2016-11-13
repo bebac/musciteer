@@ -45,6 +45,19 @@ namespace http
 
   using headers = std::map<std::string, std::string, case_insensitive_compare>;
 
+  class message
+  {
+  public:
+    bool get_content_length(size_t& value);
+  public:
+    bool get_header(const std::string& key, std::string& value);
+  public:
+    void set_header(const std::string& key, const std::string& value);
+    void set_header(const std::string& key, std::string&& value);
+  protected:
+    headers headers_;
+  };
+
   std::istream& operator>>(std::istream& is, http::version& version);
   std::istream& operator>>(std::istream& is, http::method& method);
   std::istream& operator>>(std::istream& is, http::headers& headers);

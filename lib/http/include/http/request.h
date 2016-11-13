@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------------
 namespace http
 {
-  class request
+  class request : public message
   {
   public:
     request();
@@ -36,13 +36,6 @@ namespace http
   public:
     http::version version();
   public:
-    bool get_content_length(size_t& value);
-  public:
-    bool get_header(const std::string& key, std::string& value);
-  public:
-    void set_header(const std::string& key, const std::string& value);
-    void set_header(const std::string& key, std::string&& value);
-  public:
     void read(std::istream& is);
   public:
     void write(std::ostream& os) const;
@@ -51,7 +44,6 @@ namespace http
     http::method method_;
     std::string uri_;
     http::version version_;
-    http::headers headers_;
   };
 
   class request_environment : public request

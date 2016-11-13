@@ -57,45 +57,6 @@ namespace http
     return version_;
   }
 
-  bool request::get_content_length(size_t& value)
-  {
-    std::string s;
-
-    if ( !get_header("Content-Length", s) ) {
-      return false;
-    }
-
-    auto pos = std::size_t{0};
-    value = std::stoul(s, &pos);
-
-    return true;
-  }
-
-  bool request::get_header(const std::string& key, std::string& value)
-  {
-    auto it = headers_.find(key);
-
-    if ( it != headers_.end() )
-    {
-      value = it->second;
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  void request::set_header(const std::string& key, const std::string& value)
-  {
-    headers_.emplace(key, value);
-  }
-
-  void request::set_header(const std::string& key, std::string&& value)
-  {
-    headers_.emplace(key, std::move(value));
-  }
-
   void request::read(std::istream& is)
   {
     is >> method_ >> uri_ >> version_ >> headers_;

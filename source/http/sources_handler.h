@@ -122,22 +122,19 @@ protected:
 protected:
   void post_sources_local_directories()
   {
-    std::string content_type;
-    std::string content_length_s;
-    std::string content;
+    auto content_type = std::string{};
+    auto content_length = size_t{0};
+    auto content = std::string{};
 
-    if ( !env.get_header("content-type", content_type) ) {
+    if ( !env.get_header("Content-Type", content_type) ) {
       throw std::runtime_error("no content-type header");
     }
 
-    if ( !env.get_header("content-length", content_length_s) ) {
+    if ( !env.get_content_length(content_length) ) {
       throw std::runtime_error("no content-length header");
     }
 
-    auto pos = std::size_t{0};
-    auto len = std::stoul(content_length_s, &pos);
-
-    for ( size_t i=0; i<len; ++i) {
+    for ( size_t i=0; i<content_length; ++i ) {
       content += env.is.get();
     }
 
@@ -196,22 +193,19 @@ protected:
 protected:
   void post_sources_spotify_settings()
   {
-    std::string content_type;
-    std::string content_length_s;
-    std::string content;
+    auto content_type = std::string{};
+    auto content_length = size_t{0};
+    auto content = std::string{};
 
-    if ( !env.get_header("content-type", content_type) ) {
+    if ( !env.get_header("Content-Type", content_type) ) {
       throw std::runtime_error("no content-type header");
     }
 
-    if ( !env.get_header("content-length", content_length_s) ) {
+    if ( !env.get_content_length(content_length) ) {
       throw std::runtime_error("no content-length header");
     }
 
-    auto pos = std::size_t{0};
-    auto len = std::stoul(content_length_s, &pos);
-
-    for ( size_t i=0; i<len; ++i) {
+    for ( size_t i=0; i<content_length; ++i ) {
       content += env.is.get();
     }
 

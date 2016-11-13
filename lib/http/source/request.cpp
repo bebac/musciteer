@@ -57,6 +57,20 @@ namespace http
     return version_;
   }
 
+  bool request::get_content_length(size_t& value)
+  {
+    std::string s;
+
+    if ( !get_header("Content-Length", s) ) {
+      return false;
+    }
+
+    auto pos = std::size_t{0};
+    value = std::stoul(s, &pos);
+
+    return true;
+  }
+
   bool request::get_header(const std::string& key, std::string& value)
   {
     auto it = headers_.find(key);

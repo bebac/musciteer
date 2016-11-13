@@ -64,7 +64,7 @@ TEST_CASE("Read http response (ok)")
   CHECK(header_found);
   CHECK(header_value == "nginx");
 
-  header_found = response.get_header("content-length", header_value);
+  header_found = response.get_header("Content-Length", header_value);
 
   CHECK(header_found);
   CHECK(header_value == "0");

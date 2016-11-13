@@ -52,6 +52,8 @@ namespace http
   public:
     bool ok();
   public:
+    bool get_content_length(size_t& value);
+  public:
     bool get_header(const std::string& key, std::string& value);
   public:
     void read(std::istream& is);

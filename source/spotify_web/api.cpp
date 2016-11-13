@@ -14,12 +14,15 @@ namespace spotify_web
 {
   namespace
   {
-    std::regex url_re("^(http|https)://([^:/]*)(:?([^/]+)?(.*))");
+    const std::regex url_re{"^(http|https)://([^:/]*)(:?([^/]+)?(.*))"};
+
+    constexpr const char* host_accounts_spotify = "accounts.spotify.com";
+    constexpr const char* host_api_spotify = "api.spotify.com";
   }
 
   void api::authorize(const std::string& code, const std::string& state)
   {
-    socket_.connect("accounts.spotify.com");
+    socket_.connect(host_accounts_spotify);
 
     dripcore::streambuf sbuf(socket_, *task_);
 
@@ -39,7 +42,7 @@ namespace spotify_web
 
     env.method(http::method::post);
     env.uri("/api/token");
-    env.set_header("Host", "accounts.spotify.com");
+    env.set_header("Host", host_accounts_spotify);
     env.set_header("Content-Type", "application/x-www-form-urlencoded");
     env.set_header("Content-Length", std::to_string(params.length()));
     env.set_header("Authorization", "Basic " + http::base64::encode(client_code.data(), client_code.length()));
@@ -53,15 +56,12 @@ namespace spotify_web
       return;
     }
 
-    std::string content_length_s;
-    std::string content;
+    auto content_length = size_t{0};
+    auto content = std::string{};
 
-    if ( res.get_header("content-length", content_length_s) )
+    if ( res.get_content_length(content_length) )
     {
-      auto pos = std::size_t{0};
-      auto len = std::stoul(content_length_s, &pos);
-
-      for ( size_t i=0; i<len; ++i) {
+      for ( size_t i=0; i<content_length; ++i) {
         content += env.is.get();
       }
 
@@ -77,7 +77,7 @@ namespace spotify_web
 
   void api::get(const std::string& path, json& body)
   {
-    socket_.connect("api.spotify.com");
+    socket_.connect(host_api_spotify);
 
     dripcore::streambuf sbuf(socket_, *task_);
 
@@ -100,19 +100,19 @@ namespace spotify_web
       env.set_header("Authorization", "Bearer " + api_data_.access_token());
     }
 
-    env.set_header("Host", "api.spotify.com");
+    env.set_header("Host", host_api_spotify);
 
     env.os << env << std::flush;
     env.is >> res;
 
     if ( res.status_code() == 200 )
     {
-      std::string content_type;
-      std::string content_length_s;
-      std::string content;
-      std::string accept = "application/json";
+      auto content_type = std::string{};
+      auto content_length = size_t{0};
+      auto content = std::string{};
+      auto accept = std::string{"application/json"};
 
-      if ( !res.get_header("content-type", content_type) ) {
+      if ( !res.get_header("Content-Type", content_type) ) {
         throw std::runtime_error("no content-type header");
       }
 
@@ -120,14 +120,11 @@ namespace spotify_web
         throw std::runtime_error("wrong content type");
       }
 
-      if ( !res.get_header("content-length", content_length_s) ) {
-        throw std::runtime_error("no content-length header");
+      if ( !res.get_content_length(content_length) ) {
+        throw std::runtime_error("spotify_web - get json has no content-length header");
       }
 
-      auto pos = std::size_t{0};
-      auto len = std::stoul(content_length_s, &pos);
-
-      for ( size_t i=0; i<len; ++i) {
+      for ( size_t i=0; i<content_length; ++i ) {
         content += env.is.get();
       }
 
@@ -198,22 +195,19 @@ namespace spotify_web
 
     if ( res.status_code() == 200 )
     {
-      std::string content_type;
-      std::string content_length_s;
-      std::string content;
+      auto content_type = std::string{};
+      auto content_length = size_t{0};
+      auto content = std::string{};
 
-      if ( !res.get_header("content-type", content_type) ) {
+      if ( !res.get_header("Content-Type", content_type) ) {
         throw std::runtime_error("no content-type header");
       }
 
-      if ( !res.get_header("content-length", content_length_s) ) {
-        throw std::runtime_error("no content-length header");
+      if ( !res.get_content_length(content_length) ) {
+        throw std::runtime_error("spotify_web - get album cover response has no content-length header");
       }
 
-      auto pos = std::size_t{0};
-      auto len = std::stoul(content_length_s, &pos);
-
-      for ( size_t i=0; i<len; ++i) {
+      for ( size_t i=0; i<content_length; ++i ) {
         content += env.is.get();
       }
 
@@ -241,7 +235,7 @@ namespace spotify_web
 
   void api::refresh_access_token()
   {
-    socket_.connect("accounts.spotify.com");
+    socket_.connect(host_accounts_spotify);
 
     dripcore::streambuf sbuf(socket_, *task_);
 
@@ -260,7 +254,7 @@ namespace spotify_web
 
     env.method(http::method::post);
     env.uri("/api/token");
-    env.set_header("Host", "accounts.spotify.com");
+    env.set_header("Host", host_accounts_spotify);
     env.set_header("Content-Type", "application/x-www-form-urlencoded");
     env.set_header("Content-Length", std::to_string(params.length()));
     env.set_header("Authorization", "Basic " + http::base64::encode(client_code.data(), client_code.length()));
@@ -274,15 +268,12 @@ namespace spotify_web
       return;
     }
 
-    std::string content_length_s;
-    std::string content;
+    auto content_length = size_t{0};
+    auto content = std::string{};
 
-    if ( res.get_header("content-length", content_length_s) )
+    if ( res.get_content_length(content_length) )
     {
-      auto pos = std::size_t{0};
-      auto len = std::stoul(content_length_s, &pos);
-
-      for ( size_t i=0; i<len; ++i) {
+      for ( size_t i=0; i<content_length; ++i) {
         content += env.is.get();
       }
 

@@ -36,6 +36,8 @@ namespace http
   public:
     http::version version();
   public:
+    bool get_content_length(size_t& value);
+  public:
     bool get_header(const std::string& key, std::string& value);
   public:
     void set_header(const std::string& key, const std::string& value);

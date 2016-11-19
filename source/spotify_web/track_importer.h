@@ -71,7 +71,7 @@ namespace spotify_web
       }
 
       auto track = musciteer::dm::track{};
-      auto track_source = musciteer::dm::track_source{"spotify", track_json["uri"]};
+      auto track_source = make_track_source(track_json);
 
       std::string track_title = track_json["name"];
       unsigned track_tn = track_json["track_number"];
@@ -227,10 +227,12 @@ namespace spotify_web
           throw std::runtime_error("album images json not an array");
         }
 
-        auto album_cover = http_get_image(images_json[0]["url"]);
+        auto cover = musciteer::dm::album_cover();
         auto kvstore = musciteer::kvstore();
 
-        kvstore.set(album.id()+"/cover", album_cover);
+        spotify_.get(images_json[0]["url"], cover);
+
+        kvstore.set(album.id()+"/cover", cover);
 
         artist.albums_add(album);
       }
@@ -238,13 +240,35 @@ namespace spotify_web
       return album;
     }
   private:
-    musciteer::dm::album_cover http_get_image(const std::string& url)
+    musciteer::dm::track_source make_track_source(const json& track)
     {
-      auto cover = musciteer::dm::album_cover();
+      auto track_source   = musciteer::dm::track_source{"spotify", track["uri"]};
 
-      spotify_.get(url, cover);
+      if ( spotify_.is_authorized() )
+      {
+        auto audio_features = spotify_.audio_features(track["id"]);
 
-      return cover;
+        if ( !audio_features.is_object() ) {
+          throw std::runtime_error("audio_features is not an object");
+        }
+
+        if ( audio_features["type"] != "audio_features" ) {
+          throw std::runtime_error("audio_features wrong type!");
+        }
+
+        float loudness   = audio_features["loudness"];
+        float energy     = audio_features["energy"];
+        float replaygain = -((12.0+loudness)*energy)-3.0;
+
+        track_source.rg_track_gain(replaygain);
+        track_source.rg_track_peak(1.0);
+      }
+      else
+      {
+        std::cerr << "spotify import - not authorized - skipping audio features" << std::endl;
+      }
+
+      return track_source;
     }
   private:
     spotify_web::api& spotify_;

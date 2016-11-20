@@ -39,10 +39,10 @@ namespace spotify_web
   public:
     ~socket()
     {
-      SSL_free(ssl_);
-      SSL_CTX_free(ctx_);
       close();
     }
+  public:
+    operator bool() { return !!socket_; }
   public:
     void connect(const std::string& host, const std::string& port = "443")
     {
@@ -59,6 +59,8 @@ namespace spotify_web
 
       for (rp = result; rp != NULL; rp = rp->ai_next)
       {
+        close();
+
         socket_ = dripcore::socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 
         if ( socket_ )
@@ -187,6 +189,20 @@ namespace spotify_web
       }
       else {
         throw std::runtime_error(gai_strerror(res));
+      }
+    }
+  private:
+    void close() override
+    {
+      io::close();
+      if ( ssl_ ) {
+        SSL_free(ssl_);
+      }
+      if ( ctx_ ) {
+        SSL_CTX_free(ctx_);
+      }
+      if ( socket_ ) {
+        socket_.close();
       }
     }
   private:

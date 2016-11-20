@@ -136,6 +136,15 @@ public:
     }
   }
 #endif
+public:
+  void scale(double factor)
+  {
+    for( size_t i = 0; i < size_; ++i )
+    {
+      data_[i].l = static_cast<int32_t>(data_[i].l*factor);
+      data_[i].r = static_cast<int32_t>(data_[i].r*factor);
+    }
+  }
 private:
   audio_buffer(const audio_buffer&) = delete;
   audio_buffer& operator= (const audio_buffer&) = delete;

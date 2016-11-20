@@ -13,6 +13,12 @@
 audio_output_alsa::audio_output_alsa()
   :
   state_(state_closed),
+  stream_begin_time_(),
+  stream_notify_next_(),
+  stream_length_(),
+  rg_enabled_(false),
+  rg_(0),
+  scale_(1.0),
   handle_(nullptr),
   msg_ch_(),
   thr_(&audio_output_alsa::loop, this)
@@ -252,6 +258,17 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
         stream_begin_time_ = std::chrono::steady_clock::now();
         stream_notify_next_ = stream_begin_time_ + std::chrono::seconds(1);
         stream_length_ = m.length;
+        rg_ = m.replaygain;
+
+        if ( rg_enabled_ ) {
+          scale_ = std::pow(10, rg_ / 20);
+        }
+
+        std::cerr
+          << "audio_output - stream begin replaygain is " << (rg_enabled_ ? "on" : "off")
+          << " [ rg_=" << rg_ << ", scale_=" << scale_ << " ]"
+          << std::endl;
+
         state_ = state_playing;
 
         for ( auto observer : observers_ )
@@ -321,9 +338,15 @@ void audio_output_alsa::handle(stream_buffer& m)
     {
       assert(handle_);
 
+      auto buffer = std::move(m.buffer);
+
       update_stream_time();
 
-      snd_pcm_sframes_t frames = snd_pcm_writei(handle_, m.buffer.data(), m.buffer.size());
+      if ( rg_enabled_ ) {
+        buffer.scale(scale_);
+      }
+
+      snd_pcm_sframes_t frames = snd_pcm_writei(handle_, buffer.data(), buffer.size());
 
       if ( frames < 0 ) {
         std::cerr << "audio output underrun" << std::endl;
@@ -339,7 +362,7 @@ void audio_output_alsa::handle(stream_buffer& m)
       update_stream_time();
 
       // Return completed buffer for recycling.
-      completed_buffer_ch_.send(std::move(m.buffer));
+      completed_buffer_ch_.send(std::move(buffer));
       break;
     }
   }

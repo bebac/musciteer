@@ -70,6 +70,9 @@ private:
   time_point stream_begin_time_;
   time_point stream_notify_next_;
   milliseconds stream_length_;
+  bool rg_enabled_;
+  double rg_;
+  double scale_;
 private:
   snd_pcm_t* handle_;
 private:

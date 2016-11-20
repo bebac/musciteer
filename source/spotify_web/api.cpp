@@ -130,6 +130,10 @@ namespace spotify_web
 
       body = json::parse(content);
     }
+    else
+    {
+      std::cerr << "spotify_web get error " << res.status_code() << " " << res.status_message() << std::endl;
+    }
   }
 
   void api::get(const std::string& url, musciteer::dm::album_cover& cover)

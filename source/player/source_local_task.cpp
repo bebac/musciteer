@@ -16,38 +16,82 @@
 namespace musciteer
 {
   /////
-  // FLAC player.
+  // Flac file decoder.
+  //
 
-  class flac_decoder : public FLAC::Decoder::File
+  template<typename T>
+  class flac_decoder_file : public FLAC::Decoder::File
   {
-    using milliseconds = audio_output_alsa::milliseconds;
   public:
-    flac_decoder(const std::string& filename, unsigned stream_id, std::shared_ptr<audio_output_alsa> audio_output)
-      :
-      FLAC::Decoder::File(),
-      audio_output_(audio_output),
-      stream_id_(stream_id)
+    flac_decoder_file(T& handler) : handler_(handler)
     {
-      auto res = FLAC::Decoder::File::init(filename.c_str());
+    }
+  public:
+    void init_track_source(const dm::track_source& source)
+    {
+      auto res = init(source.uri().c_str());
 
       if ( FLAC__STREAM_DECODER_INIT_STATUS_OK != res ) {
-        std::cout << "flac decoder error" << std::endl;
+        throw std::runtime_error("flac decoder file intit error!");
       }
     }
-  public:
-    void stream_buffer_channel_init(size_t num_buffers)
+  protected:
+    FLAC__StreamDecoderReadStatus read_callback(FLAC__byte buffer[], size_t *bytes)
     {
-      for ( size_t i=0; i<num_buffers; ++i ) {
-        buffer_ch_.send(audio_buffer{}, task_);
-      }
+      return handler_.read_callback(buffer, bytes);
     }
-  public:
-    void play(dripcore::task* task)
+  protected:
+    FLAC__StreamDecoderWriteStatus write_callback(const FLAC__Frame* frame, const FLAC__int32* const buffer[])
     {
-      task_ = task;
+      return handler_.write_callback(frame, buffer);
+    }
+  protected:
+    void metadata_callback(const ::FLAC__StreamMetadata *metadata)
+    {
+      handler_.metadata_callback(metadata);
+    }
+  protected:
+    void error_callback (::FLAC__StreamDecoderErrorStatus status)
+    {
+      handler_.error_callback(status);
+    }
+  private:
+    T& handler_;
+  };
 
-      stream_buffer_channel_init(10);
-      process_until_end_of_stream();
+  /////
+  // Flac decoder task.
+
+  class flac_decoder_task : public dripcore::task
+  {
+    friend class flac_decoder_file<flac_decoder_task>;
+  public:
+    using milliseconds = audio_output_alsa::milliseconds;
+  public:
+    flac_decoder_task(std::shared_ptr<player_session> session)
+      :
+      decoder_(*this),
+      session_(session)
+    {
+    }
+  private:
+    void init() override
+    {
+      for ( size_t i=0; i<10; ++i ) {
+        buffer_ch_.send(audio_buffer{}, this);
+      }
+    }
+  private:
+    void main() override
+    {
+      auto track = session_->track();
+      assert(track);
+
+      source_ = track->sources_get("local");
+
+      decoder_.init_track_source(source_);
+      decoder_.process_until_end_of_stream();
+
       stream_end();
     }
   private:
@@ -57,89 +101,72 @@ namespace musciteer
       message m(message::stream_end_id);
 
       m.stream_end.reply = done;
-      audio_output_->send(std::move(m));
 
-      done.recv(task_);
+      send(*session_->audio_output(), std::move(m));
+
+      done.recv(this);
     }
-  protected:
-    FLAC__StreamDecoderReadStatus read_callback(FLAC__byte buffer[], size_t *bytes)
-    {
-      return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
-    }
-  protected:
-    FLAC__StreamDecoderWriteStatus write_callback(const FLAC__Frame* frame, const FLAC__int32* const buffer[])
-    {
-      auto buf = buffer_ch_.recv(task_);
-
-      buf.clear();
-      buf.writen(buffer, frame->header.blocksize, bits_per_sample_);
-
-      audio_output_->send(std::move(buf));
-
-      if ( task_->stopping() || task_->done() ) {
-        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-      }
-      else {
-        return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
-      }
-    }
-  protected:
+  private:
     void metadata_callback(const ::FLAC__StreamMetadata *metadata)
     {
       bits_per_sample_ = metadata->data.stream_info.bits_per_sample;
 
       auto sample_rate = metadata->data.stream_info.sample_rate;
       auto total_samples = metadata->data.stream_info.total_samples;
+      auto replaygain = source_.rg_track_gain();
 
       std::chrono::duration<float> length{float(total_samples)/float(sample_rate)};
 
       message m(message::stream_begin_id);
 
-      m.stream_begin.stream_id = stream_id_;
+      m.stream_begin.stream_id = session_->id();
       m.stream_begin.sample_rate = sample_rate;
       m.stream_begin.length = std::chrono::duration_cast<milliseconds>(length);
+      m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
-      audio_output_->send(std::move(m));
+
+      send(*session_->audio_output(), std::move(m));
     }
-  protected:
+  private:
+    FLAC__StreamDecoderReadStatus read_callback(FLAC__byte buffer[], size_t *bytes)
+    {
+      return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
+    }
+  private:
+    FLAC__StreamDecoderWriteStatus write_callback(const FLAC__Frame* frame, const FLAC__int32* const buffer[])
+    {
+      auto buf = buffer_ch_.recv(this);
+
+      buf.clear();
+      buf.writen(buffer, frame->header.blocksize, bits_per_sample_);
+
+      send(*session_->audio_output(), std::move(buf));
+
+      if ( stopping() || done() ) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+      }
+      else {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+      }
+    }
+  private:
     void error_callback (::FLAC__StreamDecoderErrorStatus status)
     {
       std::cout << "decoder error" << std::endl;
     }
   private:
-    dripcore::task* task_;
-    std::shared_ptr<audio_output_alsa> audio_output_;
+    template<typename Receiver, typename Message>
+    void send(Receiver& receiver, Message m)
+    {
+      receiver.send(std::forward<Message>(m));
+    }
   private:
-    unsigned stream_id_;
+    flac_decoder_file<flac_decoder_task> decoder_;
+  private:
     unsigned bits_per_sample_;
     dripcore::channel<audio_buffer> buffer_ch_;
-  };
-
-  /////
-  // Flac decode task.
-
-  class flac_decoder_task : public dripcore::task
-  {
-  public:
-    flac_decoder_task(std::shared_ptr<player_session> session) : session_(session)
-    {
-    }
   private:
-    void main() override
-    {
-      auto track = session_->track();
-      assert(track);
-
-      auto source = track->sources_get("local");
-
-      flac_decoder decoder{
-        source.uri(),
-        session_->id(),
-        session_->audio_output()
-      };
-
-      decoder.play(this);
-    }
+    dm::track_source source_;
   private:
     std::shared_ptr<player_session> session_;
   };

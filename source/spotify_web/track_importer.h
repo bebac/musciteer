@@ -248,7 +248,9 @@ namespace spotify_web
       {
         auto audio_features = spotify_.audio_features(track["id"]);
 
-        if ( !audio_features.is_object() ) {
+        if ( !audio_features.is_object() )
+        {
+          std::cerr << "make_track_source - id " << track["id"] << " audio_features is not an object " << audio_features << std::endl;
           throw std::runtime_error("audio_features is not an object");
         }
 

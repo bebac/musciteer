@@ -154,6 +154,7 @@ namespace musciteer
     bool track_loaded_;
   private:
     std::shared_ptr<player_session> player_session_;
+    dm::track_source source_;
     dripcore::channel<audio_buffer> buffer_ch_;
   private:
     static constexpr const char* name = "spotify";
@@ -299,9 +300,9 @@ namespace musciteer
     auto track = player_session_->track();
     assert(track);
 
-    auto source = track->sources_get("spotify");
+    source_ = track->sources_get("spotify");
 
-    spotify_link link(source.uri());
+    spotify_link link(source_.uri());
 
     if ( link.is_track() )
     {
@@ -413,11 +414,14 @@ namespace musciteer
       auto audio_output = player_session_->audio_output();
       assert(audio_output);
 
+      auto replaygain = source_.rg_track_gain();
+
       ::message m(::message::stream_begin_id);
 
       m.stream_begin.stream_id = player_session_->id();
       m.stream_begin.sample_rate = 44100;
       m.stream_begin.length = std::chrono::milliseconds(track->duration());
+      m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
       audio_output->send(std::move(m));
 

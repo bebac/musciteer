@@ -24,6 +24,15 @@ namespace musciteer
     struct player_data
     {
     public:
+      player_data()
+        :
+        ctpb_enabled(false),
+        replaygain_enabled(false),
+        ctpb_type(),
+        audio_device()
+      {
+      }
+    public:
       void read(msgpack::istream& is)
       {
         msgpack::map map;
@@ -41,6 +50,7 @@ namespace musciteer
                 case 1: is >> ctpb_enabled; break;
                 case 2: is >> ctpb_type; break;
                 case 3: is >> audio_device; break;
+                case 4: is >> replaygain_enabled; break;
                 default:
                   is >> msgpack::skip;
                   break;
@@ -62,15 +72,17 @@ namespace musciteer
     public:
       void write(msgpack::ostream& os) const
       {
-        msgpack::map map{3};
+        msgpack::map map{4};
 
         os << map
           << 1 << ctpb_enabled
           << 2 << ctpb_type
-          << 3 << audio_device;
+          << 3 << audio_device
+          << 4 << replaygain_enabled;
       }
     public:
       bool ctpb_enabled;
+      bool replaygain_enabled;
       std::string ctpb_type;
       std::string audio_device;
     };
@@ -85,6 +97,7 @@ namespace musciteer
           data_.ctpb_enabled = true;
           data_.ctpb_type = "random";
           data_.audio_device = "default";
+          data_.replaygain_enabled = false;
         }
       }
     public:
@@ -106,6 +119,16 @@ namespace musciteer
       void ctpb_type(const std::string& value)
       {
         data_.ctpb_type = value;
+      }
+    public:
+      bool replaygain_enabled() const
+      {
+        return data_.replaygain_enabled;
+      }
+    public:
+      void replaygain_enabled(bool value)
+      {
+        data_.replaygain_enabled = value;
       }
     public:
       const std::string& audio_device() const

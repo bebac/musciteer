@@ -125,16 +125,18 @@ public:
 class audio_output_open_request
 {
 public:
-  audio_output_open_request() : device_name()
+  audio_output_open_request() : device_name(), replaygain_enabled(false)
   {
   }
   audio_output_open_request(audio_output_open_request&& other)
   {
     device_name = std::move(other.device_name);
+    replaygain_enabled = std::move(other.replaygain_enabled);
     reply = std::move(other.reply);
   }
 public:
   std::string device_name;
+  bool replaygain_enabled;
   message_channel reply;
 };
 

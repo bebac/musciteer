@@ -133,7 +133,7 @@ namespace dripcore
     {
       io::close();
       if ( fd_ != -1 ) {
-        ::close(fd_);
+        ::close(fd_); fd_ = -1;
       }
     }
   public:

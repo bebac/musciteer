@@ -4,6 +4,7 @@ class AudioSettings < Maquette::Component
   def initialize(store)
     @store = store
     store.dispatch({ type: :audio_settings_load })
+    store.dispatch({ type: :audio_replaygain_load })
   end
 
   def current_device
@@ -14,8 +15,16 @@ class AudioSettings < Maquette::Component
     store.state[:audio_settings][:devices]
   end
 
+  def replaygain_enabled?
+    store.state[:replaygain_enabled]
+  end
+
   def set_device(evt)
     store.dispatch({ type: :audio_settings_set_device, data: evt.target.value })
+  end
+
+  def toggle_replaygain(evt)
+    store.dispatch({ type: :audio_replaygain_set, data: replaygain_enabled? ? false : true })
   end
 
   def render_header
@@ -44,10 +53,29 @@ class AudioSettings < Maquette::Component
     end
   end
 
+  def render_replaygain
+    h 'div.settings-item' do
+      [
+        (h 'div', "Replaygain"),
+        (
+          h 'div.togglebox' do
+            h 'input', {
+              type: 'checkbox',
+              checked: replaygain_enabled?,
+              onchange: handler(:toggle_replaygain)
+            }
+          end
+        ),
+        (h 'div')
+      ]
+    end
+  end
+
   def render
     [
       render_header,
       render_device,
+      render_replaygain
     ]
   end
 end
@@ -69,6 +97,27 @@ module ActionDispatchHooks
       request.on :success do |response|
         if output = response.json
           dispatch({ type: :audio_settings_success, data: output })
+        end
+      end
+    end
+  end
+
+  def audio_replaygain_load
+    Browser::HTTP.get("/api/player/replaygain") do |request|
+      request.on :success do |response|
+        if output = response.json
+          dispatch({ type: :audio_replaygain_success, data: output })
+        end
+      end
+    end
+  end
+
+  def audio_replaygain_set(value)
+    Browser::HTTP.post("/api/player/replaygain", data={"enabled" => value}.to_json) do |request|
+      request.content_type("application/json")
+      request.on :success do |response|
+        if output = response.json
+          dispatch({ type: :audio_replaygain_success, data: output })
         end
       end
     end

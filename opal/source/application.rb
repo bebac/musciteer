@@ -25,6 +25,7 @@ class Application
           player_state:            :stopped,
           audio_settings:          { current: nil, devices: [] },
           ctpb_settings:           { enabled: nil, type: [] },
+          replaygain_enabled:      { enabled: nil },
           local_source_settings:   { status: "ok", directories: [] },
           spotify_source_settings: { status: "unknown", username: "", password: "" },
           local_source_scanning:   false,
@@ -96,6 +97,10 @@ class Application
         when :ctpb_settings_success
           state.merge({
             ctpb_settings: action[:data]
+          })
+        when :audio_replaygain_success
+          state.merge({
+            replaygain_enabled: action[:data][:enabled]
           })
         when :local_source_settings_success
           state.merge({

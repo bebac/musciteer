@@ -71,6 +71,18 @@ public:
               method_not_allowed();
             }
           }
+          else if ( match[1] == "replaygain" )
+          {
+            if ( method == http::method::get ) {
+              get_player_replaygain();
+            }
+            else if ( method == http::method::post ) {
+              post_player_replaygain();
+            }
+            else {
+              method_not_allowed();
+            }
+          }
           else
           {
             not_found();
@@ -110,23 +122,7 @@ private:
 private:
   void post_player_output()
   {
-    auto content_type = std::string{};
-    auto content_length = size_t{0};
-    auto content = std::string{};
-
-    if ( !env.get_header("Content-Type", content_type) ) {
-      throw std::runtime_error("no content-type header");
-    }
-
-    if ( !env.get_content_length(content_length) ) {
-      throw std::runtime_error("no content-length header");
-    }
-
-    for ( size_t i=0; i<content_length; ++i) {
-      content += env.is.get();
-    }
-
-    json j = json::parse(content);
+    auto j = read_json_content(env);
 
     if ( !j.is_object() ) {
       throw std::runtime_error("player output must be an object");
@@ -154,30 +150,12 @@ private:
 private:
   void get_player_ctpb()
   {
-    json j = get_ctpb_json();
-
-    ok(std::move(j));
+    ok(get_ctpb_json());
   }
 private:
   void post_player_ctpb()
   {
-    auto content_type = std::string{};
-    auto content_length = size_t{0};
-    auto content = std::string{};
-
-    if ( !env.get_header("Content-Type", content_type) ) {
-      throw std::runtime_error("no content-type header");
-    }
-
-    if ( !env.get_content_length(content_length) ) {
-      throw std::runtime_error("no content-length header");
-    }
-
-    for ( size_t i=0; i<content_length; ++i ) {
-      content += env.is.get();
-    }
-
-    json j = json::parse(content);
+    auto j = read_json_content(env);
 
     if ( !j.is_object() ) {
       throw std::runtime_error("player ctpb must be an object");
@@ -198,9 +176,34 @@ private:
     auto player = musciteer::player();
     player.settings_changed();
 
-    json r = get_ctpb_json();
+    ok(get_ctpb_json());
+  }
+private:
+  void get_player_replaygain()
+  {
+    ok(get_replaygain_json());
+  }
+private:
+  void post_player_replaygain()
+  {
+    auto j = read_json_content(env);
 
-    ok(std::move(r));
+    if ( !j.is_object() ) {
+      throw std::runtime_error("player replaygain must be an object");
+    }
+
+    musciteer::dm::player player_settings;
+
+    if ( j.count("enabled") ) {
+      player_settings.replaygain_enabled(j["enabled"].get<bool>());
+    }
+
+    player_settings.save();
+
+    auto player = musciteer::player();
+    player.settings_changed();
+
+    ok(get_replaygain_json());
   }
 private:
   json get_output_json()
@@ -229,6 +232,38 @@ private:
     };
 
     return ctpb;
+  }
+private:
+  json get_replaygain_json()
+  {
+    musciteer::dm::player player_settings;
+
+    json replaygain = {
+      { "enabled", player_settings.replaygain_enabled() }
+    };
+
+    return replaygain;
+  }
+private:
+  json read_json_content(http::request_environment& env)
+  {
+    auto content_type = std::string{};
+    auto content_length = size_t{0};
+    auto content = std::string{};
+
+    if ( !env.get_header("Content-Type", content_type) ) {
+      throw std::runtime_error("no content-type header");
+    }
+
+    if ( !env.get_content_length(content_length) ) {
+      throw std::runtime_error("no content-length header");
+    }
+
+    for ( size_t i=0; i<content_length; ++i ) {
+      content += env.is.get();
+    }
+
+    return json::parse(content);
   }
 protected:
   dripcore::task* task_;

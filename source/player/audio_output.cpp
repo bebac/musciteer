@@ -163,11 +163,6 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
     {
       assert(handle_ == nullptr);
 
-      std::cout
-        << "audio_output - open [ device_name=" << m.device_name
-        << ", replaygain_enabled=" << m.replaygain_enabled << " ]"
-        << std::endl;
-
       rg_enabled_ = m.replaygain_enabled;
 
       int err = snd_pcm_open(&handle_, m.device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
@@ -185,12 +180,29 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
       break;
     }
     case state_open:
+    {
+      assert(handle_);
+
+      rg_enabled_ = m.replaygain_enabled;
+
       r.open_res.error_code = 0;
       break;
+    }
     case state_playing:
+    {
+      assert(handle_);
+
+      rg_enabled_ = m.replaygain_enabled;
+
       r.open_res.error_code = 0;
       break;
+    }
   }
+
+  std::cout
+    << "audio_output - open [ device_name=" << m.device_name
+    << ", replaygain_enabled=" << m.replaygain_enabled << " ]"
+    << std::endl;
 
   m.reply.send(std::move(r));
 }

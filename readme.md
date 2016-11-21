@@ -70,6 +70,7 @@ API
 | GET          | /api/player
 | GET, POST    | /api/player/ctpb
 | GET, POST    | /api/player/output
+| GET, POST    | /api/player/replaygain
 | POST         | /api/spotify/import
 
 

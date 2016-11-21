@@ -131,5 +131,4 @@ module ActionDispatchHooks
       end
     end
   end
-
 end

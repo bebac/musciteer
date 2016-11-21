@@ -5,6 +5,10 @@ class Player < Maquette::Component
     @store = store
   end
 
+  def stopped?
+    store.state[:player_state] == :stopped
+  end
+
   def stream_synced?
     store.state[:stream_sync]
   end
@@ -47,7 +51,11 @@ class Player < Maquette::Component
     [
       (
         h 'div.stream', onclick: handler(:show_control) do
-          h 'div', "Not Playing"
+          if stopped?
+            h 'div', "not playing"
+          else
+            h 'div'
+          end
         end
       ),
       (

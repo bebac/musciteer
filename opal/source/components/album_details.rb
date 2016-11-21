@@ -30,7 +30,7 @@ class AlbumDetailsDiscHeader < Maquette::Component
   end
 
   def render
-    h 'li', "Disc #{disc_number}"
+    h 'li.disc-header', "Disc #{disc_number}"
   end
 end
 

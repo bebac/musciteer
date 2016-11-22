@@ -5,7 +5,7 @@ Spotify web access authorization is done by redirecting to spotify's account
 end point which then redirects back to a callback url. Since Musciteer is meant
 to run headless on a local network one probably want's the do the authorization
 from a different pc than the one running Musciteer. The problem is that the
-callback url must be registered with spotify and it has to match extaly what is
+callback url must be registered with Spotify and it has to match exactly what is
 registered.
 
 For Musciteer the following callback urls are registered

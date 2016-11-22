@@ -27,7 +27,8 @@ might be involved somehow and came up with this formula
 | Laura Marling - I Was An Eagle            | -2.36   | -18.077  | 0.11   | -2.332
 
 
-Please don't ask me explain this formula, cause I can't. I think spotify streams
+Please don't ask me to explain this formula, cause I can't. I think spotify streams
 audio at -12 LUFS which might explain the 12. I guess it makes some sense that
-the energy plays a role. The offset of 3db - I don't have a clue and as you can
-see it is off for some tracks, so maybe it's just all completely wrong!!!
+the energy plays a role. The offset of 3db - I don't have a clue - Probably someting
+with flac's reference loudness being 89db and as you can see it is off for some
+tracks, so maybe it's just all completely wrong!!!

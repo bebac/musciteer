@@ -31,7 +31,7 @@ A somewhat prioritized list of features / tasks.
 - [x] Debian package for Ubuntu 16.04
 - [x] Browse and queue music from mobile web app. Works best on a tablet, on
       small screens it is not very usable.
-- [ ] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify. See [spotify audio features](doc/spotify_audio_features.md)
+- [x] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify. See [spotify audio features](doc/spotify_audio_features.md)
 - [ ] Tagging
 - [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
 - [ ] Improve Spotify integration
@@ -215,3 +215,10 @@ There is also a guard file to automatically build the files when they are change
 ```
 bundle exec guard
 ```
+
+
+Contributing
+------------
+
+Any kind of feed back is welcome. Feel free to ask me qustions on gitter or open
+an issue, be it a bug or an idea.

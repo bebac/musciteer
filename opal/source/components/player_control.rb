@@ -31,49 +31,88 @@ class PlayerControl < Maquette::Component
     `document.documentElement.webkitRequestFullscreen()`
   end
 
+  def render_albums_button
+    h 'div#player-albums' do
+      h 'button', key: 'albums', onclick: handler(:albums) do
+        h 'text', "albums"
+      end
+    end
+  end
+
+  def render_spacer
+    h 'div'
+  end
+
+  def render_player_toggle_button
+    h 'div#player-toggle' do
+      if playing?
+        h 'button', key: 'stop', onclick: handler(:stop), innerHTML: stop_svg
+      else
+        h 'button', key: 'play', onclick: handler(:play), innerHTML: play_svg
+      end
+    end
+  end
+
+  def render_player_skip_button
+    h 'div#player-skip' do
+      if playing?
+        h 'button', key: 'skip', onclick: handler(:skip), innerHTML: skip_svg
+      end
+    end
+  end
+
+  def render_fullscreen_button
+    h 'div#player-fullscreen' do
+      h 'button', key: 'fullscreen', onclick: handler(:fullscreen) do
+        h 'text', "fullscreen"
+      end
+    end
+  end
+
   def render
     h 'div#player-control' do
       h 'div' do
         [
-          (
-            h 'div#player-albums' do
-              h 'button', key: 'albums', onclick: handler(:albums) do
-                h 'text', "albums"
-              end
-            end
-          ),
-          (h 'div'),
-          (
-            h 'div#player-toggle' do
-              if playing?
-                h 'button', key: 'stop', onclick: handler(:stop) do
-                  h 'img', { src: 'assets/stop.svg' }
-                end
-              else
-                h 'button', key: 'play', onclick: handler(:play) do
-                  h 'img', { src: 'assets/play.svg' }
-                end
-              end
-            end
-          ),
-          (
-            h 'div#player-skip' do
-              if playing?
-                h 'button', key: 'skip', onclick: handler(:skip) do
-                  h 'img', { src: 'assets/skip.svg' }
-                end
-              end
-            end
-          ),
-          (
-            h 'div#player-fullscreen' do
-              h 'button', key: 'fullscreen', onclick: handler(:fullscreen) do
-                h 'text', "fullscreen"
-              end
-            end
-          )
+          render_albums_button,
+          render_spacer,
+          render_player_toggle_button,
+          render_player_skip_button,
+          render_fullscreen_button
         ]
       end
     end
+  end
+
+  def play_svg
+    <<-svg
+<svg viewBox="0 0 200 200">
+  <g>
+    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
+    <path d="M85,50v100l50,-50"/>
+  </g>
+</svg>
+    svg
+  end
+
+  def stop_svg
+    <<-svg
+<svg viewBox="0 0 200 200">
+  <g>
+    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
+    <path d="M75,75h50v50h-50"/>
+  </g>
+</svg>
+    svg
+  end
+
+  def skip_svg
+    <<-svg
+<svg viewBox="0 0 200 200">
+  <g  stroke-width="8">
+    <circle cx="100" cy="100" r="96" fill="none"/>
+    <path d="M 90,60 120,100 90,140" fill="none"/>
+  </g>
+</svg>
+    svg
   end
 end

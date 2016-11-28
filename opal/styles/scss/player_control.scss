@@ -1,4 +1,5 @@
 $player-background-color: rgba(33,33,33,0);
+$player-button-color: rgba(160,160,160,1);
 
 #player-control-overlay {
   position: fixed;
@@ -39,7 +40,7 @@ $player-background-color: rgba(33,33,33,0);
         outline: none;
         font-weight: bold;
         font-size: 1.33em;
-        color: #aaa;
+        color: $player-button-color;
       }
 
       button:hover {
@@ -52,9 +53,19 @@ $player-background-color: rgba(33,33,33,0);
       }
     }
 
+    #player-toggle, #player-skip
+    {
+      svg
+      {
+        stroke: $player-button-color;
+        fill: $player-button-color;
+      }
+    }
+
     #player-toggle
     {
-      img {
+      svg
+      {
         height: 4em;
         width: 4em;
       }
@@ -63,7 +74,8 @@ $player-background-color: rgba(33,33,33,0);
     #player-skip
     {
       text-align: left;
-      img {
+      svg
+      {
         height: 3em;
         width: 3em;
       }

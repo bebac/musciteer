@@ -92,7 +92,7 @@ namespace musciteer
   private:
     std::deque<musciteer::dm::track> play_q_;
     bool continuous_playback_;
-    std::unique_ptr<player_ctpb_provider> ctpb_provider_;
+    player_ctpb_provider ctpb_provider_;
     bool replaygain_enalbed_;
   private:
     std::shared_ptr<player_session> session_;

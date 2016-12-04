@@ -24,7 +24,7 @@ namespace musciteer
     observers_(),
     play_q_(),
     continuous_playback_(true),
-    ctpb_provider_(),
+    ctpb_provider_(this),
     replaygain_enalbed_(false)
   {
     audio_output_subscribe(message_ch_);
@@ -59,14 +59,16 @@ namespace musciteer
     continuous_playback_ = settings.ctpb_enabled();
     replaygain_enalbed_  = settings.replaygain_enabled();
 
-    // For now the only continuous playback provider is random.
-    if ( settings.ctpb_type() == "random" )
+    if ( continuous_playback_ )
     {
-      ctpb_provider_.reset(new player_ctpb_provider());
-    }
-    else
-    {
-      std::cerr << "player_task - unknown ctpb provider" << std::endl;
+      try
+      {
+        ctpb_provider_.load(settings.ctpb_type());
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << "player_task - failed to load ctpb " << e.what() << std::endl;
+      }
     }
 
     std::cout
@@ -194,9 +196,9 @@ namespace musciteer
             become_playing(play_q_.front());
             play_q_.pop_front();
           }
-          else if ( ctpb_provider_ )
+          else if ( ctpb_provider_.is_loaded() )
           {
-            auto track = ctpb_provider_->get_track();
+            auto track = ctpb_provider_.get_track();
 
             if ( !track.id_is_null() )
             {
@@ -423,9 +425,9 @@ namespace musciteer
         }
         else if ( continuous_playback_ )
         {
-          assert(ctpb_provider_);
+          assert(ctpb_provider_.is_loaded());
 
-          auto track = ctpb_provider_->get_track();
+          auto track = ctpb_provider_.get_track();
 
           if ( !track.id_is_null() )
           {

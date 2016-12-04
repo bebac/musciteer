@@ -15,11 +15,15 @@ class ContinuousPlaybackSettings < Maquette::Component
   end
 
   def available_types
-    [ "random" ]
+    [ "random", "less-played", "more-played" ]
   end
 
   def toggle(evt)
     store.dispatch({ type: :ctpb_settings_enable, data: enabled? ? false : true })
+  end
+
+  def set_type(evt)
+    store.dispatch({ type: :ctpb_settings_type, data: evt.target.value })
   end
 
   def render_header
@@ -50,9 +54,9 @@ class ContinuousPlaybackSettings < Maquette::Component
         (h 'div', "Type"),
         (
           h 'div' do
-            h 'select.setting', { key: self } do
+            h 'select.setting', { key: self, onchange: handler(:set_type) } do
               available_types.map do |type|
-                h 'option', { selected: current_type == type ? 'selected' : '' }, type
+                h 'option', { key: type, selected: current_type == type ? true : false }, type
               end
             end
           end
@@ -84,6 +88,17 @@ module ActionDispatchHooks
 
   def ctpb_settings_enable(value)
     Browser::HTTP.post("/api/player/ctpb", data={"enabled" => value}.to_json) do |request|
+      request.content_type("application/json")
+      request.on :success do |response|
+        if ctpb = response.json
+          dispatch({ type: :ctpb_settings_success, data: ctpb})
+        end
+      end
+    end
+  end
+
+  def ctpb_settings_type(value)
+    Browser::HTTP.post("/api/player/ctpb", data={"type" => value}.to_json) do |request|
       request.content_type("application/json")
       request.on :success do |response|
         if ctpb = response.json

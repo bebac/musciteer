@@ -213,6 +213,9 @@ build build/test.d/test_replay_gain_value.o: cc test/test_replay_gain_value.cpp
 build build/test.d/test_storage.o: cc test/test_storage.cpp
   includes = -Ilib/msgpack/include
 
+build build/test.d/test_player_ctpb_provider.o: cc test/test_player_ctpb_provider.cpp
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include
+
 build build/test: ld $
   build/test.d/test_http_common.o $
   build/test.d/test_http_request.o $
@@ -220,8 +223,9 @@ build build/test: ld $
   build/test.d/test_magpack.o $
   build/test.d/test_replay_gain_value.o $
   build/test.d/test_storage.o $
+  build/test.d/test_player_ctpb_provider.o $
   build/test.d/main.o | build/libhttp.a build/libmsgpack.a build/libmusciteer_dm.a
-  libs = -lmsgpack -lhttp -lmusciteer_dm -lkyotocabinet
+  libs = -ldripcore -lmsgpack -lhttp -lmusciteer_dm -lkyotocabinet -lanl -lssl -lcrypto
 
 
 ###

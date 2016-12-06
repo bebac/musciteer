@@ -182,14 +182,7 @@ namespace musciteer
     class more_played : public dripcore::task
     {
     public:
-      more_played(const player_ctpb_ochannel& channel)
-        :
-        count_to_weight_tab_{
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-          16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-          29, 30, 31, 32
-        },
-        channel_(channel, this)
+      more_played(const player_ctpb_ochannel& channel) : channel_(channel, this)
       {
       }
     private:
@@ -216,8 +209,24 @@ namespace musciteer
       {
         auto tracks = musciteer::dm::tracks();
 
-        std::vector<std::string> track_ids;
+        struct track_entry
+        {
+          std::string id;
+          int         count;
+        };
+
+        std::vector<track_entry> track_entries;
         std::vector<int> weights;
+
+        //
+        // Build the track list and find the highest and lowest
+        // play count.
+        //
+
+        int count_hi_max = 0;
+        int count_hi_min = 0;
+        int count_lo_max = 0;
+        int count_lo_min = std::numeric_limits<int>::max();
 
         tracks.each([&](musciteer::dm::track& track)
         {
@@ -228,21 +237,122 @@ namespace musciteer
             count = 0;
           }
 
-          if ( count >= 0 )
-          {
-            track_ids.push_back(track.id());
-
-            if ( count > 31 ) {
-              count = 31;
-            }
-
-            weights.push_back(count_to_weight_tab_[count]);
+          if ( count < 0 ) {
+            return true;
           }
+
+          if ( count > count_hi_max ) {
+            count_hi_max = count;
+          }
+
+          if ( count < count_lo_min ) {
+            count_lo_min = count;
+          }
+
+          track_entries.push_back(track_entry{track.id(), count});
 
           yield(true);
 
           return true;
         });
+
+        //
+        // Divide the tracks into 3 bins.
+        //
+
+        int bin_size = count_hi_max / 3;
+
+        count_hi_min = count_hi_max - bin_size;
+        count_lo_max = count_lo_min + bin_size;
+
+        int count_60 = 0;
+        int count_30 = 0;
+        int count_10 = 0;
+
+        auto bin_count = [&]() {
+          for ( const auto& entry : track_entries )
+          {
+            if ( entry.count >= count_hi_min) {
+              count_60++;
+            }
+            else if ( entry.count >= count_lo_max ) {
+              count_30++;
+            }
+            else {
+              count_10++;
+            }
+          }
+        };
+
+
+        do
+        {
+#if 0
+          std::cout
+           << "player_ctpb::more_played\n"
+           << "  entries      = " << track_entries.size() << "\n"
+           << "  count_hi_max = " << count_hi_max << "\n"
+           << "  count_hi_min = " << count_hi_min << "\n"
+           << "  count_lo_max = " << count_lo_max << "\n"
+           << "  count_lo_min = " << count_lo_min << "\n"
+           << std::endl;
+#endif
+
+          bin_count();
+
+#if 0
+          std::cout
+           << "player_ctpb::more_played\n"
+           << "  count_60     = " << count_60 << "\n"
+           << "  count_30     = " << count_30 << "\n"
+           << "  count_10     = " << count_10 << "\n"
+           << std::endl;
+#endif
+
+          //
+          // If there is only a few tracks in the 60% bin include
+          // a lower play count and recount.
+          //
+
+          if ( count_60 < 100 && count_hi_min > 1 )
+          {
+            count_60 = 0;
+            count_30 = 0;
+            count_10 = 0;
+
+            count_hi_min--;
+
+            if ( count_lo_max > 1 ){
+              count_lo_max--;
+            }
+          }
+          else {
+            break;
+          }
+        }
+        while ( true );
+
+        //
+        // Build the weight list and pick a track.
+        //
+
+        int weight_max = track_entries.size()*100;
+        int weight_60  = weight_max*0.60/count_60;
+        int weight_30  = weight_max*0.30/count_30;
+        int weight_10  = weight_max*0.10/count_10;
+
+        for ( const auto& entry : track_entries )
+        {
+          if ( entry.count >= count_hi_min) {
+            weights.push_back(weight_60);
+          }
+          else if ( entry.count >= count_lo_max ) {
+            weights.push_back(weight_30);
+          }
+          else {
+            weights.push_back(weight_10);
+          }
+        }
 
         std::discrete_distribution<> dist(weights.begin(), weights.end());
         std::mt19937 gen;
@@ -252,10 +362,8 @@ namespace musciteer
 
         idx_ = dist(gen);
 
-        return track_ids[idx_];
+        return track_entries[idx_].id;
       }
-    private:
-      std::array<int, 32> count_to_weight_tab_;
     private:
       long int idx_;
     private:

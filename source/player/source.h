@@ -13,16 +13,19 @@
 // ----------------------------------------------------------------------------
 #include <dripcore/loop.h>
 #include <dripcore/task.h>
+#include <dripcore/task_channel.h>
 
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
-  using done_channel = dripcore::channel<bool>;
+  using done_channel  = dripcore::task_channel<bool, 1>;
+  using done_ichannel = dripcore::task_ichannel<bool>;
+  using done_ochannel = dripcore::task_ochannel<bool>;
 
   class source
   {
   public:
-    source(dripcore::loop* loop) : session_ch_(), loop_(loop)
+    source(dripcore::loop* loop) : session_ch_(), done_ch_(), loop_(loop)
     {
     }
   public:

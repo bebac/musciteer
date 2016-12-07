@@ -23,12 +23,12 @@ namespace musciteer
   class source_spotify_task : public dripcore::task
   {
   public:
-    source_spotify_task(session_channel channel, done_channel done_ch);
+    source_spotify_task(session_channel channel, done_ochannel done_ch);
   private:
     void main() final;
   private:
     session_channel ch_;
-    done_channel done_ch_;
+    done_ochannel done_ch_;
   };
 }
 

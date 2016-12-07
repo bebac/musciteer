@@ -111,7 +111,7 @@ namespace musciteer
       std::shared_ptr<player_session> session;
     };
   public:
-    spotify_session(dripcore::channel<message> ch, done_channel done_ch);
+    spotify_session(dripcore::channel<message> ch, done_ochannel done_ch);
   private:
     void main() final;
   private:
@@ -148,7 +148,7 @@ namespace musciteer
     sp_session* session_;
   private:
     dripcore::channel<message> ch_;
-    done_channel done_ch_;
+    done_ochannel done_ch_;
   private:
     sp_track* track_;
     bool track_loaded_;
@@ -163,8 +163,8 @@ namespace musciteer
   /////
   // spotify_session implementation.
 
-  spotify_session::spotify_session(dripcore::channel<message> ch, done_channel done_ch)
-    : session_(nullptr), ch_(ch), done_ch_(done_ch), track_(nullptr), track_loaded_(false)
+  spotify_session::spotify_session(dripcore::channel<message> ch, done_ochannel done_ch)
+    : session_(nullptr), ch_(ch), done_ch_(done_ch, this), track_(nullptr), track_loaded_(false)
   {
     sp_session_callbacks callbacks = {
       &logged_in_cb,
@@ -559,15 +559,15 @@ namespace musciteer
   /////
   // source_spotify_task implementation.
 
-  source_spotify_task::source_spotify_task(session_channel channel, done_channel done_ch)
-    : ch_(channel), done_ch_(done_ch)
+  source_spotify_task::source_spotify_task(session_channel channel, done_ochannel done_ch)
+    : ch_(channel), done_ch_(done_ch, this)
   {
   }
 
   void source_spotify_task::main()
   {
     dripcore::channel<spotify_session::message> spotify_session_ch;
-    done_channel spotify_session_done_ch;
+    done_ichannel spotify_session_done_ch{done_channel{}, this};
 
     auto spotify_session_task = spawn<spotify_session>(spotify_session_ch, spotify_session_done_ch);
 
@@ -580,7 +580,7 @@ namespace musciteer
         spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit}, this);
 
         if ( !spotify_session_task.expired() )  {
-          spotify_session_done_ch.recv(this);
+          spotify_session_done_ch.recv();
         }
         break;
       }

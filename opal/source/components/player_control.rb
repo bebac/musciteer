@@ -1,24 +1,12 @@
 class PlayerControl < Maquette::Component
+  include PlayerAssets
+  include PlayerState
+  include PlayerActions
+
   attr_reader :store
 
   def initialize(store)
     @store = store
-  end
-
-  def playing?
-    store.state[:player_state] == :playing
-  end
-
-  def stop
-    store.dispatch({ type: :player_stop })
-  end
-
-  def play
-    store.dispatch({ type: :player_start })
-  end
-
-  def skip
-    store.dispatch({ type: :player_skip })
   end
 
   def albums
@@ -81,38 +69,5 @@ class PlayerControl < Maquette::Component
         ]
       end
     end
-  end
-
-  def play_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g>
-    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
-    <path d="M85,50v100l50,-50"/>
-  </g>
-</svg>
-    svg
-  end
-
-  def stop_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g>
-    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
-    <path d="M75,75h50v50h-50"/>
-  </g>
-</svg>
-    svg
-  end
-
-  def skip_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g  stroke-width="8">
-    <circle cx="100" cy="100" r="96" fill="none"/>
-    <path d="M 90,60 120,100 90,140" fill="none"/>
-  </g>
-</svg>
-    svg
   end
 end

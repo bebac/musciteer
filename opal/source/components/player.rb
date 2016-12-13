@@ -1,24 +1,10 @@
 class Player < Maquette::Component
+  include PlayerState
+
   attr_reader :store
 
   def initialize(store)
     @store = store
-  end
-
-  def stopped?
-    store.state[:player_state] == :stopped
-  end
-
-  def stream_synced?
-    store.state[:stream_sync]
-  end
-
-  def stream
-    store.state[:stream]
-  end
-
-  def track
-    stream[:track]
   end
 
   def duration_formatted

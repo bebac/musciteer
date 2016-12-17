@@ -172,7 +172,7 @@ namespace spotify_web
 Install needed dependencies
 
 ```sh
-sudo apt install ninja-build libasound2-dev libflac++-dev libkyotocabinet-dev libcrypto++-dev
+sudo apt install ninja-build libasound2-dev libflac++-dev libkyotocabinet-dev libssl-dev libcrypto++-dev
 ```
 
 Get additional dependencies like libspotify and json library.

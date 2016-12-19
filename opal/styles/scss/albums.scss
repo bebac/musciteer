@@ -12,11 +12,9 @@
     li
     {
       list-style: none;
-      display: inline-block;
+      //display: inline-block;
       margin: 1.33em;
       width: 12em;
-      background-color: lighten($background-color, 2%);
-      border: 1px solid #eee;
 
       .cover
       {
@@ -30,6 +28,7 @@
           min-width: 12em;
           max-width: 12em;
           max-height: 12em;
+          border: 1px solid #eee;
         }
       }
 

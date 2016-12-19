@@ -1,0 +1,147 @@
+#album
+{
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+
+  div#album-header
+  {
+    position: relative;
+    display: flex;
+    justify-content: right;
+    align-items: flex-start;
+    width: 100%;
+
+    div:nth-child(1)
+    {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #888;
+      z-index: 1;
+      overflow: hidden;
+
+      img {
+        filter: blur(75px) grayscale(50%);
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    div:nth-child(2)
+    {
+      align-self: flex-start;
+      padding: 1em;
+      z-index: 2;
+
+      img {
+        max-width: 12em;
+        min-width: 12em;
+      }
+    }
+
+    div:nth-child(3)
+    {
+      align-self: flex-start;
+      padding-top: 1em;
+      z-index: 2;
+
+      h1 {
+        font-size: 1.75em;
+        color: #eee;
+        padding-bottom: 0.25em;
+      }
+
+      h2 {
+        font-size: 1.25em;
+        color: #eee;
+      }
+    }
+  }
+
+  div#album-tracks
+  {
+    .tracks
+    {
+      list-style-type: none;
+
+      li
+      {
+        padding: 0.66em;
+        //border-bottom: 1px solid darken($background-color, 0%);
+        border-bottom: 1px solid #eee;
+        cursor:pointer; // Needed to get onclick events in mobile browsers.
+
+        > div {
+          display: inline-block;
+          vertical-align: top;
+        }
+
+        .tn {
+          padding-right: 0.66em;
+          width: 1em;
+          text-align: right;
+          color: #aaa;
+        }
+
+        .title {
+          max-width: 80%;
+        }
+
+        .track-show-details {
+          padding: 0.16em 0.33em;
+          color: #ccc;
+          cursor: pointer;
+        }
+
+        .track-details {
+          margin: 0.666em 0 0.333em 0;
+        }
+
+        .tag-edit {
+            background-color: #fff;
+        }
+
+        .track-details input {
+            padding: 0.166em 0.666em 0.166em 0.666em;
+            border: 0px solid #fff;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .tags,.duration {
+          float: right;
+          margin-left: 1em;
+        }
+
+        .tag, .tag-edit {
+          padding: 0.166em 0.666em 0.166em 0.666em;
+          font-size: 0.833em;
+          border-radius: 10px;
+        }
+
+        .tag {
+          background-color: #F9FDE4;
+        }
+
+        .action-status {
+          margin-left: 0.66em;
+          color: #00f;
+        }
+      }
+
+      .disc-header {
+        color: #666;
+        font-size: 1.33em;
+        font-weight: bold;
+        background-color: #fff;
+      }
+
+      li:hover {
+        background-color: lighten($background-color, 2%);
+      }
+    }
+  }
+}

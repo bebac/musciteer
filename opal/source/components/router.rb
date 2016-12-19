@@ -3,19 +3,37 @@ class Router < Maquette::Component
 
   def initialize(store)
     @store = store
-    @paths = {
-      '/albums'  => Albums.new(store),
-      '/tracks'  => TrackList.new(store),
-      '/player'  => Player.new(store),
-      '/spotify' => Spotify.new(store)
-    }
+
     $window.on 'pop:state' do |evt|
       set_path($document.location.path)
     end
+
     if $document.location.path == "/"
       $window.history.replace('/albums')
     end
+
     set_path($document.location.path)
+  end
+
+  def component(path)
+    case path
+    when '/albums'
+      @albums ||= Albums.new(@store)
+    when '/tracks'
+      @track_list ||= TrackList.new(@store)
+    when '/player'
+      @player ||= Player.new(@store)
+    when '/spotify'
+      @spotify ||= Spotify.new(@store)
+    when /\/album\/al.{4}/
+      @album_view ||= AlbumView.new(@store)
+    else
+      nil
+    end
+  end
+
+  def path
+    store.state[:path]
   end
 
   def path_active?(path)
@@ -50,7 +68,11 @@ class Router < Maquette::Component
   end
 
   def render_path
-    if component = @paths[store.state[:path]]
+    if path != $document.location.path
+      $window.history.push(path)
+    end
+
+    if component = component(path)
       component.render
     else
       h 'p', "nothing here"

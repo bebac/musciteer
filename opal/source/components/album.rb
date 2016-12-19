@@ -1,4 +1,4 @@
-class AlbumDetailsTrack < Maquette::Component
+class AlbumViewTrack < Maquette::Component
   attr_reader :track
   attr_reader :store
 
@@ -22,7 +22,7 @@ class AlbumDetailsTrack < Maquette::Component
   end
 end
 
-class AlbumDetailsDiscHeader < Maquette::Component
+class AlbumViewDiscHeader < Maquette::Component
   attr_reader :disc_number
 
   def initialize(disc_number)
@@ -34,7 +34,7 @@ class AlbumDetailsDiscHeader < Maquette::Component
   end
 end
 
-class AlbumDetails < Maquette::Component
+class AlbumView < Maquette::Component
   attr_reader :store
 
   def initialize(store)
@@ -60,33 +60,55 @@ class AlbumDetails < Maquette::Component
     tracks.each do |track|
       if track.dn > dn
         dn = track.dn
-        res << AlbumDetailsDiscHeader.new(dn)
+        res << AlbumViewDiscHeader.new(dn)
       end
-      res << AlbumDetailsTrack.new(track, store)
+      res << AlbumViewTrack.new(track, store)
     end
     res
   end
 
+  def render_header
+    h 'div#album-header' do
+      [
+        (
+          h 'div' do
+            h 'img', src: album.cover
+          end
+        ),
+        (
+          h 'div' do
+            h 'img', src: album.cover
+          end
+        ),
+        (
+          h 'div' do
+            [
+              (h 'h1', album.title),
+              (h 'h2', album.artist)
+            ]
+          end
+        )
+      ]
+    end
+  end
+
+  def render_track_list
+    h 'div#album-tracks' do
+      h 'ol.tracks' do
+        tracks_with_disc_headers.map { |x| x.render }
+      end
+    end
+  end
+
   def render
-    h "div#album-details" do
+    h "div#album" do
       if loading?
         h 'p', "loading..."
       elsif album
         @cache.result_for(album) do
           [
-            (
-              h 'div.cover' do
-                h 'img', src: album.cover
-              end
-            ),
-            (h 'h1', album.title),
-            (h 'h2', album.artist),
-            (h 'hr'),
-            (
-              h 'ol.tracks' do
-                tracks_with_disc_headers.map { |x| x.render }
-              end
-            )
+            render_header,
+            render_track_list
           ]
         end
       else

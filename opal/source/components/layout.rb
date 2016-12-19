@@ -4,24 +4,18 @@ class Layout < Maquette::Component
   def initialize(store)
     @store = store
     @top = Top.new(store)
+    @bottom = Bottom.new(store)
     @router = Router.new(store)
-    @album_details = AlbumDetails.new(store)
-    @settings = Settings.new(store)
+    #@settings = Settings.new(store)
     @notification = Notification.new(store)
     @player_control = PlayerControl.new(store)
   end
 
-  def hide_album_details(evt)
-    if evt.target.id == 'album-details-overlay'
-      $document.at('#album-details-overlay').hide
-    end
-  end
-
-  def hide_settings(evt)
-    if evt.target.id == 'settings-overlay'
-      $document.at('#settings-overlay').hide
-    end
-  end
+  # def hide_settings(evt)
+  #   if evt.target.id == 'settings-overlay'
+  #     $document.at('#settings-overlay').hide
+  #   end
+  # end
 
   def hide_player_control(evt)
     if evt.target.id == 'player-control-overlay'
@@ -29,14 +23,8 @@ class Layout < Maquette::Component
     end
   end
 
-  def render_top
-    h 'div#top' do
-      @top.render
-    end
-  end
-
-  def render_bottom
-    h 'div#bottom' do
+  def render_main
+    h 'div#main' do
       [
         (
           h 'div#menu' do
@@ -44,25 +32,29 @@ class Layout < Maquette::Component
           end
         ),
         (
+          h 'div#top' do
+            @top.render
+          end
+        ),
+        (
           h 'div#content' do
             @router.render_path
+          end
+        ),
+        (
+          h 'div#bottom-container' do
+            @bottom.render
           end
         )
       ]
     end
   end
 
-  def render_album_details_overlay
-    h 'div#album-details-overlay', onclick: handler(:hide_album_details) do
-      @album_details.render
-    end
-  end
-
-  def render_settings_overlay
-    h 'div#settings-overlay', onclick: handler(:hide_settings) do
-      @settings.render
-    end
-  end
+  # def render_settings_overlay
+  #   h 'div#settings-overlay', onclick: handler(:hide_settings) do
+  #     @settings.render
+  #   end
+  # end
 
   def render_notification_overlay
     h 'div#notification-overlay' do
@@ -85,14 +77,22 @@ class Layout < Maquette::Component
   def render
     h 'div' do
       [
-        render_top,
-        render_bottom,
-        render_album_details_overlay,
-        render_settings_overlay,
+        render_main,
+        #render_settings_overlay,
         render_notification_overlay,
         render_player_control_overlay,
         render_connection_lost_overlay
       ]
     end
+  end
+
+  def fold_up_svg
+    <<-svg
+<svg viewBox="0 0 200 200">
+  <g>
+    <path d="m25,75l75,50l75,-50" fill="none"/>
+  </g>
+</svg>
+    svg
   end
 end

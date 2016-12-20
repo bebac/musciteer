@@ -39,7 +39,7 @@ module PlayerAssets
     <<-svg
 <svg viewBox="0 0 200 200">
   <g>
-    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
+    <circle cx="100" cy="100" r="92" fill="none" stroke-width="8"/>
     <path d="M85,50v100l50,-50"/>
   </g>
 </svg>
@@ -50,7 +50,7 @@ module PlayerAssets
     <<-svg
 <svg viewBox="0 0 200 200">
   <g>
-    <circle cx="100" cy="100" r="96" fill="none" stroke-width="8"/>
+    <circle cx="100" cy="100" r="92" fill="none" stroke-width="8"/>
     <path d="M75,75h50v50h-50"/>
   </g>
 </svg>
@@ -61,7 +61,7 @@ module PlayerAssets
     <<-svg
 <svg viewBox="0 0 200 200">
   <g  stroke-width="8">
-    <circle cx="100" cy="100" r="96" fill="none"/>
+    <circle cx="100" cy="100" r="92" fill="none"/>
     <path d="M 90,60 120,100 90,140" fill="none"/>
   </g>
 </svg>

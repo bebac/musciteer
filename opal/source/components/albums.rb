@@ -101,16 +101,40 @@ module ActionDispatchHooks
   end
 
   def album_details_load(album)
-    Browser::HTTP.get("/api/albums/#{album.id}/tracks") do |req|
-      req.on :success do |res|
-        dispatch({
-          type: :album_details_load_success,
-          data: res.json.map { |t| Track.new(t) }
-        })
-      end
+    case album
+    when String
+      Browser::HTTP.get("/api/albums/#{album}") do |req|
+        req.on :success do |res|
+          # Create album.
+          album = Album.new(res.json)
+          # Set album details album.
+          dispatch({
+            type: :album_details_load_success,
+            data: album
+          })
+          # Load tracks.
+          dispatch({
+            type: :album_details_load,
+            data: album
+          })
+        end
 
-      req.on :error do |err|
-        p err
+        req.on :error do |err|
+          p err
+        end
+      end
+    when Album
+      Browser::HTTP.get("/api/albums/#{album.id}/tracks") do |req|
+        req.on :success do |res|
+          dispatch({
+            type: :album_details_load_success,
+            data: res.json.map { |t| Track.new(t) }
+          })
+        end
+
+        req.on :error do |err|
+          p err
+        end
       end
     end
   end

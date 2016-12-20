@@ -82,10 +82,15 @@ end
 
 module ActionDispatchHooks
   def set_path(path)
-    if path == '/tracks'
+    case path
+    when '/tracks'
       dispatch({ type: :tracks_load }) unless state[:tracks]
-    elsif path == '/albums'
+    when '/albums'
       dispatch({ type: :albums_load }) unless state[:albums]
+    when /\/album\/(al.{4})/
+      unless state[:album_details]
+        dispatch({ type: :album_details_load, data: $1 })
+      end
     end
   end
 end

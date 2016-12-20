@@ -79,17 +79,23 @@ class Application
             album_details: action[:data]
           })
         when :album_details_load_success
-          # Oops, we are mutating the data! The important thing is that we
-          # create a new state instance
-          if album = state[:album_details]
-            album.tracks = action[:data]
-          else
-            fail("state album_details is not an album!")
+          case data = action[:data]
+          when Album
+            # No state change.
+            state
+          when Array
+            # Oops, we are mutating the data! The important thing is that we
+            # create a new state instance
+            if album = state[:album_details]
+              album.tracks = data
+            else
+              fail("state album_details is not an album!")
+            end
+            state.merge({
+              album_details_loading: false,
+              album_details: album
+            })
           end
-          state.merge({
-            album_details_loading: false,
-            album_details: album
-          })
         when :audio_settings_success
           state.merge({
             audio_settings: action[:data]

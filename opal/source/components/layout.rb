@@ -6,16 +6,16 @@ class Layout < Maquette::Component
     @top = Top.new(store)
     @bottom = Bottom.new(store)
     @router = Router.new(store)
-    #@settings = Settings.new(store)
+    @settings = Settings.new(store)
     @notification = Notification.new(store)
     @player_control = PlayerControl.new(store)
   end
 
-  # def hide_settings(evt)
-  #   if evt.target.id == 'settings-overlay'
-  #     $document.at('#settings-overlay').hide
-  #   end
-  # end
+  def hide_settings(evt)
+    if evt.target.id == 'settings-overlay'
+      $document.at('#settings-overlay').hide
+    end
+  end
 
   def hide_player_control(evt)
     if evt.target.id == 'player-control-overlay'
@@ -50,11 +50,11 @@ class Layout < Maquette::Component
     end
   end
 
-  # def render_settings_overlay
-  #   h 'div#settings-overlay', onclick: handler(:hide_settings) do
-  #     @settings.render
-  #   end
-  # end
+  def render_settings_overlay
+    h 'div#settings-overlay', onclick: handler(:hide_settings) do
+      @settings.render
+    end
+  end
 
   def render_notification_overlay
     h 'div#notification-overlay' do
@@ -78,7 +78,7 @@ class Layout < Maquette::Component
     h 'div' do
       [
         render_main,
-        #render_settings_overlay,
+        render_settings_overlay,
         render_notification_overlay,
         render_player_control_overlay,
         render_connection_lost_overlay

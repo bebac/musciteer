@@ -17,6 +17,10 @@ class Top < Maquette::Component
     $document.at('#menu').toggle
   end
 
+  def toggle_settings
+    $document.at('#settings-overlay').toggle
+  end
+
   def pop_state(evt)
     $window.history.back
   end
@@ -38,7 +42,11 @@ class Top < Maquette::Component
   def render_close_button
     h 'div#top-close' do
       unless path =~ /^\/albums/
-        h 'button.icon', onclick: handler(:pop_state), innerHTML: close_svg
+        h 'button.icon', key: 'close.1', onclick: handler(:pop_state), innerHTML: close_svg
+      else
+        h 'button.icon', { key: 'settings.1', onclick: handler(:toggle_settings) } do
+          h 'img', { src: 'assets/settings.svg' }
+        end
       end
     end
   end

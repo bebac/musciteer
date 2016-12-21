@@ -37,6 +37,7 @@ class Albums < Maquette::Component
   def initialize(store)
     @store = store
     @cache = Maquette::Cache.new
+    @scroll_top = 0;
   end
 
   def loading?
@@ -51,6 +52,10 @@ class Albums < Maquette::Component
       end
     end
     albums
+  end
+
+  def save_scroll_top(evt)
+    @scroll_top = evt.target.scroll.y
   end
 
   def render_loading
@@ -70,8 +75,8 @@ class Albums < Maquette::Component
   end
 
   def render
-    @cache.result_for(albums) do
-      h 'div#albums' do
+    node = @cache.result_for(albums) do
+      h 'div#albums', { onscroll: handler(:save_scroll_top) } do
         if loading?
           render_loading
         elsif albums
@@ -81,6 +86,13 @@ class Albums < Maquette::Component
         end
       end
     end
+
+    # Update scroll position.
+    if @scroll_top > 0
+      `node.properties.scrollTop = #{@scroll_top}`
+    end
+
+    node
   end
 end
 

@@ -314,7 +314,7 @@ namespace musciteer
           // a lower play count and recount.
           //
 
-          if ( count_60 < 100 && count_hi_min > 1 )
+          if ( count_60 < track_entries.size()*0.1 && count_hi_min > 1 )
           {
             count_60 = 0;
             count_30 = 0;

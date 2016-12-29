@@ -9,10 +9,14 @@ class Bottom < Maquette::Component
     @store = store
   end
 
+  def goto_player
+    store.dispatch({ type: :set_path, data: "/player" })
+  end
+
   def render_player_cover
     h 'div#player-cover' do
       if stream_synced?
-        h 'img', { src: track.album_cover_path }
+        h 'img', { src: track.album_cover_path, onclick: handler(:goto_player) }
       end
     end
   end

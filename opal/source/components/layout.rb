@@ -8,18 +8,11 @@ class Layout < Maquette::Component
     @router = Router.new(store)
     @settings = Settings.new(store)
     @notification = Notification.new(store)
-    @player_control = PlayerControl.new(store)
   end
 
   def hide_settings(evt)
     if evt.target.id == 'settings-overlay'
       $document.at('#settings-overlay').hide
-    end
-  end
-
-  def hide_player_control(evt)
-    if evt.target.id == 'player-control-overlay'
-      $document.at('#player-control-overlay').hide
     end
   end
 
@@ -62,12 +55,6 @@ class Layout < Maquette::Component
     end
   end
 
-  def render_player_control_overlay
-    h 'div#player-control-overlay', onclick: handler(:hide_player_control) do
-      @player_control.render
-    end
-  end
-
   def render_connection_lost_overlay
     h 'div#connection-lost-overlay' do
       h 'div', "Connection Lost"
@@ -80,7 +67,6 @@ class Layout < Maquette::Component
         render_main,
         render_settings_overlay,
         render_notification_overlay,
-        render_player_control_overlay,
         render_connection_lost_overlay
       ]
     end

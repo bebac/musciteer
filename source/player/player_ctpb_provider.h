@@ -287,7 +287,7 @@ namespace musciteer
 
         do
         {
-#if 0
+#if 1
           std::cout
            << "player_ctpb::more_played\n"
            << "  entries      = " << track_entries.size() << "\n"
@@ -300,7 +300,7 @@ namespace musciteer
 
           bin_count();
 
-#if 0
+#if 1
           std::cout
            << "player_ctpb::more_played\n"
            << "  count_60     = " << count_60 << "\n"
@@ -314,7 +314,7 @@ namespace musciteer
           // a lower play count and recount.
           //
 
-          if ( count_60 < track_entries.size()*0.1 && count_hi_min > 1 )
+          if ( count_60 < 100 && count_hi_min > 1 )
           {
             count_60 = 0;
             count_30 = 0;

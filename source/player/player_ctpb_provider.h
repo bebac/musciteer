@@ -287,7 +287,7 @@ namespace musciteer
 
         do
         {
-#if 1
+#if 0
           std::cout
            << "player_ctpb::more_played\n"
            << "  entries      = " << track_entries.size() << "\n"
@@ -300,7 +300,7 @@ namespace musciteer
 
           bin_count();
 
-#if 1
+#if 0
           std::cout
            << "player_ctpb::more_played\n"
            << "  count_60     = " << count_60 << "\n"

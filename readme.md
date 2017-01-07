@@ -10,6 +10,8 @@ a modern web interface
 
 > NOTE: Currently it only supports flac and spotify
 
+[![Musciteer](https://raw.githubusercontent.com/bebac/musciteer/master/doc/screenshots.gif)](https://github.com/bebac/musciteer/releases)
+
 
 
 Features

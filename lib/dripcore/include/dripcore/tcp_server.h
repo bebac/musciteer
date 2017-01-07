@@ -50,7 +50,7 @@ namespace dripcore
       socket_.nonblocking(true);
       socket_.reuseaddr(true);
       socket_.bind((struct sockaddr *)&sock_addr, sizeof(sock_addr));
-      socket_.listen(5);
+      socket_.listen(10);
     }
   public:
     ~tcp_server()

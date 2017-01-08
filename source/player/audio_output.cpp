@@ -284,6 +284,17 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
           scale_ = std::pow(10, rg_ / 20);
         }
 
+        if ( scale_ > 1.0 )
+        {
+          auto peak = m.replaygain_peak;
+
+          if ( scale_*peak > 1.0 )
+          {
+            std::cerr << "audio_output - calculated scale " << scale_ << " will cause clipping, adjusting..." << std::endl;
+            scale_ = 0.99/peak;
+          }
+        }
+
         std::cout
           << "audio_output - stream begin replaygain is " << (rg_enabled_ ? "on" : "off")
           << " [ rg_=" << rg_ << ", scale_=" << scale_ << " ]"

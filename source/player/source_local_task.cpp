@@ -114,6 +114,7 @@ namespace musciteer
       auto sample_rate = metadata->data.stream_info.sample_rate;
       auto total_samples = metadata->data.stream_info.total_samples;
       auto replaygain = source_.rg_track_gain();
+      auto replaygain_peak = source_.rg_track_peak();
 
       std::chrono::duration<float> length{float(total_samples)/float(sample_rate)};
 
@@ -123,6 +124,7 @@ namespace musciteer
       m.stream_begin.sample_rate = sample_rate;
       m.stream_begin.length = std::chrono::duration_cast<milliseconds>(length);
       m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
+      m.stream_begin.replaygain_peak = replaygain_peak ? replaygain_peak.value() : 1;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
 
       send(*session_->audio_output(), std::move(m));

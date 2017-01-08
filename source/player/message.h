@@ -219,7 +219,7 @@ public:
 class audio_output_stream_begin
 {
 public:
-  audio_output_stream_begin() : stream_id(0), replaygain(0)
+  audio_output_stream_begin() : stream_id(0), replaygain(0), replaygain_peak(1)
   {
   }
   audio_output_stream_begin(audio_output_stream_begin&& other)
@@ -228,6 +228,7 @@ public:
     sample_rate = std::move(other.sample_rate);
     length = std::move(other.length);
     replaygain = std::move(other.replaygain);
+    replaygain_peak = std::move(other.replaygain_peak);
     completed_buffer_ch = std::move(other.completed_buffer_ch);
   }
 public:
@@ -235,6 +236,7 @@ public:
   unsigned sample_rate;
   std::chrono::milliseconds length;
   float replaygain;
+  float replaygain_peak;
   dripcore::channel<audio_buffer> completed_buffer_ch;
 };
 

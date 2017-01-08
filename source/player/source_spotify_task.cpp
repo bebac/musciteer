@@ -415,6 +415,7 @@ namespace musciteer
       assert(audio_output);
 
       auto replaygain = source_.rg_track_gain();
+      auto replaygain_peak = source_.rg_track_peak();
 
       ::message m(::message::stream_begin_id);
 
@@ -422,6 +423,7 @@ namespace musciteer
       m.stream_begin.sample_rate = 44100;
       m.stream_begin.length = std::chrono::milliseconds(track->duration());
       m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
+      m.stream_begin.replaygain = replaygain_peak ? replaygain_peak.value() : 1;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
       audio_output->send(std::move(m));
 

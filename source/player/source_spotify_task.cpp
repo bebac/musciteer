@@ -423,7 +423,7 @@ namespace musciteer
       m.stream_begin.sample_rate = 44100;
       m.stream_begin.length = std::chrono::milliseconds(track->duration());
       m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
-      m.stream_begin.replaygain = replaygain_peak ? replaygain_peak.value() : 1;
+      m.stream_begin.replaygain_peak = replaygain_peak ? replaygain_peak.value() : 1;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
       audio_output->send(std::move(m));
 

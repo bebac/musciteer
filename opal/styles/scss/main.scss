@@ -25,6 +25,18 @@ body
   height: 100%;
 }
 
+svg
+{
+  stroke: $text-color;
+  fill: $text-color;
+  vertical-align: middle;
+}
+
+svg.button
+{
+  overflow: visible;
+}
+
 #top
 {
   height: 3em;

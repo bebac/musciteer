@@ -1,12 +1,13 @@
 class Bottom < Maquette::Component
-  include PlayerAssets
   include PlayerState
-  include PlayerActions
 
   attr_reader :store
 
   def initialize(store)
     @store = store
+    @play = PlayButton.new(store)
+    @stop = StopButton.new(store)
+    @skip = SkipButton.new(store)
   end
 
   def goto_player
@@ -35,17 +36,23 @@ class Bottom < Maquette::Component
     end
   end
 
+  def render_button(button)
+    h 'div' do
+      button.render
+    end
+  end
+
   def render_player_ctrl
     h 'div#player-ctrl' do
       if playing?
         [
-          (h 'button', key: 'stop.1', onclick: handler(:stop), innerHTML: stop_svg),
-          (h 'button', key: 'skip.1', onclick: handler(:skip), innerHTML: skip_svg)
+          render_button(@stop),
+          render_button(@skip)
         ]
       else
         [
-          (h 'button', key: 'play.1', onclick: handler(:play), innerHTML: play_svg),
-          (h 'button', key: 'skip.0',                          innerHTML: skip_svg)
+          render_button(@play),
+          render_button(@skip)
         ]
       end
     end

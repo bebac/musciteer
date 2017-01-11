@@ -38,11 +38,10 @@ $player-button-color: rgba(160,160,160,1);
 
   div#top-menu, div#top-close
   {
-    svg
+    svg.button
     {
-      stroke: $text-color;
-      fill: $text-color;
-      vertical-align: middle;
+      height: 2.25em;
+      width: 2.25em;
     }
 
     button:nth-child(1)

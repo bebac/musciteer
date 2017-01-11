@@ -22,18 +22,30 @@
 
   .player-top, .player-bottom
   {
-    svg
-    {
-      stroke: $text-color;
-      fill: $text-color;
-      vertical-align: middle;
-    }
+    display: flex;
 
-    svg
+    >div,button
     {
-      height: 2.25em;
-      width: 2.25em;
+      align-self: center;
+      padding: 0 0.33em 0;
+      vertical-align: middle;
+
+      svg.button
+      {
+        height: 2.25em;
+        width: 2.25em;
+      }
     }
+  }
+
+  .player-top
+  {
+    justify-content: flex-end;
+  }
+
+  .player-bottom
+  {
+    justify-content: flex-start;
   }
 
   .player-top
@@ -44,11 +56,6 @@
     width: 100%;
     height: 3em;
     z-index: 11;
-
-    button
-    {
-      float: right;
-    }
   }
 
   .player-bottom
@@ -102,7 +109,6 @@
     align-content: center;
     height: 100vh;
     z-index: 10;
-
 
     >div
     {
@@ -169,7 +175,6 @@
       color: #fff;
       font-size: 3em;
       font-weight: bold;
-
     }
 
     .player-track-artists
@@ -202,8 +207,8 @@
     {
       svg
       {
-        height: 6em;
-        width: 6em;
+        height: 5em;
+        width: 5em;
       }
     }
 
@@ -211,8 +216,8 @@
     {
       svg
       {
-        height: 4em;
-        width: 4em;
+        height: 3em;
+        width: 3em;
       }
     }
   }

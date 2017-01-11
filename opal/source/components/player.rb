@@ -1,12 +1,15 @@
 class Player < Maquette::Component
-  include PlayerAssets
   include PlayerState
-  include PlayerActions
 
   attr_reader :store
 
   def initialize(store)
     @store = store
+    @close = CloseButton.new(store) { pop_state }
+    @fullscreen = FullscreenButton.new(store)
+    @play = PlayButton.new(store)
+    @stop = StopButton.new(store)
+    @skip = SkipButton.new(store)
   end
 
   def duration_formatted
@@ -82,16 +85,16 @@ class Player < Maquette::Component
                           (
                             h 'div.player-toggle' do
                               if playing?
-                                h 'button', key: 'stop', onclick: handler(:stop), innerHTML: stop_svg
+                                @stop.render
                               else
-                                h 'button', key: 'play', onclick: handler(:play), innerHTML: play_svg
+                                @play.render
                               end
                             end
                           ),
                           (
                             h 'div.player-skip' do
                               if playing?
-                                h 'button', key: 'skip', onclick: handler(:skip), innerHTML: skip_svg
+                                @skip.render
                               end
                             end
                           )
@@ -120,13 +123,17 @@ class Player < Maquette::Component
 
   def render_player_top
     h 'div.player-top' do
-      h 'button.icon', key: 'close.1', onclick: handler(:pop_state), innerHTML: close_svg
+      h 'div' do
+        @close.render
+      end
     end
   end
 
   def render_player_bottom
     h 'div.player-bottom' do
-      h 'button.icon', key: 'fullscreen.1', onclick: handler(:fullscreen), innerHTML: fullscreen_svg
+      h 'button', onclick: handler(:fullscreen) do
+        @fullscreen.render
+      end
     end
   end
 
@@ -168,27 +175,5 @@ class Player < Maquette::Component
         render_idle
       end
     end
-  end
-
-  def close_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g stroke-width="24">
-    <path d="M50,50l100,100"/>
-    <path d="M50,150l100,-100"/>
-  </g>
-</svg>
-    svg
-  end
-
-  def fullscreen_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g stroke-width="24">
-    <path d="M110,90l100,-100M200,0v30l-40,-40"/>
-    <path d="M90,110l-100,100M0,200v-30l40,40"/>
-  </g>
-</svg>
-    svg
   end
 end

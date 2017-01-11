@@ -1,12 +1,9 @@
 class Top < Maquette::Component
-  include PlayerAssets
-  include PlayerState
-  include PlayerActions
-
   attr_reader :store
 
   def initialize(store)
     @store = store
+    @close = CloseButton.new(store) { pop_state }
   end
 
   def path
@@ -42,7 +39,7 @@ class Top < Maquette::Component
   def render_close_button
     h 'div#top-close' do
       unless path =~ /^\/albums/
-        h 'button.icon', key: 'close.1', onclick: handler(:pop_state), innerHTML: close_svg
+        @close.render
       else
         h 'button.icon', { key: 'settings.1', onclick: handler(:toggle_settings) } do
           h 'img', { src: 'assets/settings.svg' }
@@ -75,17 +72,6 @@ class Top < Maquette::Component
     <path d="M40,60h110"/>
     <path d="M40,100h110"/>
     <path d="M40,140h110"/>
-  </g>
-</svg>
-    svg
-  end
-
-  def close_svg
-    <<-svg
-<svg viewBox="0 0 200 200">
-  <g stroke-width="24">
-    <path d="M50,50l100,100"/>
-    <path d="M50,150l100,-100"/>
   </g>
 </svg>
     svg

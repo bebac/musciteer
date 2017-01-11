@@ -46,16 +46,16 @@
     text-align: right;
     //text-overflow: hidden;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
 
-    svg
+    div
     {
-      stroke: $text-color;
-      fill: $text-color;
-      vertical-align: middle;
+      display: inline-block;
+      padding: 0 0.66em;
+      overflow: visible;
     }
 
-    button:nth-child(1)
+    div:nth-child(1)
     {
       svg
       {
@@ -64,7 +64,7 @@
       }
     }
 
-    button:nth-child(2)
+    div:nth-child(2)
     {
       svg
       {

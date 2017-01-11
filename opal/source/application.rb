@@ -7,6 +7,7 @@ require 'browser/history'
 require 'browser/interval'
 require 'browser/delay'
 require 'browser/effects'
+require 'browser/animation_frame'
 require 'json'
 
 require_relative 'maquette'
@@ -173,6 +174,9 @@ class Application
           state.merge({
             spotify_importing: false
           })
+        when :render
+          @projector.render
+          state
         else
           puts "unhandled action #{action[:type]}, data #{action[:data]}"
           state

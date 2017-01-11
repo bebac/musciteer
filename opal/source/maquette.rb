@@ -39,8 +39,13 @@ module Maquette
     end
 
     def handler(m, *args)
-      handlers[[ m, args ]] ||= lambda do |evt|
-        method(m).call(*args, Browser::Event.new(evt))
+      handlers[[ m, args ]] ||= lambda do |evt, arg1, arg2|
+        if evt.JS[:type]
+          method(m).call(*args, Browser::Event.new(evt))
+        else
+          # enterAnimation, exitAnimation, updateAnimation
+          method(m).call(*args, Browser::DOM::Element.new(evt), arg1, arg2)
+        end
       end
     end
   end

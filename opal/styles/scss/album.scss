@@ -70,25 +70,45 @@
 
       li
       {
+        display: flex;
         padding: 0.66em;
         //border-bottom: 1px solid darken($background-color, 0%);
         border-bottom: 1px solid #eee;
         cursor:pointer; // Needed to get onclick events in mobile browsers.
 
-        > div {
-          display: inline-block;
-          vertical-align: top;
+        svg.button
+        {
+          padding: 0 0.66em;
+          height: 1.25em;
+          width: 1.25em;
         }
 
-        .tn {
-          padding-right: 0.66em;
+        div.flex-left, div.flex-right
+        {
+          >div {
+            display: inline-block;
+          }
+        }
+
+        div.flex-left
+        {
+          flex: 1;
+
+        }
+
+        div.flex-right
+        {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          flex: 1;
+        }
+
+        .tn
+        {
           width: 1em;
           text-align: right;
           color: #aaa;
-        }
-
-        .title {
-          max-width: 80%;
         }
 
         .track-show-details {
@@ -112,11 +132,6 @@
             background-color: #fff;
         }
 
-        .tags,.duration {
-          float: right;
-          margin-left: 1em;
-        }
-
         .tag, .tag-edit {
           padding: 0.166em 0.666em 0.166em 0.666em;
           font-size: 0.833em;
@@ -125,11 +140,6 @@
 
         .tag {
           background-color: #F9FDE4;
-        }
-
-        .action-status {
-          margin-left: 0.66em;
-          color: #00f;
         }
       }
 

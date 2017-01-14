@@ -29,8 +29,8 @@ module ActionDispatchHooks
     $document.at('#connection-lost-overlay').show
   end
 
-  def player_start
-    message_channel_send({ event: :play, data: nil })
+  def player_start(track_id)
+    message_channel_send({ event: :play, data: track_id })
   end
 
   def player_stop

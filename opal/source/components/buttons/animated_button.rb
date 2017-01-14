@@ -59,6 +59,8 @@ class AnimatedButton < Maquette::Component
   def click(evt)
     clicked
     @state = :clicked
+    enter_animation(evt.target.at('../..'))
+    evt.stop!
   end
 
   def render_animated_circle

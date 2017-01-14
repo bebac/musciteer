@@ -5,6 +5,7 @@ class AlbumViewTrack < Maquette::Component
   def initialize(track, store)
     @track = track
     @store = store
+    @play = PlayButton.new(store, track.id)
   end
 
   def queue
@@ -14,9 +15,22 @@ class AlbumViewTrack < Maquette::Component
   def render
     h 'li', { key: self, onclick: handler(:queue) } do
       [
-        (h 'div.tn', track.tn),
-        (h 'div.title', track.title),
-        (h 'div.duration', track.duration_formatted)
+        (
+          h 'div.flex-left' do
+            [
+              (h 'div.tn', track.tn),
+              @play.render,
+              (h 'div.title', track.title)
+            ]
+          end
+        ),
+        (
+          h 'div.flex-right' do
+            [
+              (h 'div.duration', track.duration_formatted)
+            ]
+          end
+        )
       ]
     end
   end

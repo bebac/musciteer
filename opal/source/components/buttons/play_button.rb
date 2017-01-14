@@ -2,13 +2,15 @@ require_relative 'animated_button'
 
 class PlayButton < AnimatedButton
   attr_reader :store
+  attr_reader :track_id
 
-  def initialize(store)
+  def initialize(store, track_id=nil)
     super(store)
+    @track_id = track_id
   end
 
   def clicked
-    store.dispatch({ type: :player_start })
+    store.dispatch({ type: :player_start, data: track_id })
   end
 
   def render_button

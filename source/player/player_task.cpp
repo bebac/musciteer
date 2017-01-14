@@ -221,7 +221,25 @@ namespace musciteer
         break;
       }
       case playing:
+      {
+        auto tracks = musciteer::dm::tracks();
+
+        auto track = tracks.find_by_id(m.id);
+
+        if ( track.id_is_null() )
+        {
+          // ERROR!
+          return;
+        }
+
+        // Put track in front of the queue.
+        play_q_.push_front(track);
+
+        // Stop playing track.
+        assert(session_);
+        session_->stop();
         break;
+      }
       case stopping:
         break;
       case paused:

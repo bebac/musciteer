@@ -21,16 +21,25 @@ namespace musciteer
 
     if ( sources.size() > 0 )
     {
-      auto& source = sources[0];
+      auto source = dm::track_source{};
 
-      if ( source.name() == "local" ) {
-        source_local_->send(std::move(session));
+      for ( const auto& s : sources )
+      {
+        if ( s.name() == "local" )
+        {
+          source_local_->send(std::move(session));
+          return;
+        }
       }
-      else if ( source.name() == "spotify" ) {
+
+      source = sources[0];
+
+      if ( source.name() == "spotify" ) {
         source_spotify_->send(std::move(session));
       }
-      else {
-        // TODO: Error!
+      else
+      {
+        // TODO: Error! No source.
       }
     }
     else

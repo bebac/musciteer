@@ -283,6 +283,9 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
         if ( rg_enabled_ ) {
           scale_ = std::pow(10, rg_ / 20);
         }
+        else {
+          scale_ = 1.0;
+        }
 
         if ( scale_ > 1.0 )
         {

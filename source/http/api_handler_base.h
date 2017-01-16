@@ -20,7 +20,7 @@ public:
   api_handler_base(http::request_environment& env)
     :
     env(env),
-    route_re_("^/?([^/]*)?/?([^/]*)?")
+    route_re_("^/?([^/]*)?/?([^/]*)/?([^/]*)")
   {
   }
 public:

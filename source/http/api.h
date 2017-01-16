@@ -16,6 +16,34 @@
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
+  inline json to_json(const musciteer::dm::track_source& track_source)
+  {
+    json j = {
+      { "name", track_source.name() },
+      { "uri",  track_source.uri() }
+    };
+
+    json replay_gain;
+
+    if ( auto& rg = track_source.rg_ref_loudness() ) {
+      replay_gain["ref_loudness"] = static_cast<double>(rg.value()*100)/100;
+    }
+
+    if ( auto& rg = track_source.rg_track_gain() ) {
+      replay_gain["track_gain"] = static_cast<double>(rg.value()*100)/100;
+    }
+
+    if ( auto& rg = track_source.rg_track_peak() ) {
+      replay_gain["track_peak"] = rg.value();
+    }
+
+    if ( !replay_gain.is_null() ) {
+      j["replay_gain"] = replay_gain;
+    }
+
+    return j;
+  }
+
   inline json to_json(const musciteer::dm::track& track)
   {
     json artists;
@@ -38,32 +66,8 @@ namespace musciteer
 
     json sources;
 
-    track.sources_each([&](const dm::track_source& source)
-    {
-      json j = {
-        { "name",  source.name() },
-        { "uri", source.uri() }
-      };
-
-      json replay_gain;
-
-      if ( auto& rg = source.rg_ref_loudness() ) {
-        replay_gain["ref_loudness"] = static_cast<double>(rg.value()*100)/100;
-      }
-
-      if ( auto& rg = source.rg_track_gain() ) {
-        replay_gain["track_gain"] = static_cast<double>(rg.value()*100)/100;
-      }
-
-      if ( auto& rg = source.rg_track_peak() ) {
-        replay_gain["track_peak"] = rg.value();
-      }
-
-      if ( !replay_gain.is_null() ) {
-        j["replay_gain"] = replay_gain;
-      }
-
-      sources.push_back(j);
+    track.sources_each([&](const dm::track_source& source) {
+      sources.push_back(to_json(source));
     });
 
     json t = {

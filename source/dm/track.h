@@ -60,7 +60,7 @@ namespace musciteer
       void artists_add(const dm::artist&);
     public:
       void sources_add(const dm::track_source&);
-      void sources_del(const dm::track_source&);
+      void sources_remove(const std::string&);
     public:
       void increment_play_count();
       void increment_skip_count();

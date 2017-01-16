@@ -57,7 +57,32 @@ public:
             method_not_allowed();
           }
         }
-        else {
+        else if ( match[2] == "sources" )
+        {
+          if ( match[3].length() == 0 )
+          {
+            if ( method == http::method::get ) {
+              get_track_sources(match[1]);
+            }
+            else {
+              method_not_allowed();
+            }
+          }
+          else
+          {
+            if ( method == http::method::get ) {
+              get_track_source(match[1], match[3]);
+            }
+            else if ( method == http::method::delete_ ) {
+              delete_track_source(match[1], match[3]);
+            }
+            else {
+              method_not_allowed();
+            }
+          }
+        }
+        else
+        {
           not_found();
         }
       }
@@ -129,6 +154,67 @@ private:
       tracks.remove(track);
       albums.save(album);
 
+      ok();
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void get_track_sources(const std::string& id)
+  {
+    auto tracks = musciteer::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      json sources;
+
+      track.sources_each([&](const musciteer::dm::track_source& source) {
+        sources.push_back(musciteer::to_json(source));
+      });
+
+      ok(sources);
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void get_track_source(const std::string& id, const std::string& source_name)
+  {
+    auto tracks = musciteer::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      track.sources_each([&](const musciteer::dm::track_source& source) {
+        if ( source.name() == source_name )
+        {
+          ok(musciteer::to_json(source));
+          return;
+        }
+      });
+
+      not_found();
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void delete_track_source(const std::string& id, const std::string& source_name)
+  {
+    auto tracks = musciteer::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      track.sources_remove(source_name);
+      tracks.save(track);
       ok();
     }
     else

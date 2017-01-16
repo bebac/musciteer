@@ -159,8 +159,14 @@ namespace musciteer
       }
     }
 
-    void track::sources_del(const dm::track_source&)
+    void track::sources_remove(const std::string& source_name)
     {
+      sources_.erase(
+        std::remove_if(sources_.begin(), sources_.end(), [&](const dm::track_source& s) {
+          return s.name() == source_name;
+        }),
+        sources_.end()
+      );
     }
 
     void track::increment_play_count()

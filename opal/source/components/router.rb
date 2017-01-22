@@ -50,18 +50,20 @@ class Router < Maquette::Component
     evt.stop!
   end
 
-  def link(path, text)
-    h path_active?(path) ? 'a.active' : 'a', { href: path, onclick: handler(:goto, path) }, text
+  def li(path, text)
+    h "li#{path_active?(path) ? '.active' : ''}", { key: path } do
+      h 'a', { href: path, onclick: handler(:goto, path) }, text
+    end
   end
 
   def render_navigation
     h 'div#navbar' do
       h 'ul' do
         [
-          (h 'li', { key: 1 }, link('/albums', 'Albums')),
-          (h 'li', { key: 2 }, link('/tracks', 'Tracks')),
-          (h 'li', { key: 3 }, link('/player', 'Player')),
-          (h 'li', { key: 4 }, link('/spotify', 'Spotify'))
+          li('/albums', 'Albums'),
+          li('/tracks', 'Tracks'),
+          li('/player', 'Player'),
+          li('/spotify', 'Spotify')
         ]
       end
     end

@@ -7,23 +7,30 @@
     li
     {
       list-style: none;
+      font-weight: bold;
 
       a
       {
         display: block;
-        color: $text-color;
+        color: lighten($text-color, 20%);
         text-decoration: none;
-        padding: 0.66em;
-      }
-
-      a.active
-      {
-        background: darken($background-color, 4%);
+        padding: 0.66em 1.33em;
       }
 
       &:hover
       {
-        background: darken($background-color, 6%);
+        a
+        {
+          color: lighten($text-color, 0%);
+        }
+      }
+    }
+
+    li.active
+    {
+      a
+      {
+        color: lighten($text-color, 0%);
       }
     }
   }

@@ -53,15 +53,16 @@ svg.button
   top: 3em;
   display: none;
   flex: 1;
-  height: 100vh;
+  height: calc(100vh - 7em);
   background: $background-color;
+  z-index: 2;
 }
 
 #content
 {
   position: relative;
   top: 3em;
-  flex: 4;
+  flex: 5;
   height: calc(100vh - 7em);
   background:rgba(255,255,255,1);
 }

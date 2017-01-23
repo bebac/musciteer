@@ -54,7 +54,7 @@ class Application
           })
         when :player_stopped
           state.merge({
-            player_state: :stopped
+            player_state: :stopped, stream_sync: false, stream: {}
           })
         when :tracks_load
           state.merge({
@@ -153,14 +153,14 @@ class Application
             stream: stream.merge(action[:data])
           })
         when :stream_end
-          # Clear notification if it a stream begin notification.
+          # Clear notification if it's a stream begin notification.
           notification = state[:notification]
           if notification
             notification = nil if notification.instance_of?(StreamBegin)
           end
           # Update state.
           state.merge({
-            stream_sync: false, stream: {}, notification: notification
+            stream_sync: false, notification: notification
           })
         when :notification
           state.merge({

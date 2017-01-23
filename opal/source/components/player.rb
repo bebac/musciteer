@@ -13,7 +13,7 @@ class Player < Maquette::Component
   end
 
   def duration_formatted
-    if duration = stream[:duration]
+    if stream? && (duration = stream[:duration])
       secs = duration / 1000
       min = Integer(secs / 60) % 60;
       sec = Integer(secs % 60);
@@ -24,7 +24,7 @@ class Player < Maquette::Component
   end
 
   def length_formatted
-    if length = stream[:length]
+    if stream? && (length = stream[:length])
       secs = length / 1000
       min = Integer(secs / 60) % 60;
       sec = Integer(secs % 60);
@@ -154,7 +154,9 @@ class Player < Maquette::Component
 
   def render_player_background_playing
     h 'div.player-background' do
-      h 'img.stream', { src: track.album_cover_path }
+      if stream_synced?
+        h 'img.stream', { src: track.album_cover_path }
+      end
     end
   end
 
@@ -169,7 +171,7 @@ class Player < Maquette::Component
 
   def render
     h 'div#player' do
-      if stream_synced?
+      if playing? && stream?
         render_stream
       else
         render_idle

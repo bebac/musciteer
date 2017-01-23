@@ -11,6 +11,10 @@ module PlayerState
     store.state[:stream_sync]
   end
 
+  def stream?
+    !store.state[:stream].empty?
+  end
+
   def stream
     store.state[:stream]
   end

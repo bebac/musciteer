@@ -13,10 +13,10 @@ class CloseButton < AnimatedButton
   end
 
   def render_button
-    h 'g', { "stroke-width" => "24" } do
+    h 'g', { "stroke-width" => "16" } do
       [
-        (h 'path', d: "M50,50l100,100"),
-        (h 'path', d: "M50,150l100,-100")
+        (h 'path', d: "M70,70l70,70"),
+        (h 'path', d: "M70,140l70,-70")
       ]
     end
   end

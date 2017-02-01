@@ -59,7 +59,7 @@ class Player < Maquette::Component
               (
                 h 'div.title' do
                   if stream_synced?
-                    h 'div.player-track-title', track.title
+                    h 'div.player-track-title', (track.title.length > 30 ? track.title[0..30]+'...' : track.title)
                   end
                 end
               ),

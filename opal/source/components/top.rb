@@ -59,7 +59,7 @@ class Top < Maquette::Component
   def render
     [
       render_menu_button,
-      #render_search_box,
+      render_search_box,
       #render_settings_button
       render_close_button
     ]

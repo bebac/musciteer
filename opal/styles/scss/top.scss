@@ -70,4 +70,23 @@ $player-button-color: rgba(160,160,160,1);
   {
     padding-right: 0.33em;
   }
+
+  div#top-search
+  {
+    min-width: 25%;
+    input
+    {
+      color: $text-color;
+      width: 100%;
+      padding: 0.66em 1.33em;
+      border-radius: 1.66em;
+      border: 1px solid #ddd;
+    }
+
+    input:focus
+    {
+      outline: none;
+      border: 1px solid #ddd;
+    }
+  }
 }

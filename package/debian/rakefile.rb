@@ -36,7 +36,7 @@ task :dpkg do
   end
 
   name = "musciteer"
-  version = "0.1-5"
+  version = "0.1-6"
   architecture = %x[dpkg --print-architecture].strip
 
   # Create debian control file.

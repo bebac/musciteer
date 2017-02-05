@@ -357,7 +357,8 @@ http_connection::http_connection(dripcore::socket socket)
   streambuf_(),
   api_re_("^/api/([^/]*)(/.*)?", std::regex::optimize),
   assets_re_("^/(assets/.+)", std::regex::optimize),
-  album_re_("^/(albums/al.{4})", std::regex::optimize)
+  album_re_("^/(albums/al.{4})", std::regex::optimize),
+  artist_re_("^/(artists/ar.{4})", std::regex::optimize)
 {
   std::cout << "connection " << size_t(this) << std::endl;
 }
@@ -497,8 +498,10 @@ void http_connection::dispatch(http::request_environment& env)
   std::smatch match;
 
   if (
-    path == "/" || path == "/albums" || path == "/tracks" || path == "/player" ||
-    path == "/spotify" || std::regex_match(path, match, album_re_)
+    path == "/" || path == "/albums" || path == "/tracks" ||
+    path == "/player" || path == "/artists" || path == "/spotify" ||
+    std::regex_match(path, match, album_re_) ||
+    std::regex_match(path, match, artist_re_)
   )
   {
     static_file_handler handler(env);

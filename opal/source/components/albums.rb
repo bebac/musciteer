@@ -10,6 +10,13 @@ class AlbumThumb < Maquette::Component
   def show_album_details(evt)
     store.dispatch({ type: :set_path, data: "/albums/#{album.id}" })
     store.dispatch({ type: :album_details_load, data: album })
+    evt.stop!
+  end
+
+  def show_artist(evt)
+    store.dispatch({ type: :set_path, data: "/artists/#{album.artist_id}" })
+    store.dispatch({ type: :artist_load, data: album.artist_id })
+    evt.stop!
   end
 
   def render
@@ -24,7 +31,7 @@ class AlbumThumb < Maquette::Component
           h 'div.title', "#{album.title}"
         ),
         (
-          h 'div.artist', "#{album.artist}"
+          h 'div.artist', { onclick: handler(:show_artist) }, "#{album.artist}"
         )
       ]
     end
@@ -148,6 +155,25 @@ module ActionDispatchHooks
           p err
         end
       end
+    end
+  end
+
+  def artist_load(artist)
+    case artist
+    when String
+      Browser::HTTP.get("/api/artists/#{artist}/") do |req|
+        req.on :success do |res|
+          # Create artist
+          artist = Artist.new(res.json)
+          # Set artist.
+          dispatch({
+            type: :artist_load_success,
+            data: artist
+          })
+        end
+      end
+    else
+      # TODO: Error!
     end
   end
 end

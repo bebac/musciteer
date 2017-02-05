@@ -36,6 +36,8 @@ class Application
           albums:                  false,
           album_details_loading:   false,
           album_details:           false,
+          artist_loading:          false,
+          artist:                  false,
           notification:            nil,
           stream_sync:             false,
           stream:                  {},
@@ -97,6 +99,11 @@ class Application
               album_details: album
             })
           end
+        when :artist_load_success
+          state.merge({
+            artist_loading: false,
+            artist: action[:data]
+          })
         when :audio_settings_success
           state.merge({
             audio_settings: action[:data]

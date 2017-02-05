@@ -89,6 +89,7 @@ private:
   std::regex api_re_;
   std::regex assets_re_;
   std::regex album_re_;
+  std::regex artist_re_;
 private:
   static constexpr const char* crlf = "\r\n";
   static constexpr const char* guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";

@@ -9,6 +9,10 @@ class Album
     end
   end
 
+  def artist_id
+    @artist['id']
+  end
+
   def artist
     @artist['name']
   end

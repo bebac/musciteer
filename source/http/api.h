@@ -46,7 +46,10 @@ namespace musciteer
 
   inline json to_json(const musciteer::dm::track& track)
   {
-    json artists;
+    json jtrack;
+    json jartists;
+    json jalbum;
+    json jsources;
 
     for ( auto& artist : track.artists() )
     {
@@ -54,43 +57,43 @@ namespace musciteer
         { "id",   artist.id() },
         { "name", artist.name() }
       };
-      artists.push_back(j);
+      jartists.push_back(j);
     }
 
     const auto& album = track.album();
 
-    json jalbum = {
+    jalbum = {
       { "id",    album.id() },
       { "title", album.title() },
     };
 
-    json sources;
-
     track.sources_each([&](const dm::track_source& source) {
-      sources.push_back(to_json(source));
+      jsources.push_back(to_json(source));
     });
 
-    json t = {
+    jtrack = {
       { "id", track.id() },
       { "title", track.title() },
       { "tn", track.track_number() },
       { "dn", track.disc_number() },
       { "duration", track.duration() },
-      { "artists", artists },
+      { "artists", jartists },
       { "album", jalbum },
       { "play_count", track.play_count() },
       { "skip_count", track.skip_count() },
-      { "sources", sources }
+      { "sources", jsources }
     };
 
-    return t;
+    return jtrack;
   }
 
   inline json to_json(const musciteer::dm::album& album)
   {
+    json jalbum;
+
     auto artist = album.artist();
 
-    json jalbum = {
+    jalbum = {
       { "id", album.id() },
       { "title", album.title() },
       //{ "tracks", album.track_ids() },

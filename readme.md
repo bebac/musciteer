@@ -66,6 +66,8 @@ API
 | GET, DELETE  | /api/albums/:id
 | GET          | /api/albums/:id/tracks
 | GET          | /api/albums/:id/cover
+| GET          | /api/artists
+| GET          | /api/artists/:id
 | GET, POST    | /api/sources/local/directories
 | POST         | /api/sources/local/scan
 | GET, POST    | /api/sources/spotify/settings

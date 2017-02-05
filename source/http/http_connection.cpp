@@ -7,6 +7,7 @@
 #include "http_connection.h"
 #include "tracks_handler.h"
 #include "albums_handler.h"
+#include "artists_handler.h"
 #include "player_handler.h"
 #include "sources_handler.h"
 #include "spotify_handler.h"
@@ -520,6 +521,11 @@ void http_connection::dispatch(http::request_environment& env)
       else if ( match[1] == "player" )
       {
         player_handler handler(env, this);
+        handler.call(match[2]);
+      }
+      else if ( match[1] == "artists" )
+      {
+        artists_handler handler(env, this);
         handler.call(match[2]);
       }
       else if ( match[1] == "sources" )

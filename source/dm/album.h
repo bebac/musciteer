@@ -34,7 +34,7 @@ namespace musciteer
     public:
       album();
     public:
-      bool id_is_null();
+      bool id_is_null() const;
     public:
       const std::string& id() const;
       const std::string& title() const;

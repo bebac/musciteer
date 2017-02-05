@@ -47,7 +47,7 @@ namespace musciteer
       album_ids_.insert(album.id());
     }
 
-    void artist::albums_each(std::function<void(const dm::album& album)> cb)
+    void artist::albums_each(std::function<void(const dm::album& album)> cb) const
     {
       auto albums = dm::albums();
 

@@ -18,7 +18,7 @@ namespace musciteer
     {
     }
 
-    bool album::id_is_null()
+    bool album::id_is_null() const
     {
       return id_.empty();
     }

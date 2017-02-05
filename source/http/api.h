@@ -103,6 +103,36 @@ namespace musciteer
 
     return jalbum;
   }
+
+  inline json to_json(const musciteer::dm::artist& artist)
+  {
+    json jartist;
+    json jalbums;
+
+    artist.albums_each([&](const dm::album& album) {
+      // Hmm there shouldn't really be any albums with no id.
+      if ( album.id_is_null() ) {
+        return;
+      }
+      // Add album.
+      jalbums.push_back(
+        json{
+          { "id", album.id() },
+          { "title", album.title() },
+          { "cover", "/api/albums/"+album.id()+"/cover" }
+        }
+      );
+    });
+
+    jartist = {
+      { "id", artist.id() },
+      { "name", artist.name() },
+      { "albums", jalbums }
+    };
+
+    return jartist;
+  }
+
 }
 
 // ----------------------------------------------------------------------------

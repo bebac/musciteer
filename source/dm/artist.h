@@ -42,7 +42,7 @@ namespace musciteer
     public:
       void albums_add(const dm::album& album);
       void albums_del(const dm::album& album);
-      void albums_each(std::function<void(const dm::album& album)>);
+      void albums_each(std::function<void(const dm::album& album)>) const;
     public:
       void read(msgpack::istream& is);
       void write(msgpack::ostream& os) const;

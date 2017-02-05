@@ -8,7 +8,7 @@ class AlbumThumb < Maquette::Component
   end
 
   def show_album_details(evt)
-    store.dispatch({ type: :set_path, data: "/album/#{album.id}" })
+    store.dispatch({ type: :set_path, data: "/albums/#{album.id}" })
     store.dispatch({ type: :album_details_load, data: album })
   end
 

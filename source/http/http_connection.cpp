@@ -357,7 +357,7 @@ http_connection::http_connection(dripcore::socket socket)
   streambuf_(),
   api_re_("^/api/([^/]*)(/.*)?", std::regex::optimize),
   assets_re_("^/(assets/.+)", std::regex::optimize),
-  album_re_("^/(album/al.{4})", std::regex::optimize)
+  album_re_("^/(albums/al.{4})", std::regex::optimize)
 {
   std::cout << "connection " << size_t(this) << std::endl;
 }

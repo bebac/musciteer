@@ -38,7 +38,7 @@ class Top < Maquette::Component
 
   def render_close_button
     h 'div#top-close' do
-      unless path =~ /^\/albums/
+      unless path =~ /^\/albums$/
         @close.render
       else
         h 'button.icon', { key: 'settings.1', onclick: handler(:toggle_settings) } do

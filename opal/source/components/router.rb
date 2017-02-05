@@ -25,7 +25,7 @@ class Router < Maquette::Component
       @player ||= Player.new(@store)
     when '/spotify'
       @spotify ||= Spotify.new(@store)
-    when /\/album\/al.{4}/
+    when /\/albums\/al.{4}/
       @album_view ||= AlbumView.new(@store)
     else
       nil
@@ -89,7 +89,7 @@ module ActionDispatchHooks
       dispatch({ type: :tracks_load }) unless state[:tracks]
     when '/albums'
       dispatch({ type: :albums_load }) unless state[:albums]
-    when /\/album\/(al.{4})/
+    when /\/albums\/(al.{4})/
       unless state[:album_details]
         dispatch({ type: :album_details_load, data: $1 })
       end

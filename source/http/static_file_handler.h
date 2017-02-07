@@ -80,6 +80,7 @@ protected:
       }
 
       auto newer = std::chrono::duration_cast<std::chrono::seconds>(status.mtime() - ims_t);
+      auto lm_t = std::chrono::system_clock::to_time_t(status.mtime());
 
       if ( newer.count() > 0 )
       {
@@ -88,11 +89,11 @@ protected:
         if ( f )
         {
           auto size = f.tellg();
-          auto lm_t = std::chrono::system_clock::to_time_t(status.mtime());
 
           env.os << "HTTP/1.1 200 OK" << crlf
             << "Content-Type: " << mime_type(path) << crlf
             << "Content-Length: " << size << crlf
+            << "Cache-Control: no-cache, must-revalidate, max-age=0" << crlf
             << "Last-Modified:" << std::put_time(std::gmtime(&lm_t), "%a, %d %b %Y %H:%M:%S %Z") << crlf
             << crlf;
 

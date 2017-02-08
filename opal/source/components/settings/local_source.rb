@@ -25,6 +25,14 @@ class LocalSourceSettings < Maquette::Component
     })
   end
 
+  def new_directory
+    @new_directory ||= ''
+  end
+
+  def store_new_directory(evt)
+    @new_directory = evt.target.value
+  end
+
   def add_directory(evt)
     if evt.target.value
       store.dispatch({
@@ -32,6 +40,7 @@ class LocalSourceSettings < Maquette::Component
         data: directories.push(evt.target.value)
       })
     end
+    @new_directory = nil
   end
 
   def scanning?
@@ -77,7 +86,8 @@ class LocalSourceSettings < Maquette::Component
               (
                 h 'div' do
                   h 'input', {
-                    type: 'text', value: '', placeholder: "new directory",
+                    type: 'text', value: new_directory, placeholder: "new directory",
+                    oninput: handler(:store_new_directory),
                     onchange: handler(:add_directory)
                   }
                 end

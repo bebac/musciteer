@@ -182,7 +182,9 @@ namespace musciteer
     class more_played : public dripcore::task
     {
     public:
-      more_played(const player_ctpb_ochannel& channel) : channel_(channel, this)
+      more_played(const player_ctpb_ochannel& channel)
+        :
+        channel_(channel, this)
       {
       }
     private:
@@ -198,6 +200,85 @@ namespace musciteer
 
           std::cout
            << "player_ctpb::more_played - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
+           << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+           << std::endl;
+
+          channel_.send(std::move(track));
+        }
+      }
+    private:
+      std::string generate_track_id()
+      {
+        auto tracks = musciteer::dm::tracks();
+
+        std::vector<std::string> track_ids;
+        std::vector<int> weights;
+
+        tracks.each([&](musciteer::dm::track& track)
+        {
+          int count = track.play_count() - track.skip_count();
+
+          // If track has a negative play count >= 2 skip it.
+          if ( count < 0 && count > -2 ) {
+            count = 0;
+          }
+
+          if ( count >= 0 )
+          {
+            track_ids.push_back(track.id());
+
+            if ( count > 99 ) {
+              count = 99;
+            }
+
+            weights.push_back(count+1);
+          }
+
+          yield(true);
+
+          return true;
+        });
+
+        std::discrete_distribution<> dist(weights.begin(), weights.end());
+        std::mt19937 gen;
+
+        std::seed_seq seq{time(0), idx_};
+        gen.seed(seq);
+
+        idx_ = dist(gen);
+
+        return track_ids[idx_];
+      }
+    private:
+      long int idx_;
+    private:
+      player_ctpb_ochannel channel_;
+    };
+
+
+    //
+    // Top Played.
+    //
+
+    class top_played : public dripcore::task
+    {
+    public:
+      top_played(const player_ctpb_ochannel& channel) : channel_(channel, this)
+      {
+      }
+    private:
+      void main() final
+      {
+        while ( !stopping() )
+        {
+          auto tracks   = musciteer::dm::tracks();
+          auto start    = std::chrono::steady_clock::now();
+          auto track_id = generate_track_id();
+          auto track    = tracks.find_by_id(track_id);
+          auto end      = std::chrono::steady_clock::now();
+
+          std::cout
+           << "player_ctpb::top_played - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
            << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
            << std::endl;
 
@@ -265,21 +346,21 @@ namespace musciteer
         count_hi_min = count_hi_max - bin_size;
         count_lo_max = count_lo_min + bin_size;
 
-        int count_60 = 0;
-        int count_30 = 0;
-        int count_10 = 0;
+        int count_80 = 0;
+        int count_15 = 0;
+        int count_05 = 0;
 
         auto bin_count = [&]() {
           for ( const auto& entry : track_entries )
           {
             if ( entry.count >= count_hi_min) {
-              count_60++;
+              count_80++;
             }
             else if ( entry.count >= count_lo_max ) {
-              count_30++;
+              count_15++;
             }
             else {
-              count_10++;
+              count_05++;
             }
           }
         };
@@ -303,22 +384,22 @@ namespace musciteer
 #if 0
           std::cout
            << "player_ctpb::more_played\n"
-           << "  count_60     = " << count_60 << "\n"
-           << "  count_30     = " << count_30 << "\n"
-           << "  count_10     = " << count_10 << "\n"
+           << "  count_80     = " << count_80 << "\n"
+           << "  count_15     = " << count_15 << "\n"
+           << "  count_05     = " << count_05 << "\n"
            << std::endl;
 #endif
 
           //
-          // If there is only a few tracks in the 60% bin include
+          // If there is only a few tracks in the 80% bin include
           // a lower play count and recount.
           //
 
-          if ( count_60 < 100 && count_hi_min > 1 )
+          if ( count_80 < (track_entries.size()*0.1) && count_hi_min > 1 )
           {
-            count_60 = 0;
-            count_30 = 0;
-            count_10 = 0;
+            count_80 = 0;
+            count_15 = 0;
+            count_05 = 0;
 
             count_hi_min--;
 
@@ -337,20 +418,20 @@ namespace musciteer
         //
 
         int weight_max = track_entries.size()*100;
-        int weight_60  = weight_max*0.60/count_60;
-        int weight_30  = weight_max*0.30/count_30;
-        int weight_10  = weight_max*0.10/count_10;
+        int weight_80  = weight_max*0.80/count_80;
+        int weight_15  = weight_max*0.15/count_15;
+        int weight_05  = weight_max*0.05/count_05;
 
         for ( const auto& entry : track_entries )
         {
           if ( entry.count >= count_hi_min) {
-            weights.push_back(weight_60);
+            weights.push_back(weight_80);
           }
           else if ( entry.count >= count_lo_max ) {
-            weights.push_back(weight_30);
+            weights.push_back(weight_15);
           }
           else {
-            weights.push_back(weight_10);
+            weights.push_back(weight_05);
           }
         }
 
@@ -397,6 +478,9 @@ namespace musciteer
       }
       else if ( type == "more-played" ) {
         ctpb_task_ = task_->spawn<player_ctpb::more_played>(channel_).lock();
+      }
+      else if ( type == "top-played" ) {
+        ctpb_task_ = task_->spawn<player_ctpb::top_played>(channel_).lock();
       }
       else {
         throw std::runtime_error("player_ctpb_provider - unknown type");

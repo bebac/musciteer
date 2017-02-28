@@ -15,7 +15,7 @@ class ContinuousPlaybackSettings < Maquette::Component
   end
 
   def available_types
-    [ "random", "less-played", "more-played" ]
+    [ "random", "less-played", "more-played", "top-played" ]
   end
 
   def toggle(evt)

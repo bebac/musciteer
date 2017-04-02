@@ -79,7 +79,7 @@ namespace musciteer
     void queue_update_notify(const musciteer::dm::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
-    void audio_output_open();
+    bool audio_output_open();
   private:
     state state_;
   private:

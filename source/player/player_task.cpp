@@ -403,8 +403,11 @@ namespace musciteer
 
   void player_task::become_playing(const musciteer::dm::track& track)
   {
-    if ( state_ == stopped ) {
-      audio_output_open();
+    if ( state_ == stopped )
+    {
+      if ( !audio_output_open() ) {
+        return;
+      }
     }
 
     session_ = std::make_shared<player_session>();
@@ -514,7 +517,7 @@ namespace musciteer
     audio_output_->send(std::move(m));
   }
 
-  void player_task::audio_output_open()
+  bool player_task::audio_output_open()
   {
     message_channel ch;
     message m(message::open_req_id, 0);
@@ -530,12 +533,13 @@ namespace musciteer
     if ( r.open_res.error_code == 0 )
     {
       std::cout << "audio output " << audio_output_device_ << " open ok" << std::endl;
+      return true;
     }
     else
     {
       std::cout << "audio output open response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
       // TODO: Send some sort of notification.
-      become_stopped();
+      return false;
     }
   }
 }

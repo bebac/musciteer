@@ -39,7 +39,7 @@ namespace spotify_web
   public:
     ~socket()
     {
-      close();
+      ssl_free();
     }
   public:
     operator bool() { return !!socket_; }
@@ -147,6 +147,16 @@ namespace spotify_web
       SSL_set_fd(ssl_, socket_.native_handle());
     }
   private:
+    void ssl_free()
+    {
+      if ( ssl_ ) {
+        SSL_free(ssl_);
+      }
+      if ( ctx_ ) {
+        SSL_CTX_free(ctx_);
+      }
+    }
+  private:
     void getaddrinfo(
       const char *node,
       const char *service,
@@ -195,12 +205,7 @@ namespace spotify_web
     void close() override
     {
       io::close();
-      if ( ssl_ ) {
-        SSL_free(ssl_);
-      }
-      if ( ctx_ ) {
-        SSL_CTX_free(ctx_);
-      }
+      ssl_free();
       if ( socket_ ) {
         socket_.close();
       }

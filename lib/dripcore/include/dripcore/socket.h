@@ -50,7 +50,7 @@ namespace dripcore
   public:
     virtual ~socket()
     {
-      close();
+      native_close();
     }
   private:
     // No copying.
@@ -132,9 +132,7 @@ namespace dripcore
     void close() override
     {
       io::close();
-      if ( fd_ != -1 ) {
-        ::close(fd_); fd_ = -1;
-      }
+      native_close();
     }
   public:
     bool ok() { return fd_ != -1; }
@@ -149,6 +147,15 @@ namespace dripcore
     int native_handle() const override
     {
       return fd_;
+    }
+  private:
+    void native_close()
+    {
+      if (fd_ != -1)
+      {
+        ::close(fd_);
+        fd_ = -1;
+      }
     }
   private:
     int fd_;

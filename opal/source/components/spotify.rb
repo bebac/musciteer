@@ -19,9 +19,11 @@ class Spotify < Maquette::Component
 
   def make_path_from_url
     case url
-    when /https:\/\/play\.spotify\.com\/album\/(.*)/
+    when /https:\/\/play\.spotify\.com\/album\/(.*)/,
+         /https:\/\/open\.spotify\.com\/album\/(.*)/
       "/v1/albums/#{$1}"
-    when /https:\/\/play\.spotify\.com\/track\/(.*)/
+    when /https:\/\/play\.spotify\.com\/track\/(.*)/,
+         /https:\/\/open\.spotify\.com\/track\/(.*)/
       "/v1/tracks/#{$1}"
     when /^\/v1\/(albums|tracks)\//
       url

@@ -367,6 +367,7 @@ http_connection::http_connection(dripcore::socket socket)
 http_connection::~http_connection()
 {
   std::cout << "~connection " << size_t(this) << std::endl;
+  socket_.task_detach(this);
 }
 
 void http_connection::init()

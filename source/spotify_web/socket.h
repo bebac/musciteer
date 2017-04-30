@@ -39,6 +39,10 @@ namespace spotify_web
   public:
     ~socket()
     {
+      if ( socket_ )
+      {
+        socket_.task_detach(task_);
+      }
       ssl_free();
     }
   public:
@@ -206,7 +210,9 @@ namespace spotify_web
     {
       io::close();
       ssl_free();
-      if ( socket_ ) {
+      if ( socket_ )
+      {
+        socket_.task_detach(task_);
         socket_.close();
       }
     }

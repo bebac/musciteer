@@ -40,6 +40,7 @@ namespace musciteer
       const std::string& title() const;
       const track_id_list& track_ids() const;
       const std::string& artist_id() const;
+      const std::string& cover_url() const;
     public:
       dm::artist artist() const;
     public:
@@ -54,6 +55,8 @@ namespace musciteer
     public:
       void artist(const dm::artist&);
     public:
+      void cover_url(const std::string& url);
+    public:
       void alt_ids_add(const std::string& alt_id);
     public:
       void read(msgpack::istream&);
@@ -64,6 +67,7 @@ namespace musciteer
       track_id_list track_ids_;
       std::string artist_id_;
       alt_id_list alt_ids_;
+      std::string cover_url_;
     };
 
     inline msgpack::istream& operator>>(msgpack::istream& is, album& value)

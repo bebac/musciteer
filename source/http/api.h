@@ -87,22 +87,31 @@ namespace musciteer
     return jtrack;
   }
 
-  inline json to_json(const musciteer::dm::album& album)
+  inline json to_json(const musciteer::dm::album& album, bool include_artist = true)
   {
     json jalbum;
 
-    auto artist = album.artist();
+    auto artist    = album.artist();
+    auto cover_url = album.cover_url();
+
+    if ( cover_url.empty() ) {
+      cover_url = "/api/albums/"+album.id()+"/cover";
+    }
 
     jalbum = {
       { "id", album.id() },
       { "title", album.title() },
       //{ "tracks", album.track_ids() },
-      { "artist", {
-        { "id", artist.id() },
-        { "name", artist.name() } }
-      },
-      { "cover", "/api/albums/"+album.id()+"/cover" }
+      { "cover", cover_url }
     };
+
+    if ( include_artist )
+    {
+      jalbum["artist"] = json{
+        { "id", artist.id() },
+        { "name", artist.name() }
+      };
+    }
 
     return jalbum;
   }
@@ -118,13 +127,7 @@ namespace musciteer
         return;
       }
       // Add album.
-      jalbums.push_back(
-        json{
-          { "id", album.id() },
-          { "title", album.title() },
-          { "cover", "/api/albums/"+album.id()+"/cover" }
-        }
-      );
+      jalbums.push_back(to_json(album, false));
     });
 
     jartist = {

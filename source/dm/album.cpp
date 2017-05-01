@@ -43,6 +43,11 @@ namespace musciteer
       return artist_id_;
     }
 
+    const std::string& album::cover_url() const
+    {
+      return cover_url_;
+    }
+
     dm::artist album::artist() const
     {
       auto artists = dm::artists();
@@ -89,6 +94,11 @@ namespace musciteer
       artist_id_ = artist.id();
     }
 
+    void album::cover_url(const std::string& url)
+    {
+      cover_url_ = url;
+    }
+
     void album::alt_ids_add(const std::string& alt_id)
     {
       alt_ids_.insert(alt_id);
@@ -113,10 +123,11 @@ namespace musciteer
               case 3: is >> track_ids_; break;
               case 4: is >> artist_id_; break;
               case 5: is >> alt_ids_; break;
+              case 6: is >> cover_url_; break;
               default:
                 is >> msgpack::skip;
                 break;
-            }
+           }
           }
           else
           {
@@ -134,14 +145,15 @@ namespace musciteer
 
     void album::write(msgpack::ostream& os) const
     {
-      msgpack::map map{5};
+      msgpack::map map{6};
 
       os << map
         << 1 << id_
         << 2 << title_
         << 3 << track_ids_
         << 4 << artist_id_
-        << 5 << alt_ids_;
+        << 5 << alt_ids_
+        << 6 << cover_url_;
     }
   }
 }

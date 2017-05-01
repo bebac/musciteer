@@ -227,12 +227,7 @@ namespace spotify_web
           throw std::runtime_error("album images json not an array");
         }
 
-        auto cover = musciteer::dm::album_cover();
-        auto kvstore = musciteer::kvstore();
-
-        spotify_.get(images_json[0]["url"], cover);
-
-        kvstore.set(album.id()+"/cover", cover);
+        album.cover_url(images_json[0]["url"]);
 
         artist.albums_add(album);
       }

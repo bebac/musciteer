@@ -62,9 +62,16 @@ namespace musciteer
 
     const auto& album = track.album();
 
+    auto cover_url = album.cover_url();
+
+    if ( cover_url.empty() ) {
+      cover_url = "/api/albums/"+album.id()+"/cover";
+    }
+
     jalbum = {
       { "id",    album.id() },
       { "title", album.title() },
+      { "cover", cover_url }
     };
 
     track.sources_each([&](const dm::track_source& source) {

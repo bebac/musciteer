@@ -102,7 +102,8 @@ namespace musciteer
       { "id", album.id() },
       { "title", album.title() },
       //{ "tracks", album.track_ids() },
-      { "cover", cover_url }
+      { "cover", cover_url },
+      { "alt_ids", album.alt_ids() }
     };
 
     if ( include_artist )

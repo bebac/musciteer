@@ -43,6 +43,11 @@ namespace musciteer
       return artist_id_;
     }
 
+    const album::alt_id_list& album::alt_ids() const
+    {
+      return alt_ids_;
+    }
+
     const std::string& album::cover_url() const
     {
       return cover_url_;

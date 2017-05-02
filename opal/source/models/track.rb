@@ -31,7 +31,7 @@ class Track
   end
 
   def album_cover_path
-    "/api/albums/#{@album["id"]}/cover"
+    @album["cover"]
   end
 
   def duration_formatted

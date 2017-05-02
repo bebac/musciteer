@@ -4,6 +4,9 @@
 //                  Copyright (C) 2015
 //
 // ----------------------------------------------------------------------------
+#include "migration.h"
+
+// ----------------------------------------------------------------------------
 #include "player/sources.h"
 #include "player/player.h"
 
@@ -77,6 +80,7 @@ void init_openssl_library(void)
 #endif
 }
 
+
 // ----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -105,6 +109,7 @@ int main(int argc, char *argv[])
   init_openssl_library();
 
   musciteer::kvstore::start(options.database_filename);
+  musciteer::migration::run(options.database_filename);
   musciteer::sources::start(&loop);
   musciteer::player::start(&loop);
 

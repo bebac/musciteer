@@ -37,6 +37,25 @@ namespace musciteer
       db_.close();
     }
   public:
+    unsigned version()
+    {
+      unsigned value;
+
+      if ( get(version_key, value) )
+      {
+        return value;
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  public:
+    void version(unsigned new_version)
+    {
+      set(version_key, new_version);
+    }
+  public:
     int64_t increment(const std::string& key, int64_t num, int64_t orig)
     {
       return db_.increment(key, num, orig);
@@ -132,6 +151,8 @@ namespace musciteer
     }
   private:
     kyotocabinet::HashDB db_;
+  private:
+    static constexpr const char* version_key = "__version__";
   };
 
   class kvstore
@@ -141,6 +162,18 @@ namespace musciteer
   public:
     kvstore()
     {
+    }
+  public:
+    unsigned version()
+    {
+      assert(instance_);
+      return instance_->version();
+    }
+  public:
+    void version(unsigned new_version)
+    {
+      assert(instance_);
+      instance_->version(new_version);
     }
   public:
     int64_t increment(const std::string& key, int64_t num, int64_t orig=0)
@@ -184,8 +217,6 @@ namespace musciteer
       assert(instance_);
       instance_->each(key_match, value_cb);
     }
-  public:
-
   public:
     static void start(const std::string& filename);
     static void stop();

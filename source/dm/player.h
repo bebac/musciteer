@@ -94,7 +94,7 @@ namespace musciteer
       {
         if ( !kvstore_.get(player_key, data_) )
         {
-          data_.ctpb_enabled = true;
+          data_.ctpb_enabled = false;
           data_.ctpb_type = "random";
           data_.audio_device = "default";
           data_.replaygain_enabled = false;

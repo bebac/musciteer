@@ -73,15 +73,22 @@ namespace musciteer
           return true;
         });
 
-        std::discrete_distribution<> dist(weights.begin(), weights.end());
-        std::mt19937 gen;
+        if ( !track_ids.empty() )
+        {
+          std::discrete_distribution<> dist(weights.begin(), weights.end());
+          std::mt19937 gen;
 
-        std::seed_seq seq{time(0), idx_};
-        gen.seed(seq);
+          std::seed_seq seq{time(0), idx_};
+          gen.seed(seq);
 
-        idx_ = dist(gen);
+          idx_ = dist(gen);
 
-        return track_ids[idx_];
+          return track_ids[idx_];
+        }
+        else
+        {
+          return std::string();
+        }
       }
     private:
       long int idx_;
@@ -157,15 +164,22 @@ namespace musciteer
           return true;
         });
 
-        std::discrete_distribution<> dist(weights.begin(), weights.end());
-        std::mt19937 gen;
+        if ( !track_ids.empty() )
+        {
+          std::discrete_distribution<> dist(weights.begin(), weights.end());
+          std::mt19937 gen;
 
-        std::seed_seq seq{time(0), idx_};
-        gen.seed(seq);
+          std::seed_seq seq{time(0), idx_};
+          gen.seed(seq);
 
-        idx_ = dist(gen);
+          idx_ = dist(gen);
 
-        return track_ids[idx_];
+          return track_ids[idx_];
+        }
+        else
+        {
+          return std::string();
+        }
       }
     private:
       std::array<int, 25> count_to_weight_tab_;
@@ -239,15 +253,22 @@ namespace musciteer
           return true;
         });
 
-        std::discrete_distribution<> dist(weights.begin(), weights.end());
-        std::mt19937 gen;
+        if ( !track_ids.empty() )
+        {
+          std::discrete_distribution<> dist(weights.begin(), weights.end());
+          std::mt19937 gen;
 
-        std::seed_seq seq{time(0), idx_};
-        gen.seed(seq);
+          std::seed_seq seq{time(0), idx_};
+          gen.seed(seq);
 
-        idx_ = dist(gen);
+          idx_ = dist(gen);
 
-        return track_ids[idx_];
+          return track_ids[idx_];
+        }
+        else
+        {
+          return std::string();
+        }
       }
     private:
       long int idx_;
@@ -435,15 +456,22 @@ namespace musciteer
           }
         }
 
-        std::discrete_distribution<> dist(weights.begin(), weights.end());
-        std::mt19937 gen;
+        if ( !track_entries.empty() )
+        {
+          std::discrete_distribution<> dist(weights.begin(), weights.end());
+          std::mt19937 gen;
 
-        std::seed_seq seq{time(0), idx_};
-        gen.seed(seq);
+          std::seed_seq seq{time(0), idx_};
+          gen.seed(seq);
 
-        idx_ = dist(gen);
+          idx_ = dist(gen);
 
-        return track_entries[idx_].id;
+          return track_entries[idx_].id;
+        }
+        else
+        {
+          return std::string();
+        }
       }
     private:
       long int idx_;

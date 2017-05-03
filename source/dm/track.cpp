@@ -70,7 +70,7 @@ namespace musciteer
       return res;
     }
 
-    const track_source& track::sources_get(const std::string& name)
+    const track_source& track::sources_get(const std::string& name) const
     {
       for ( auto& s : sources_ )
       {

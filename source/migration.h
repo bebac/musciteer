@@ -103,6 +103,36 @@ namespace musciteer
       musciteer::kvstore kvstore_;
     };
 
+    class migration_1_task : public dripcore::task
+    {
+    public:
+      migration_1_task() : kvstore_(musciteer::kvstore())
+      {
+      }
+    public:
+      void main() override
+      {
+        auto albums = musciteer::dm::albums();
+
+        std::vector<std::string> album_cover_keys;
+
+        albums.each([&](const musciteer::dm::album& album)
+        {
+          album_cover_keys.push_back(album.id()+"/cover");
+          return true;
+        });
+
+        for ( auto& key : album_cover_keys )
+        {
+          kvstore_.remove(key);
+        }
+
+        kvstore_.version(2);
+      }
+    private:
+      musciteer::kvstore kvstore_;
+    };
+
     template<class T>
     void run_migration_task()
     {
@@ -116,7 +146,7 @@ namespace musciteer
     {
       auto kvstore = musciteer::kvstore();
 
-      while ( kvstore.version() < 1 )
+      while ( kvstore.version() < 2 )
       {
         std::cout << "database " << database_filename << " running migration from version " << kvstore.version() << std::endl;
 
@@ -124,6 +154,9 @@ namespace musciteer
         {
           case 0:
             run_migration_task<migration_0_task>();
+            break;
+          case 1:
+            run_migration_task<migration_1_task>();
             break;
         }
       }

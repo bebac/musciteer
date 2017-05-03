@@ -16,6 +16,9 @@
 #include "../dm/album_cover.h"
 
 // ----------------------------------------------------------------------------
+#include <FLAC++/metadata.h>
+
+// ----------------------------------------------------------------------------
 class albums_handler : public api_handler_base
 {
 public:
@@ -182,24 +185,70 @@ private:
 private:
   void get_album_cover(const std::string& id)
   {
-    auto kvstore = musciteer::kvstore();
+    auto albums = musciteer::dm::albums();
 
-    musciteer::dm::album_cover cover;
+    auto album = albums.find_by_id(id);
+    auto found = false;
 
-    if ( kvstore.get(id+"/cover", cover) )
+    if ( !album.id().empty() )
     {
-      auto& data = cover.data();
+      album.tracks_each([&](const musciteer::dm::track& track)
+      {
+        if ( !found )
+        {
+          try
+          {
+            auto track_source = track.sources_get("local");
+            auto filename = track_source.uri();
 
-      env.os << "HTTP/1.1 200 OK" << crlf
-        << "Content-Type: " << cover.mime_type() << crlf
-        << "Content-Length: " << data.length() << crlf
-        << crlf
-        << data;
+            FLAC::Metadata::Picture picture;
+
+            if (
+              get_picture(filename, picture, FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER) ||
+              get_picture(filename, picture, FLAC__STREAM_METADATA_PICTURE_TYPE_MEDIA)
+            )
+            {
+              std::string data;
+
+              data.assign(reinterpret_cast<const char*>(picture.get_data()), picture.get_data_length());
+
+              env.os << "HTTP/1.1 200 OK" << crlf
+                << "Content-Type: " << picture.get_mime_type() << crlf
+                << "Content-Length: " << picture.get_data_length() << crlf
+                << "Cache-Control: max-age=86400" << crlf
+                << crlf
+                << data;
+
+              found = true;
+            }
+          }
+          catch(...)
+          {
+            std::cerr << "track id " << track.id() << " has no local source" << std::endl;
+          }
+        }
+      });
     }
-    else
+
+    if ( !found )
     {
       not_found();
     }
+  }
+private:
+  bool get_picture(const std::string& filename, FLAC::Metadata::Picture& picture, FLAC__StreamMetadata_Picture_Type type)
+  {
+    return FLAC::Metadata::get_picture(
+      filename.c_str(),
+      picture,
+      type,
+      NULL,
+      NULL,
+      -1,
+      -1,
+      -1,
+      -1
+    );
   }
 };
 

@@ -177,8 +177,6 @@ namespace musciteer
         }
 
         album_artist_.albums_add(album_);
-
-        create_album_cover();
       }
 
       if ( album_artist_.name() == tag_artist )
@@ -321,41 +319,6 @@ namespace musciteer
 
         cb(name, c.get_field_value());
       }
-    }
-  private:
-    void create_album_cover()
-    {
-      FLAC::Metadata::Picture picture;
-
-      if (
-        get_picture(picture, FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER) ||
-        get_picture(picture, FLAC__STREAM_METADATA_PICTURE_TYPE_MEDIA)
-      )
-      {
-        auto cover = musciteer::dm::album_cover();
-
-        cover.mime_type(picture.get_mime_type());
-        cover.data(picture.get_data(), picture.get_data_length());
-
-        auto kvstore = musciteer::kvstore();
-
-        kvstore.set(album_.id()+"/cover", cover);
-      }
-    }
-  private:
-    bool get_picture(FLAC::Metadata::Picture& picture, FLAC__StreamMetadata_Picture_Type type)
-    {
-      return FLAC::Metadata::get_picture(
-        filename_.c_str(),
-        picture,
-        type,
-        NULL,
-        NULL,
-        -1,
-        -1,
-        -1,
-        -1
-      );
     }
   private:
     std::string filename_;

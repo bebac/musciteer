@@ -51,7 +51,10 @@ namespace spotify_web
     void get(const std::string& path, json& body);
     void get(const std::string& path, musciteer::dm::album_cover& cover);
   public:
-    json audio_features(const std::string& track_id);
+    json get_tracks(const std::vector<std::string>& track_ids);
+  public:
+    json get_audio_features(const std::string& track_id);
+    json get_audio_features(const std::vector<std::string>& track_ids);
   private:
     void refresh_access_token();
     void update_api_data(json data);

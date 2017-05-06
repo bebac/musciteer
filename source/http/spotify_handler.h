@@ -148,17 +148,54 @@ protected:
     {
       spotify_web::track_importer importer(spotify);
 
-      importer.import_track(body);
+      auto track = body;
+      auto features = spotify.get_audio_features(body["id"].get<std::string>());
+
+      if ( features["id"] != track["id"] ) {
+        throw std::runtime_error("spotify import - track and audio-features mismatch");
+      }
+
+      importer.import_track(track, features);
     }
     else if ( body["type"] == "album" )
     {
-      spotify_web::track_importer importer(spotify);
+      spotify_web::track_importer importer(spotify, body);
 
-      for ( auto item : body["tracks"]["items"] )
+      auto& tracks = body["tracks"];
+
+      do
       {
-        std::string track_url = item["href"];
-        importer.import_track(track_url);
+        std::vector<std::string> track_ids;
+
+        for ( auto item : tracks["items"] ) {
+          track_ids.push_back(item["id"]);
+        }
+
+        auto obj1 = spotify.get_tracks(track_ids);
+        auto obj2 = spotify.get_audio_features(track_ids);
+
+        auto& audio_features = obj2["audio_features"];
+        auto i = unsigned{0};
+
+        for ( auto& track : obj1["tracks"] )
+        {
+          auto& features = audio_features[i++];
+
+          if ( features["id"] != track["id"] ) {
+            throw std::runtime_error("spotify import - track and audio-features mismatch");
+          }
+
+          importer.import_track(track, features);
+        }
+
+        if ( !tracks["next"].is_null() ) {
+          spotify.get(tracks["next"], tracks);
+        }
+        else {
+          tracks = nullptr;
+        }
       }
+      while( !tracks.is_null() );
     }
     else
     {

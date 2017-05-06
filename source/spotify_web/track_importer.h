@@ -25,24 +25,17 @@ namespace spotify_web
   class track_importer
   {
   public:
-    track_importer(api& spotify) : spotify_(spotify)
+    track_importer(api& spotify)
+      : spotify_(spotify)
     {
     }
   public:
-    std::string import_track(const std::string& url)
+    track_importer(api &spotify, json album_json)
+      : spotify_(spotify), album_json_(album_json)
     {
-      json track;
-
-      spotify_.get(url, track);
-
-      if ( !track.is_object() ) {
-        throw std::runtime_error("track json not an object");
-      }
-
-      return import_track(track);
     }
   public:
-    std::string import_track(json& track_json)
+    std::string import_track(json& track_json, json& track_audio_features_json)
     {
       if ( !track_json.is_object() ) {
         throw std::runtime_error("track json not an object");
@@ -71,7 +64,7 @@ namespace spotify_web
       }
 
       auto track = musciteer::dm::track{};
-      auto track_source = make_track_source(track_json);
+      auto track_source = make_track_source(track_json, track_audio_features_json);
 
       std::string track_title = track_json["name"];
       unsigned track_tn = track_json["track_number"];
@@ -154,9 +147,7 @@ namespace spotify_web
         throw std::runtime_error("album json not an object");
       }
 
-      json details;
-
-      spotify_.get(album_json["href"], details);
+      auto details = get_spotify_album(album_json["href"]);
 
       if ( !details["artists"].is_array() ) {
         throw std::runtime_error("album artists json not an array");
@@ -235,13 +226,18 @@ namespace spotify_web
       return album;
     }
   private:
-    musciteer::dm::track_source make_track_source(const json& track)
+    musciteer::dm::track_source make_track_source(const json& track, const json& track_audio_features)
     {
       auto track_source   = musciteer::dm::track_source{"spotify", track["uri"]};
 
       if ( spotify_.is_authorized() )
       {
-        auto audio_features = spotify_.audio_features(track["id"]);
+        auto audio_features = track_audio_features;
+
+        if ( audio_features.is_null() )
+        {
+          audio_features = spotify_.get_audio_features(track["id"].get<std::string>());
+        }
 
         if ( !audio_features.is_object() )
         {
@@ -268,7 +264,18 @@ namespace spotify_web
       return track_source;
     }
   private:
+    const json& get_spotify_album(std::string path)
+    {
+      if ( album_json_.is_null() )
+      {
+        spotify_.get(path, album_json_);
+      }
+      return album_json_;
+    }
+  private:
     spotify_web::api& spotify_;
+  private:
+    json album_json_;
   private:
     musciteer::dm::artists artists_;
     musciteer::dm::albums albums_;

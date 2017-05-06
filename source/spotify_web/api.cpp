@@ -224,7 +224,28 @@ namespace spotify_web
     }
   }
 
-  json api::audio_features(const std::string& track_id)
+  json api::get_tracks(const std::vector<std::string>& track_ids)
+  {
+    std::stringstream path;
+
+    path << "/v1/tracks/?ids=";
+
+    for ( auto track_id : track_ids )
+    {
+      if ( track_id != track_ids.front() ) {
+        path << ",";
+      }
+      path << track_id;
+    }
+
+    json result;
+
+    get(path.str(), result);
+
+    return result;
+  }
+
+  json api::get_audio_features(const std::string& track_id)
   {
     json result;
 
@@ -233,6 +254,27 @@ namespace spotify_web
     }
 
     get("/v1/audio-features/" + track_id, result);
+
+    return result;
+  }
+
+  json api::get_audio_features(const std::vector<std::string>& track_ids)
+  {
+    std::stringstream path;
+
+    path << "/v1/audio-features/?ids=";
+
+    for ( auto track_id : track_ids )
+    {
+      if ( track_id != track_ids.front() ) {
+        path << ",";
+      }
+      path << track_id;
+    }
+
+    json result;
+
+    get(path.str(), result);
 
     return result;
   }

@@ -27,9 +27,9 @@ namespace musciteer
     {
     }
   public:
-    void init_track_source(const dm::track_source& source)
+    void init_track_source(const std::string& filename)
     {
-      auto res = init(source.uri().c_str());
+      auto res = init(filename.c_str());
 
       if ( FLAC__STREAM_DECODER_INIT_STATUS_OK != res ) {
         throw std::runtime_error("flac decoder file intit error!");
@@ -89,7 +89,7 @@ namespace musciteer
 
       source_ = track->sources_get("local");
 
-      decoder_.init_track_source(source_);
+      decoder_.init_track_source(source_.uri());
       decoder_.process_until_end_of_stream();
 
       stream_end();

@@ -4,13 +4,30 @@ Musciteer
 
 [![Join the chat at https://gitter.im/musciteer/Lobby](https://badges.gitter.im/musciteer/Lobby.svg)](https://gitter.im/musciteer/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Musciteer is a music server for Linux. It combines your local music files with
+Musciteer is a music playing server for Linux. It combines your local music files with
 selected music from streaming services and presents it as one library through
-a modern web interface
+a modern web interface. It's designed to run on a small, preferably fanless, pc that is
+hooked up to your hifi system. I guess you can think of it as an alternative to Volumio or MPD.
 
 > NOTE: Currently it only supports flac and spotify
 
 [![Musciteer](https://raw.githubusercontent.com/bebac/musciteer/master/doc/screenshots.gif)](https://github.com/bebac/musciteer/releases)
+
+
+Getting Started
+===============
+
+Installation is not as polished as it should be yet. For now head to [releases](https://github.com/bebac/musciteer/releases)
+it should contain the information you need to get Musciteer running as service.
+
+There is no integration with any meta data services, at least not yet, so it requires
+that your local flac files are properly tagged. For album covers you need to tag all your
+flac files with a front cover or media image. You can use something like Easytag to do this.
+
+For replaygain to work, make sure all your flac files have proper replaygain tags. One way
+to do this is to use the flac_rg_tagger tool included with Musciteer. It requires the
+metaflac package in order to run. First run a scan to import your flac files then stop
+musciteer, run flac_rg_tagger, start musciteer and run a new scan.
 
 
 
@@ -30,7 +47,7 @@ A somewhat prioritized list of features / tasks.
       how it works on iphone.
 - [ ] Ubuntu snap package. Not possible currently as snaps cannot access alsa
       :exclamation:
-- [x] Debian package for Ubuntu 16.04
+- [x] Debian package for Ubuntu 16.04 and 17.04
 - [x] Browse and queue music from mobile web app. Works best on a tablet, on
       small screens it is not very usable.
 - [x] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify. See [spotify audio features](doc/spotify_audio_features.md)

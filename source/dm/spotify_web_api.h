@@ -96,6 +96,11 @@ namespace musciteer
         return data_.access_token;
       }
     public:
+      bool has_access_token() const
+      {
+        return !data_.access_token.empty();
+      }
+    public:
       void access_token(const std::string& access_token)
       {
         data_.access_token = access_token;

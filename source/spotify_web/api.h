@@ -43,8 +43,7 @@ namespace spotify_web
   public:
     bool is_authorized() const
     {
-      auto access_token = api_data_.access_token();
-      return !access_token.empty();
+      return api_data_.has_access_token();
     }
   public:
     void authorize(const std::string& code, const std::string& state);

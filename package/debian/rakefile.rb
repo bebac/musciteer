@@ -7,8 +7,7 @@ Version: <%= version %>
 Section: base
 Priority: optional
 Architecture: <%= architecture %>
-<% if lsb_release =~ /16\.\d{2}/ %>Depends: libasound2, libflac++6v5, libcrypto++9v5, libkyotocabinet16v5
-<% else %>Depends: libasound2, libflac++6v5, libcrypto++6, libkyotocabinet16v5<% end %>
+Depends: <%= depends.join(',') %>
 Maintainer: Benny Bach <benny.bach@gmail.com>
 Description: Musciteer music player
 EOF
@@ -39,7 +38,13 @@ task :dpkg do
   name = "musciteer"
   version = "0.1-7"
   architecture = %x[dpkg --print-architecture].strip
-  lsb_release = %x[lsb_release -sr]
+  lsb_release = %x[lsb_release -sr].strip
+
+  if lsb_release =~ /16\.\d{2}/
+    depends = %w{libasound2 libflac++6v5 libcrypto++9v5 libkyotocabinet16v5}
+  else
+    depends = %w{libasound2 libflac++6v5 libcrypto++6 libkyotocabinet16v5}
+  end
 
   # Create debian control file.
   File.open("stage/DEBIAN/control", "w") do |file|
@@ -64,5 +69,5 @@ task :dpkg do
   sh "dpkg-deb --build stage"
 
   # Rename debian.dep
-  sh "mv stage.deb #{name}_#{version}-#{architecture}.deb"
+  sh "mv stage.deb #{name}_#{version}-#{architecture}-Ubuntu-#{lsb_release}.deb"
 end

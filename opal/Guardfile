@@ -1,6 +1,3 @@
-###
-# Build application.
-
 guard 'rake', :task => 'html' do
   watch('index.html.erb')
 end

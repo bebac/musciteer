@@ -1,0 +1,46 @@
+nav
+{
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: nowrap;
+
+  @media (max-width: $break)
+  {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  a
+  {
+    outline: none;
+    display: inline-block; // with default display type onclick doesn't fire if link has a href attribute.
+    color: #aaa;
+    font-size: $text-normal;
+    font-weight: 600;
+    text-transform: uppercase;
+    //letter-spacing: 0.08em;
+    padding: $v-padding $h-padding;
+
+    @media (max-width: $break)
+    {
+      padding: 0.25em 0;
+    }
+  }
+
+  a:link
+  {
+    text-decoration: none;
+  }
+
+  a:visited
+  {
+    text-decoration: none;
+  }
+
+  a.active
+  {
+    color: #666;
+  }
+}

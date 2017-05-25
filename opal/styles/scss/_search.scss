@@ -1,0 +1,54 @@
+.search
+{
+  $place-holder-color: #bbb;
+  $border-color: #bbb;
+  $text-color: #666;
+
+  display: flex;
+  flex: 1;
+  //border-left: 1px solid #eee;
+
+  >div
+  {
+    display: flex;
+    width: 100%;
+  }
+
+  input
+  {
+    flex: 0 0 auto;
+    max-width: 50%;
+    margin: 1.3em 0;
+    padding: 0.33em 0;
+    outline: none;
+    border: none;
+    background-color: rgba(225,225,225,0);
+    //border-bottom: 1px solid $border-color;
+    //margin: 0 0 0 $h-padding;
+    @include placeholder
+    {
+      color: $place-holder-color;
+    }
+  }
+
+  input[type=text]
+  {
+    font-size: 1.08em;
+    color: $text-color;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+  }
+
+  input[type=text]:focus
+  {
+  }
+
+  svg
+  {
+    flex: 0 0 auto;
+    margin: 1.3em 0;
+    //height: 0; // Firefox
+    @include size(3em);
+    stroke: $text-color;
+  }
+}

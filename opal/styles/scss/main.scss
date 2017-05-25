@@ -1,69 +1,9 @@
-@import "reset";
 @import "mixins";
-@import "colors";
-@import "router";
-@import "top";
-@import "bottom";
-@import "settings";
-@import "notification";
+@import "reset";
+@import "base";
+@import "header";
+@import "logo";
+@import "search";
+@import "navigation";
 @import "albums";
-@import "artist";
-@import "album";
-@import "tracks";
-@import "player";
-@import "connection_lost";
-@import "spotify";
 
-html
-{
-}
-
-body
-{
-  font-family: Impact, Charcoal, sans-serif;
-  overflow: hidden;
-  color: #666;
-  height: 100%;
-}
-
-svg
-{
-  stroke: $text-color;
-  fill: $text-color;
-  vertical-align: middle;
-}
-
-svg.button
-{
-  overflow: visible;
-}
-
-#top
-{
-  height: 3em;
-}
-
-#main
-{
-  display: flex;
-}
-
-#menu
-{
-  position: relative;
-  top: 3em;
-  display: none;
-  flex: 1;
-  height: calc(100vh - 7em);
-  background: $background-color;
-  z-index: 2;
-}
-
-#content
-{
-  position: relative;
-  top: 3em;
-  flex: 5;
-  height: calc(100vh - 7em);
-  background:rgba(255,255,255,1);
-}

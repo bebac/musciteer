@@ -4,7 +4,6 @@ require 'bundler'
 Bundler.require
 
 OUT_DIR            = "../public"
-
 ASSET_DIR          = File.join(OUT_DIR, "assets")
 INDEX_HTML         = File.join(OUT_DIR, "index.html")
 APPLICATION_JS     = File.join(ASSET_DIR, "application.js")
@@ -27,7 +26,7 @@ task :javascript => [ ASSET_DIR ] do
   File.binwrite APPLICATION_JS, Opal::Builder.build("application").to_s
 end
 
-desc "Build application css"
+desc "Build css"
 task :css => [ ASSET_DIR ] do
   sh "bundle exec sass -I styles/scss styles/scss/main.scss #{APPLICATION_CSS}"
 end

@@ -1,0 +1,9 @@
+.logo
+{
+  flex: 0;
+  font-size: $text-normal;
+  color: #ac9d25;
+  padding: 0 1em 0 1em;
+  //letter-spacing: 0em;
+  @include noselect;
+}

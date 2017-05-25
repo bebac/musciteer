@@ -1,0 +1,49 @@
+$h-padding: 2em;
+$v-padding: 2em;
+
+.header
+{
+  background: linear-gradient(darken(rgba(241, 239, 236, 1),10%), rgba(241, 239, 236, 0));
+  //border-bottom: 1px solid rgba(233,233,233,0.7);
+  flex: 0;
+
+  >div
+  {
+    display: flex;
+
+    @media (max-width: $break)
+    {
+               width: 100%;
+      flex-direction: column;
+    }
+
+  }
+
+  .header-left
+  {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+
+    .vbar
+    {
+      //display: flex;
+      flex: 0;
+      align-self: center;
+      height: 2em;
+      border-left: 1px solid darken(rgba(241, 239, 236, 1), 10%);
+    }
+  }
+
+  .header-right
+  {
+    display: flex;
+    flex: 1;
+
+    @media (max-width: $break)
+    {
+      display: none;
+    }
+  }
+}

@@ -1,7 +1,9 @@
+$color-primary: rgba(241, 239, 236, 1);
+
 $break: 800px;
 
 $text-normal: 1em;
- $text-small: 0.88em;
+$text-small: 0.88em;
 
 body, input
 {
@@ -12,6 +14,7 @@ body, input
   //font-family: 'Exo 2', sans-serif;
   font-family: 'Open Sans', sans-serif;
   font-size: $text-normal;
+  //background: linear-gradient(darken(rgba(241, 239, 236, 1),10%), rgba(241, 239, 236, 0));
 }
 
 html, body

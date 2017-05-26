@@ -7,7 +7,11 @@ module Musciteer
 
   module ActionDispatchHooks
     def goto(path)
-      puts "action goto path=#{path}"
+      case path
+      when /\/albums\/(al.{4})/
+        dispatch type: :album_details_load, data: $1
+      else
+      end
       $window.history.push(path)
     end
   end

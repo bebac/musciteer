@@ -34,9 +34,11 @@ module Musciteer
 
     def init
       {
-        component:      nil,
-        albums_loading: false,
-        albums:         nil
+        component:             nil,
+        albums_loading:        false,
+        albums:                nil,
+        album_details_loading: false,
+        album_details:         nil
       }
     end
 
@@ -54,6 +56,16 @@ module Musciteer
         state.merge({
           albums_loading: false,
           albums: action[:data]
+        })
+      when :album_details_load
+        state.merge({
+          album_details_loading: true,
+          album_details: action[:data]
+        })
+      when :album_details_load_success
+        state.merge({
+          album_details_loading: false,
+          album_details: action[:data]
         })
       else
         puts "unhandled action #{action[:type]}, data #{action[:data]}"
@@ -82,8 +94,8 @@ module Musciteer
       #   @player ||= Player.new(@store)
       # when '/spotify'
       #   @spotify ||= Spotify.new(@store)
-      # when /\/albums\/al.{4}/
-      #   @album_view ||= AlbumView.new(@store)
+      when /\/albums\/al.{4}/
+        @album_details ||= AlbumDetails.new(@store)
       # when /\/artists\/ar.{4}/
       #   @artist_view ||= ArtistView.new(@store)
       else

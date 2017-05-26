@@ -5,7 +5,14 @@ class Album
 
   def initialize(attrs)
     attrs.each do |k,v|
-      instance_variable_set("@#{k}", v) unless v.nil?
+      case k
+      when 'tracks'
+        @tracks = v.map do |track|
+          Track.new(track)
+        end
+      else
+        instance_variable_set("@#{k}", v) unless v.nil?
+      end
     end
   end
 

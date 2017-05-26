@@ -1,6 +1,7 @@
 module Musciteer
   class AlbumsThumb
     include Maquette::Component
+    include NavigationActions
 
     attr_reader :album
     attr_reader :store
@@ -11,8 +12,7 @@ module Musciteer
     end
 
     def show_album_details(evt)
-      #store.dispatch({ type: :set_path, data: "/albums/#{album.id}" })
-      #store.dispatch({ type: :album_details_load, data: album })
+      goto("/albums/#{album.id}")
       evt.stop!
     end
 

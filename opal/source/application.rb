@@ -51,8 +51,11 @@ module Musciteer
         state.merge({
           component: component_for(action[:data])
         })
-      when :player_start
+      when :player_play
         socket.send event: :play, data: action[:data]
+        state
+      when :player_queue
+        socket.send event: :queue, data: action[:data]
         state
       when :player_stop
         socket.send event: :stop, data: nil

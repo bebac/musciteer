@@ -12,6 +12,7 @@ module Musciteer
     end
 
     def queue(evt)
+      store.dispatch type: :player_queue, data: track.id
     end
 
     def render

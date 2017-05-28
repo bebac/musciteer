@@ -10,8 +10,8 @@ module Musciteer
       @store.state[:player_state] == :playing
     end
 
-    def player_start
-      @store.dispatch type: :player_start, data: nil
+    def player_play
+      @store.dispatch type: :player_play, data: nil
     end
 
     def player_stop
@@ -32,7 +32,7 @@ module Musciteer
 
     def play(evt)
       animation_start
-      player_start
+      player_play
     end
 
     def stop(evt)

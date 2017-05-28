@@ -30,11 +30,14 @@ module Musciteer
       @projector = Maquette::Projector.new
       @header = Header.new(@store)
       @content = Content.new(@store)
+      @footer = Footer.new(@store)
+      @socket = Websocket.new(@store)
     end
 
     def init
       {
         component:             nil,
+        player_state:          :stopped,
         albums_loading:        false,
         albums:                nil,
         album_details_loading: false,
@@ -47,6 +50,20 @@ module Musciteer
       when :goto
         state.merge({
           component: component_for(action[:data])
+        })
+      when :player_start
+        socket.send event: :play, data: action[:data]
+        state
+      when :player_stop
+        socket.send event: :stop, data: nil
+        state
+      when :player_playing
+        state.merge({
+          player_state: :playing
+        })
+      when :player_stopped
+        state.merge({
+          player_state: :stopped
         })
       when :albums_load
         state.merge({
@@ -73,12 +90,16 @@ module Musciteer
       end
     end
 
+    def socket
+      @socket
+    end
+
     def render
       h 'div.main-container' do
         [
           @header.render,
           @content.render,
-          (h 'div.footer')
+          @footer.render
         ]
       end
     end
@@ -89,7 +110,9 @@ module Musciteer
       when '/albums'
         @albums ||= Albums.new(@store)
       when '/tracks'
-        @track ||= Tracks.new(@store)
+        @tracks ||= Tracks.new(@store)
+      when '/playlists'
+        @playlists ||= Playlists.new(@store)
       # when '/player'
       #   @player ||= Player.new(@store)
       # when '/spotify'

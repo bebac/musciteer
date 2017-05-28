@@ -34,7 +34,9 @@ module Musciteer
     end
 
     def render_loading
-      h 'text', "loading..."
+      h 'div.loader-container' do
+        h 'div.loader'
+      end
     end
 
     def render_header

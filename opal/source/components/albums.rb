@@ -1,15 +1,12 @@
 module Musciteer
   class Albums
     include Maquette::Component
-    include AlbumsActions
+    #include AlbumsActions
 
     attr_reader :store
 
     def initialize(store)
       @store = store
-      unless @store.state[:albums]
-        albums_load
-      end
     end
 
     def loading?
@@ -27,7 +24,9 @@ module Musciteer
     end
 
     def render_loading
-      h 'p', "loading..."
+      h 'div.loader-container' do
+        h 'div.loader'
+      end
     end
 
     def render_albums

@@ -1,9 +1,9 @@
 module Musciteer
-  module AlbumsActions
-    def albums_load
-      @store.dispatch type: :albums_load
-    end
-  end
+  #module AlbumsActions
+  #  def albums_load
+  #    @store.dispatch type: :albums_load
+  #  end
+  #end
 
   module ActionDispatchHooks
     def albums_load

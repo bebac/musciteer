@@ -60,8 +60,7 @@
       li
       {
         display: flex;
-        padding: 0.66em 0;
-        margin: 0 1em;
+        padding: 0.66em 1em;
         border-bottom: 1px solid #eee;
 
         >div
@@ -104,7 +103,8 @@
       }
 
       li:not(.disc-header):hover {
-        background-color: lighten($color-primary, 4%);
+        //background-color: lighten($color-primary, 4%);
+        background-color: lighten(#60656B, 55%);
         //background-color: darken(rgba(242, 242, 243, 1), 0%);
         //background-color: lighten(rgba(128, 149, 164, 1),37%);
       }

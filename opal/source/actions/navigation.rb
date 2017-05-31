@@ -14,6 +14,10 @@ module Musciteer
         end
       when /\/albums\/(al.{4})/
         dispatch type: :album_details_load, data: $1
+      when '/tracks'
+        unless state[:tracks]
+          dispatch type: :tracks_load
+        end
       else
       end
       $window.history.push(path)

@@ -18,13 +18,13 @@
   {
     flex: 0 0 auto;
     max-width: 50%;
-    margin: 1.3em 0;
+    //margin: 1.3em 0;
+    margin: 0.8em 0;
     padding: 0.33em 0;
     outline: none;
     border: none;
     background-color: rgba(225,225,225,0);
     //border-bottom: 1px solid $border-color;
-    //margin: 0 0 0 $h-padding;
     @include placeholder
     {
       color: $place-holder-color;
@@ -46,7 +46,8 @@
   svg
   {
     flex: 0 0 auto;
-    margin: 1.3em 0;
+    //margin: 1.3em 0;
+    margin: 0.8em 0;
     //height: 0; // Firefox
     @include size(3em);
     stroke: $text-color;

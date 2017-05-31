@@ -1,7 +1,107 @@
 #tracks
 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100%;
+
+  table
+  {
+    display: flex;
+    flex-direction: column;
+    //justify-content: flex-start;
+    height: 100%;
+    //background-color: lighten(#CCCCCD, 10%);
+    //background-color: lighten(#60656B, 45%);
+    //background-color: #CCCCCD;
+    color: #666;
+
+    tr
+    {
+      display: flex;
+      justify-content: flex-start;
+
+      th, td
+      {
+        flex: 1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      th
+      {
+        text-align: left;
+      }
+
+      th:nth-child(1), td:nth-child(1)
+      {
+        flex: 5;
+      }
+
+      th:nth-child(2), td:nth-child(2)
+      {
+        flex: 3;
+      }
+
+      th:nth-child(3), td:nth-child(3)
+      {
+        flex: 3;
+      }
+
+      th:not(:first-child):not(:last-child)
+      {
+        padding: 0em 1em;
+      }
+
+      td:not(:first-child):not(:last-child)
+      {
+        padding: 0em 1em;
+      }
+    }
+
+    thead
+    {
+      flex: 0;
+
+      tr
+      {
+        padding: 0.33em 1em;
+        margin: 0.33em 0;
+        //background-color: lighten(#CCCCCD, 10%);
+        //background-color: #E6ECF3;
+        //background-color: $color-primary;
+        //background-color: lighten(#60656B, 45%);
+        border-bottom: 1px solid #60656B;
+      }
+    }
+
+    tbody
+    {
+      flex: 0 1 auto;
+      overflow-y: auto;
+      background-color: #fff;
+
+      tr.top
+      {
+        padding: 0;
+        border-bottom: 0px;
+      }
+
+      tr.bottom
+      {
+        padding: 0;
+        //height: 10000px;
+      }
+
+      tr
+      {
+        padding: 0.66em 1em;
+        //margin: 0 1em;
+        border-bottom: 1px solid #eee;
+      }
+
+      tr:hover {
+        //background-color: lighten($color-primary, 4%);
+        background-color: lighten(#60656B, 55%);
+      }
+    }
+  }
 }

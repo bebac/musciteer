@@ -41,7 +41,9 @@ module Musciteer
         albums_loading:        false,
         albums:                nil,
         album_details_loading: false,
-        album_details:         nil
+        album_details:         nil,
+        tracks_loading:        false,
+        tracks:                nil
       }
     end
 
@@ -87,6 +89,18 @@ module Musciteer
           album_details_loading: false,
           album_details: action[:data]
         })
+      when :tracks_load
+        state.merge({
+          tracks_loading: true
+        })
+      when :tracks_load_success
+        state.merge({
+          tracks_loading: false,
+          tracks: action[:data]
+        })
+      when :render
+        @projector.render
+        state
       else
         puts "unhandled action #{action[:type]}, data #{action[:data]}"
         state

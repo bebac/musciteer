@@ -130,6 +130,8 @@ module Musciteer
         @tracks ||= Tracks.new(@store)
       when '/playlists'
         @playlists ||= Playlists.new(@store)
+      when '/settings'
+        @settings ||= Settings.new(@store)
       # when '/player'
       #   @player ||= Player.new(@store)
       # when '/spotify'

@@ -1,5 +1,5 @@
 module Musciteer
-  class Playlists
+  class Settings
     include Maquette::Component
 
     def initialize(store)
@@ -7,7 +7,7 @@ module Musciteer
     end
 
     def render
-      h 'div#playlists' do
+      h 'div#settings' do
         h 'text', "Not implemented yet"
       end
     end

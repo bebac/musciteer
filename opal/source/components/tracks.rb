@@ -15,7 +15,7 @@ module Musciteer
     end
 
     def tracks
-      store.state[:tracks]
+      store.state[:tracks].sort { |x, y| x.play_count <=> y.play_count }.reverse
     end
 
     def queue(track)

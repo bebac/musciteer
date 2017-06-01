@@ -4,36 +4,10 @@
 
   ol
   {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    color: #666;
-
     li
     {
-      list-style: none;
-      margin: 0 1em 2em 1em;
-      width: 12em;
-
-      .cover
-      {
-        position: relative;
-        height: 12em;
-
-        >img
-        {
-          position: absolute;
-          top: 0;
-          min-width: 12em;
-          max-width: 12em;
-          max-height: 12em;
-          border: 1px solid #eee;
-        }
-      }
-
       .label
       {
-        //background: linear-gradient(rgba(241, 239, 236, 1), rgba(241, 239, 236, 0));
       }
 
       .title, .artist
@@ -61,6 +35,81 @@
       {
         cursor: pointer;
         text-decoration: underline;
+      }
+    }
+  }
+
+  @media (min-width: $break)
+  {
+    $cover-size: 12em;
+
+    ol
+    {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      color: #666;
+
+      li
+      {
+        list-style: none;
+        margin: 0 1em 2em 1em;
+        width: 12em;
+
+        .cover
+        {
+          position: relative;
+          height: $cover-size;
+
+          >img
+          {
+            position: absolute;
+            top: 0;
+            min-width: $cover-size;
+            max-width: $cover-size;
+            max-height: $cover-size;
+            border: 1px solid #eee;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: $break)
+  {
+    $cover-size: 4em;
+
+    ol
+    {
+      display: flex;
+      flex-direction: column;
+      color: #666;
+
+      li
+      {
+        display: flex;
+        border-bottom: 1px solid #eee;
+
+        .cover
+        {
+          position: relative;
+          height: $cover-size;
+
+          >img
+          {
+            //position: absolute;
+            //top: 0;
+            min-width: $cover-size;
+            max-width: $cover-size;
+            max-height: $cover-size;
+            border: 1px solid #eee;
+          }
+        }
+
+        .label
+        {
+          min-width: 0;
+        }
       }
     }
   }

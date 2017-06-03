@@ -1,17 +1,36 @@
 module Musciteer
   class Footer
     include Maquette::Component
+    include NavigationActions
+
+    attr_reader :store
 
     def initialize(store)
       @store = store
       @player_toggle = PlayerToggle.new(store)
     end
 
-    def player_show(evt)
-      puts "show fullscreen player"
+    def stream_sync?
+      store.state[:stream_sync]
     end
 
-    def render_play_icon
+    def stream?
+      !store.state[:stream].empty?
+    end
+
+    def stream
+      store.state[:stream]
+    end
+
+    def track
+      stream[:track]
+    end
+
+    def player_show(evt)
+      goto('/player')
+    end
+
+    def render_player_show_icon
       h 'svg#player-show', xmlns: "http://www.w3.org/2000/svg", 'xmlns:xlink': "http://www.w3.org/1999/xlink", viewBox: "0 0 200 200" do
         h 'g' do
           [
@@ -23,14 +42,43 @@ module Musciteer
       end
     end
 
+    def render_player
+      if stream_sync?
+        [
+          (
+            h 'div.cover' do
+              h 'img', src: track.album_cover_path
+            end
+          ),
+          (
+            h 'div.label' do
+              [
+                (h 'h1', track.title),
+                (h 'h2', track.artists),
+              ]
+            end
+          )
+        ]
+      end
+    end
+
     def render
-      h 'div.footer'  do
+      h 'div#footer'  do
         [
           (
             h  'div#footer-left' do
-              h 'div.button#player-show-button' do
-                render_play_icon
-              end
+              [
+                (
+                  h 'div.button#player-show-button' do
+                    render_player_show_icon
+                  end
+                ),
+                (
+                  h 'div#footer-player' do
+                    render_player
+                  end
+                )
+              ]
             end
           ),
           @player_toggle.render,

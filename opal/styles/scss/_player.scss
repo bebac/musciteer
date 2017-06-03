@@ -1,0 +1,140 @@
+#player
+{
+  display: flex;
+  flex-direction: column;
+  //justify-content: center;
+  //align-items: center;
+  height: 100%;
+  background-color: #333;
+  padding: 1em 1em;
+
+  #player-hide-button
+  {
+    @include size(2em);
+  }
+
+  #player-content
+  {
+    display: flex;
+    //align-items: center;
+    flex: 1;
+    //background-color: #eaa;
+
+    .container
+    {
+      flex: 1;
+    }
+
+    .container:nth-child(1)
+    {
+      display: flex;
+      //background-color: #aea;
+      padding: 1em 1em;
+
+      img
+      {
+        align-self: center;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: 100%;
+
+      }
+    }
+
+    .container:nth-child(2)
+    {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      //background-color: #aae;
+      padding: 1em 1em;
+
+      >div
+      {
+        display: flex;
+        align-items: center;
+
+        flex: 1;
+      }
+
+      .player-track-title
+      {
+        color: #eee;
+        font-size: 2.5em;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .player-track-artists
+      {
+        color: #eee;
+        font-size: 1.25em;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .player-track-album
+      {
+        color: #bbb;
+        font-size: 1em;
+        font-weight: normal;
+        text-align: center;
+      }
+
+      .player-stream-time
+      {
+        color: #bbb;
+        font-size: 1em;
+        font-weight: normal;
+        text-align: center;
+      }
+
+      div.controls
+      {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        >div
+        {
+          display: flex;
+          //justify-content: center;
+          align-items: center;
+          flex: 1;
+        }
+
+        .control-buttons
+        {
+          width: 100%;
+
+          >div
+          {
+            display: flex;
+            justify-content: center;
+            flex: 1;
+          }
+        }
+
+        .button
+        {
+          @include size(4em);
+
+          svg
+          {
+            stroke: #999;
+            fill: #999;
+          }
+        }
+
+        .button-click
+        {
+          &::after
+          {
+            background: rgba(233, 233, 233, 0.1);
+          }
+        }
+      }
+    }
+  }
+}

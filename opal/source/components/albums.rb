@@ -7,6 +7,7 @@ module Musciteer
 
     def initialize(store)
       @store = store
+      @cache = Hash.new
     end
 
     def loading?
@@ -32,7 +33,7 @@ module Musciteer
     def render_albums
       h 'ol' do
         albums.map do |album|
-          AlbumsThumb.new(album, store).render
+          @cache.fetch(album) { |album| @cache[album] = AlbumsThumb.new(album, store) }.render
         end
       end
     end

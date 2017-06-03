@@ -38,6 +38,8 @@ module Musciteer
       {
         component:             nil,
         player_state:          :stopped,
+        stream_sync:           false,
+        stream:                {},
         albums_loading:        false,
         albums:                nil,
         album_details_loading: false,
@@ -59,6 +61,9 @@ module Musciteer
       when :player_queue
         socket.send event: :queue, data: action[:data]
         state
+      when :player_skip
+        socket.send event: :skip, data: nil
+        state
       when :player_stop
         socket.send event: :stop, data: nil
         state
@@ -69,6 +74,34 @@ module Musciteer
       when :player_stopped
         state.merge({
           player_state: :stopped
+        })
+      when :stream_begin
+        if data = action[:data]
+          socket.send event: :stream_data_sync, data: data[:stream_id]
+        end
+        state
+      when :stream_sync
+        stream = state[:stream] || fail("stream is nil on stream_sync")
+        data   = action[:data]  || fail("action data is nil on stream_sync")
+        state.merge({
+          stream_sync: true,
+          stream: stream.merge({ stream_id: data[:stream_id], track: Track.new(data[:track]) })
+        })
+      when :stream_progress
+        unless state[:stream_sync]
+          if data = action[:data]
+            socket.send event: :stream_data_sync, data: data[:stream_id]
+          end
+          state
+        else
+          stream = state[:stream] || fail("stream is nil on stream_progress")
+          state.merge({
+            stream: stream.merge(action[:data])
+          })
+        end
+      when :stream_end
+        state.merge({
+          stream_sync: false, stream: {}
         })
       when :albums_load
         state.merge({
@@ -113,11 +146,15 @@ module Musciteer
 
     def render
       h 'div.main-container' do
-        [
-          @header.render,
-          @content.render,
-          @footer.render
-        ]
+        if @store.state[:component] == @player
+          @content.render
+        else
+          [
+            @header.render,
+            @content.render,
+            @footer.render
+          ]
+        end
       end
     end
 
@@ -132,8 +169,8 @@ module Musciteer
         @playlists ||= Playlists.new(@store)
       when '/settings'
         @settings ||= Settings.new(@store)
-      # when '/player'
-      #   @player ||= Player.new(@store)
+      when '/player'
+        @player ||= Player.new(@store)
       # when '/spotify'
       #   @spotify ||= Spotify.new(@store)
       when /\/albums\/al.{4}/

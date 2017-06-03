@@ -12,6 +12,7 @@ module Musciteer
     end
 
     def queue(evt)
+      puts "queue track #{track.id}"
       store.dispatch type: :player_queue, data: track.id
     end
 

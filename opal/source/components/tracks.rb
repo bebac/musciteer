@@ -34,7 +34,6 @@ module Musciteer
     end
 
     def created(element)
-      puts "created table"
       $window.on(:resize) do |evt|
         adjust_table_header(element)
       end

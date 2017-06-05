@@ -35,9 +35,8 @@ class Websocket
         fail "received invalid player state message"
       end
     when "queue_update"
-      puts "Websocket queue update #{message['data']}"
       if data = message['data']
-        store.dispatch({ type: :notification, data: data })
+        store.dispatch({ type: :queue_update, data: data })
       end
     when "stream_begin"
       if data = message['data']

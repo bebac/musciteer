@@ -2,9 +2,13 @@ module Musciteer
   class Content
     include Maquette::Component
 
+    attr_reader :notification
+
+
     def initialize(store)
       @store = store
       @component_ = nil
+      @notification = Notification.new(store)
     end
 
     def component
@@ -20,7 +24,10 @@ module Musciteer
     def render
       # Create virtual node.
       node = h 'div.content', onscroll: handler(:save_scroll_top) do
-        component.render
+        [
+          component.render,
+          notification.render
+        ]
       end
       # Update scroll position.
       if @component_ && @component_ != component

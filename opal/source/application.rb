@@ -38,6 +38,7 @@ module Musciteer
       {
         component:             nil,
         player_state:          :stopped,
+        queue_update:          nil,
         stream_sync:           false,
         stream:                {},
         albums_loading:        false,
@@ -74,6 +75,10 @@ module Musciteer
       when :player_stopped
         state.merge({
           player_state: :stopped
+        })
+      when :queue_update
+        state.merge({
+          queue_update: QueueUpdate.new(action[:data])
         })
       when :stream_begin
         if data = action[:data]

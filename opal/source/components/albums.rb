@@ -4,10 +4,16 @@ module Musciteer
     #include AlbumsActions
 
     attr_reader :store
+    attr_reader :scroll_top
 
     def initialize(store)
       @store = store
-      @cache = Hash.new
+      @cache = Maquette::Cache.new
+      @scroll_top = 0;
+    end
+
+    def save_scroll_top(value)
+      @scroll_top = value
     end
 
     def loading?
@@ -31,9 +37,11 @@ module Musciteer
     end
 
     def render_albums
-      h 'ol' do
-        albums.map do |album|
-          @cache.fetch(album) { |album| @cache[album] = AlbumsThumb.new(album, store) }.render
+      @cache.result_for(albums) do
+        h 'ol' do
+          albums.map do |album|
+            AlbumsThumb.new(album, store).render
+          end
         end
       end
     end
@@ -43,7 +51,6 @@ module Musciteer
     end
 
     def render
-      #h 'div#albums', { onscroll: handler(:save_scroll_top) } do
       h 'div#albums' do
         if loading?
           render_loading
@@ -53,13 +60,6 @@ module Musciteer
           render_not_loaded
         end
       end
-
-      # Update scroll position.
-      #if @scroll_top > 0
-      #  `node.properties.scrollTop = #{@scroll_top}`
-      #end
-
-      #node
     end
   end
 end

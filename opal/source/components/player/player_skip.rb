@@ -4,6 +4,7 @@ module Musciteer
 
     def initialize(store)
       @store = store
+      @cache = Maquette::Cache.new
     end
 
     def player_skip
@@ -16,6 +17,9 @@ module Musciteer
 
     def animation_start
       @player_skip.add_class('button-click')
+      @player_skip.on :animationend do
+        animation_end
+      end
     end
 
     def animation_end(evt)
@@ -40,8 +44,10 @@ module Musciteer
     end
 
     def render
-      h 'div.button', oncreate: handler(:player_skip_create), onanimationend: handler(:animation_end) do
-        render_skip_icon
+      @cache.result_for(self) do
+        h 'div.button', afterCreate: handler(:player_skip_create) do
+          render_skip_icon
+        end
       end
     end
   end

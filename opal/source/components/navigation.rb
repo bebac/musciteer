@@ -17,7 +17,7 @@ module Musciteer
     end
 
     def a(path, label)
-      h "a#{active?(path)}", { href: path, onclick: handler(:clicked, path) }, label
+      h "a#{active?(path)}", { key: path, href: path, onclick: handler(:clicked, path) }, label
     end
 
     def render

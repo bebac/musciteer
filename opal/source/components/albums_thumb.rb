@@ -17,14 +17,11 @@ module Musciteer
     end
 
     def show_artist(evt)
-      #store.dispatch({ type: :set_path, data: "/artists/#{album.artist_id}" })
-      #store.dispatch({ type: :artist_load, data: album.artist_id })
       evt.stop!
     end
 
     def render
-      #h "li", key: self, onclick: handler(:show_album_details) do
-      h "li", onclick: handler(:show_album_details) do
+      h "li", key: self, onclick: handler(:show_album_details) do
         [
           (
             h 'div.cover' do

@@ -21,7 +21,7 @@ module Musciteer
       @new_state = @reducer.call(@state, action)
       unless @new_state == @state
         @state = @new_state
-        @subscribers.each { |s| s.call }
+        @subscribers.each { |s| s.call } unless action[:silent]
       end
     end
 

@@ -7,6 +7,7 @@ module Musciteer
 
     def initialize(store)
       @store = store
+      @cache = Maquette::Cache.new
       @player_toggle = PlayerToggle.new(store)
     end
 
@@ -31,13 +32,15 @@ module Musciteer
     end
 
     def render_player_show_icon
-      h 'svg#player-show', xmlns: "http://www.w3.org/2000/svg", 'xmlns:xlink': "http://www.w3.org/1999/xlink", viewBox: "0 0 200 200" do
-        h 'g' do
-          [
-            #(h 'circle', { cx: "100", cy: "100", r: "92", fill: "none", 'stroke-width': "5" }),
-            (h 'path', d: "m25,125l75,-50l75,50", fill: "none", 'stroke-width': "12"),
-            (h 'circle', { cx: "100", cy: "100", r: "100", 'fill-opacity': "0", 'stroke-width': "0", onclick: handler(:player_show) })
-          ]
+      @cache.result_for(self) do
+        h 'svg#player-show', xmlns: "http://www.w3.org/2000/svg", 'xmlns:xlink': "http://www.w3.org/1999/xlink", viewBox: "0 0 200 200" do
+          h 'g' do
+            [
+              #(h 'circle', { cx: "100", cy: "100", r: "92", fill: "none", 'stroke-width': "5" }),
+              (h 'path', d: "m25,125l75,-50l75,50", fill: "none", 'stroke-width': "12"),
+              (h 'circle', { cx: "100", cy: "100", r: "100", 'fill-opacity': "0", 'stroke-width': "0", onclick: handler(:player_show) })
+            ]
+          end
         end
       end
     end

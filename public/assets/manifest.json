@@ -29,7 +29,7 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/albums",
+    "start_url": "/player",
     "display": "fullscreen",
     "orientation": "landscape",
     "theme_color": "#46443f",

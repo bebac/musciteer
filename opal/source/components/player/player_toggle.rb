@@ -4,10 +4,15 @@ module Musciteer
 
     def initialize(store)
       @store = store
+      @cache = Maquette::Cache.new
+    end
+
+    def player_state
+      @store.state[:player_state]
     end
 
     def playing?
-      @store.state[:player_state] == :playing
+      player_state == :playing
     end
 
     def player_play
@@ -20,6 +25,10 @@ module Musciteer
 
     def player_toggle_create(element)
       @player_toggle = element
+      # Not very Maquette, but Maquette doesn't handle animation events.
+      @player_toggle.on :animationend do
+        animation_end
+      end
     end
 
     def animation_start
@@ -65,11 +74,13 @@ module Musciteer
     end
 
     def render
-      h 'div.button', oncreate: handler(:player_toggle_create), onanimationend: handler(:animation_end) do
-        if playing?
-          render_stop_icon
-        else
-          render_play_icon
+      h 'div.button', afterCreate: handler(:player_toggle_create) do
+        @cache.result_for(player_state) do
+          if playing?
+            render_stop_icon
+          else
+            render_play_icon
+          end
         end
       end
     end

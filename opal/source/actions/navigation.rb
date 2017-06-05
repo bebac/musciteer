@@ -10,13 +10,13 @@ module Musciteer
       case path
       when '/albums'
         unless state[:albums]
-          dispatch type: :albums_load
+          dispatch type: :albums_load, silent: true
         end
       when /\/albums\/(al.{4})/
-        dispatch type: :album_details_load, data: $1
+        dispatch type: :album_details_load, data: $1, silent: true
       when '/tracks'
         unless state[:tracks]
-          dispatch type: :tracks_load
+          dispatch type: :tracks_load, silent: true
         end
       else
       end

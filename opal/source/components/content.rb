@@ -4,12 +4,34 @@ module Musciteer
 
     def initialize(store)
       @store = store
+      @component_ = nil
+    end
+
+    def component
+      @store.state[:component]
+    end
+
+    def save_scroll_top(evt)
+      if component.respond_to?(:save_scroll_top)
+        component.save_scroll_top(evt.target.scroll.y)
+      end
     end
 
     def render
-      h 'div.content' do
-        @store.state[:component].render
+      # Create virtual node.
+      node = h 'div.content', onscroll: handler(:save_scroll_top) do
+        component.render
       end
+      # Update scroll position.
+      if @component_ && @component_ != component
+        if component.respond_to?(:save_scroll_top)
+          `node.properties.scrollTop = #{component.scroll_top}`
+        end
+      end
+      # Set rendered componet.
+      @component_ = component
+      # Return virtual node.
+      node
     end
   end
 end

@@ -159,7 +159,6 @@ module Musciteer
     end
 
     def component_for(path)
-      puts "component_for path=#{path}"
       case path
       when '/albums'
         @albums ||= Albums.new(@store)

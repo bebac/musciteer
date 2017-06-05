@@ -3,19 +3,28 @@ module Musciteer
     include Maquette::Component
 
     attr_reader :store
+    attr_reader :scroll_top
 
     def initialize(store)
       @store = store
+      @cache = Maquette::Cache.new
       @item_height = 0
       @offset = 0
+      @scroll_top = 0
     end
 
     def loading?
       store.state[:tracks_loading]
     end
 
+    def tracks_uncached
+      store.state[:tracks]
+    end
+
     def tracks
-      store.state[:tracks].sort { |x, y| x.play_count <=> y.play_count }.reverse
+      @cache.result_for(tracks_uncached) do
+        tracks_uncached.sort { |x, y| x.play_count <=> y.play_count }.reverse
+      end
     end
 
     def queue(track)
@@ -85,7 +94,8 @@ module Musciteer
 
     def scroll(evt)
       @offset = [ calc_offset, tracks.length ].min
-      redraw
+      @scroll_top = evt.target.scroll.y
+      #redraw
     end
 
     def render_loading
@@ -109,7 +119,8 @@ module Musciteer
     end
 
     def render_tbody
-      h 'tbody', oncreate: handler(:created_tbody), onscroll: handler(:scroll) do
+      node = h 'tbody', afterCreate: handler(:created_tbody), onscroll: handler(:scroll) do
+      #node = h 'tbody', afterCreate: handler(:created_tbody) do
         [
           h 'tr.top', styles: { height: "#{height_top}px" }
         ].concat(
@@ -130,10 +141,15 @@ module Musciteer
           ]
         )
       end
+
+      if scroll_top > 0
+        #`node.properties.scrollTop = #{scroll_top}`
+      end
+      node
     end
 
     def render_tracks
-      h 'table', oncreate: handler(:created) do
+      h 'table', afterCreate: handler(:created) do
         [
           render_thead,
           render_tbody

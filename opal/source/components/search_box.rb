@@ -53,7 +53,7 @@ module Musciteer
     end
 
     def render
-      h 'div', oncreate: handler(:created) do
+      h 'div', afterCreate: handler(:created) do
         [
           render_search_input,
           render_seach_icon

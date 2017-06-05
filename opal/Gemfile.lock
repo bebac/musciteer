@@ -17,13 +17,6 @@ GIT
       sprockets (~> 3.1)
       tilt (>= 1.4)
 
-PATH
-  remote: /home/bebac/Projects/opal-maquette
-  specs:
-    maquette (0.0.1)
-      opal
-      opal-browser
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -32,7 +25,6 @@ GEM
     execjs (2.6.0)
     ffi (1.9.10)
     formatador (0.2.5)
-    grand_central (0.4.4)
     guard (2.13.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, <= 4.0)
@@ -61,7 +53,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    rack (2.0.1)
+    rack (2.0.3)
     rake (11.1.2)
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
@@ -86,10 +78,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  grand_central
   guard
   guard-rake
-  maquette!
   opal!
   opal-browser!
   sass

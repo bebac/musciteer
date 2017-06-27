@@ -499,8 +499,8 @@ void http_connection::dispatch(http::request_environment& env)
   std::smatch match;
 
   if (
-    path == "/" || path == "/albums" || path == "/tracks" ||
-    path == "/player" || path == "/artists" || path == "/spotify" ||
+    path == "/" || path == "/albums" || path == "/tracks" || path == "/playlists" ||
+    path == "/settings" || path == "/player" || path == "/artists" || path == "/spotify" ||
     std::regex_match(path, match, album_re_) ||
     std::regex_match(path, match, artist_re_)
   )

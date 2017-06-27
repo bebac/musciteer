@@ -212,30 +212,36 @@ ninja
 Building The Web interface
 --------------------------
 
-The web interface is a statically build ruby/opal application using the maquette.js
-virtual dom library. To build you will need ruby. Personally I use rbenv and ruby
-2.3, but I expect any recently new ruby version will do.
+The web interface is a vue webpack application. To build you'll need node and npm.
 
-To isntall
+Install
 
 ```sh
-cd opal; bundle install
+cd webclient
+npm install
 ```
 
-To build
+The development setup proxies request to /api to http:localhost:8214. To get websocket
+communication to work change main.js to connect to ws://localhost:8214 then run
 
-```
-rake
+```sh
+npm run dev
 ```
 
-This will build html, javascript and stylesheets and install them to the public
-folder.
+To get hot reload working on Linux, you might have to change max_user_watches.
 
-There is also a guard file to automatically build the files when they are changed.
+```sh
+sudo sysctl -w fs.inotify.max_user_watches=16536
+```
 
+Build for production
+
+```sh
+npm run build
 ```
-bundle exec guard
-```
+
+To package the files in dist must be copied to the public folder.
+
 
 
 Contributing

@@ -116,7 +116,7 @@ private:
 
     if ( !album.id_is_null() )
     {
-      ok(musciteer::to_json(album));
+      ok(musciteer::to_json(album, true, true));
     }
     else
     {

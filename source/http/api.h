@@ -94,7 +94,7 @@ namespace musciteer
     return jtrack;
   }
 
-  inline json to_json(const musciteer::dm::album& album, bool include_artist = true)
+  inline json to_json(const musciteer::dm::album& album, bool include_artist = true, bool include_tracks = false)
   {
     json jalbum;
 
@@ -119,6 +119,20 @@ namespace musciteer
         { "id", artist.id() },
         { "name", artist.name() }
       };
+    }
+
+    if ( include_tracks )
+    {
+      json jtracks;
+
+      album.tracks_each([&](const musciteer::dm::track& track)
+      {
+        if ( !track.id_is_null() ) {
+          jtracks.push_back(musciteer::to_json(track));
+        }
+      });
+
+      jalbum["tracks"] = jtracks;
     }
 
     return jalbum;

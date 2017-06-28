@@ -1,8 +1,9 @@
 <template>
   <div id="m-albums">
-    <ol>
+    <m-loader v-if="loading"></m-loader>
+    <ol v-else>
       <li
-        is="album-thumb"
+        is="m-album-thumb"
         v-for="album in albumsSortedByArtist"
         v-bind:key="album.id"
         v-bind:album="album"
@@ -14,17 +15,20 @@
 
 <script>
   import axios from 'axios'
+  import Loader from '@/components/Loader'
   import AlbumThumb from '@/components/AlbumThumb'
 
   export default {
     name: 'albums',
 
     components: {
-      AlbumThumb
+      'm-loader': Loader,
+      'm-album-thumb': AlbumThumb
     },
 
     data: function () {
       return {
+        loading: false,
         albums: [],
         top: 0
       }
@@ -42,8 +46,12 @@
     created () {
       axios.get('/api/albums')
       .then(
-        response => { this.albums = response.data }
+        response => {
+          this.albums = response.data
+          this.loading = false
+        }
       )
+      this.loading = true
     },
 
     computed: {
@@ -81,7 +89,13 @@
 <style lang="scss">
   #m-albums
   {
-    margin-top: 1em;
+    height: 100%;
+
+
+    >div
+    {
+      height: 100%;
+    }
 
     ol
     {
@@ -90,6 +104,7 @@
       justify-content: center;
       padding: 0;
       margin: 0;
+      margin-top: 1em;
     }
   }
 </style>

@@ -12,8 +12,6 @@
 
 <script>
   export default {
-    name: 'album-thumb',
-
     props: [
       'album'
     ]

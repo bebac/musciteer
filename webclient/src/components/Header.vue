@@ -1,6 +1,7 @@
 <template>
   <div id="m-header">
     <div>
+      <m-header-back></m-header-back>
       <div>
         Musciteer
       </div>
@@ -18,10 +19,12 @@
 </template>
 
 <script>
+  import HeaderBack from '@/components/HeaderBack'
   import MenuShow from '@/components/MenuShow'
 
   export default {
     components: {
+      'm-header-back': HeaderBack,
       'm-menu-show': MenuShow
     },
 
@@ -84,7 +87,7 @@
       padding: 1em;
       color: #b5a871;
 
-      >div:nth-child(1)
+      >div:nth-child(2)
       {
         display: flex;
         align-items: center;
@@ -92,7 +95,7 @@
         height: 2em;
       }
 
-      >div:nth-child(2)
+      >div:nth-child(3)
       {
         flex: 0 0 auto;
       }

@@ -31,6 +31,17 @@ router.afterEach((to, from, next) => {
       f.style.display = 'block'
     }
   }
+
+  let back = document.getElementById('header-back-button')
+
+  if (back) {
+    console.log(to)
+    if (to.name !== 'Albums') {
+      back.style.visibility = 'visible'
+    } else {
+      back.style.visibility = 'hidden'
+    }
+  }
 })
 
 /* eslint-disable no-new */

@@ -44,12 +44,11 @@ namespace musciteer
     return j;
   }
 
-  inline json to_json(const musciteer::dm::track& track)
+  inline json to_json(const musciteer::dm::track& track, bool brief = false)
   {
     json jtrack;
     json jartists;
     json jalbum;
-    json jsources;
 
     for ( auto& artist : track.artists() )
     {
@@ -62,21 +61,21 @@ namespace musciteer
 
     const auto& album = track.album();
 
-    auto cover_url = album.cover_url();
-
-    if ( cover_url.empty() ) {
-      cover_url = "/api/albums/"+album.id()+"/cover";
-    }
-
     jalbum = {
       { "id",    album.id() },
-      { "title", album.title() },
-      { "cover", cover_url }
+      { "title", album.title() }
     };
 
-    track.sources_each([&](const dm::track_source& source) {
-      jsources.push_back(to_json(source));
-    });
+    if ( !brief )
+    {
+      auto cover_url = album.cover_url();
+
+      if ( cover_url.empty() ) {
+        cover_url = "/api/albums/"+album.id()+"/cover";
+      }
+
+      jalbum["cover"] = cover_url;
+    }
 
     jtrack = {
       { "id", track.id() },
@@ -87,9 +86,19 @@ namespace musciteer
       { "artists", jartists },
       { "album", jalbum },
       { "play_count", track.play_count() },
-      { "skip_count", track.skip_count() },
-      { "sources", jsources }
+      { "skip_count", track.skip_count() }
     };
+
+    if ( !brief )
+    {
+      json jsources;
+
+      track.sources_each([&](const dm::track_source& source) {
+        jsources.push_back(to_json(source));
+      });
+
+      jtrack["sources"] = jsources;
+    }
 
     return jtrack;
   }

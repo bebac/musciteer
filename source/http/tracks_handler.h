@@ -22,11 +22,12 @@ public:
   tracks_handler(http::request_environment& env, dripcore::task* task)
     :
     api_handler_base(env),
+    brief_re_("brief=([^&]*)"),
     task_(task)
   {
   }
 public:
-  void call(const std::string& path)
+  void call(const std::string& path, const std::string& query)
   {
     auto method = env.method();
 
@@ -37,7 +38,7 @@ public:
       if ( match[0].length() == 0 || (match[0] == "/" && match[1].length() == 0 ))
       {
         if ( method == http::method::get ) {
-          get_tracks(path);
+          get_tracks(path, query);
         }
         else {
           method_not_allowed();
@@ -97,14 +98,21 @@ public:
     }
   }
 protected:
-  void get_tracks(const std::string& path)
+  void get_tracks(const std::string& path, const std::string& query)
   {
     auto tracks = musciteer::dm::tracks();
+    auto brief = false;
+
+    std::smatch match;
+
+    if ( std::regex_search(query, match, brief_re_) ) {
+      brief = true;
+    }
 
     json j;
 
     tracks.each([&](musciteer::dm::track& track) {
-      j.push_back(musciteer::to_json(track));
+      j.push_back(musciteer::to_json(track, brief));
       task_->yield(true);
       return true;
     });
@@ -222,6 +230,8 @@ private:
       not_found();
     }
   }
+protected:
+  std::regex brief_re_;
 protected:
   dripcore::task* task_;
 };

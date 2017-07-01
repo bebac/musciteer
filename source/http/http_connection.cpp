@@ -515,7 +515,7 @@ void http_connection::dispatch(http::request_environment& env)
       if ( match[1] == "tracks" )
       {
         tracks_handler handler(env, this);
-        handler.call(match[2]);
+        handler.call(match[2], query);
       }
       else if ( match[1] == "albums" )
       {

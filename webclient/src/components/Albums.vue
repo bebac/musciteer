@@ -87,24 +87,44 @@
 </script>
 
 <style lang="scss">
+  @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
+
   #m-albums
   {
     height: 100%;
-
 
     >div
     {
       height: 100%;
     }
 
-    ol
+    @media (min-width: $break)
     {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 0;
-      margin: 0;
-      margin-top: 1em;
+      ol
+      {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+        margin-top: 1em;
+      }
+    }
+
+    @media (max-width: $break)
+    {
+      ol
+      {
+        display: flex;
+        flex-direction: column;
+
+        li
+        {
+          display: flex;
+          border-bottom: 1px solid #eee;
+        }
+      }
     }
   }
 </style>

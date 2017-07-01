@@ -1,9 +1,11 @@
 <template>
   <div id="album">
-    <div v-if="album">
+    <div v-if="album" key="album" >
       <div class="album-header">
         <div>
-          <img v-bind:src="album.cover">
+          <div key="album" class="cover">
+            <img v-bind:src="album.cover" v-on:error="coverOk = false" v-if="coverOk">
+          </div>
         </div>
         <div>
           <div class="title">
@@ -50,7 +52,8 @@
 
     data () {
       return {
-        album: null
+        album: null,
+        coverOk: true
       }
     },
 
@@ -127,8 +130,8 @@
       console.log('album route update')
     },
 
-    mounted () {
-      console.log('album mounted')
+    activated () {
+      this.coverOk = true
     }
   }
 </script>
@@ -181,10 +184,24 @@
       }
     }
 
-    img
+    .cover
     {
-      max-width: 12em;
-      min-width: 12em;
+      position: relative;
+      height: 12em;
+      width: 12em;
+      border: 1px solid #ddd;
+      background-color: #eee;
+      display: block;
+
+      img
+      {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        max-width: 100%;
+        max-height: 12em;
+      }
     }
 
     ol

@@ -37,11 +37,11 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../styles/mixins.scss";
   @import "../styles/button.scss";
 
-  .button
+  #player-show-button
   {
     @include size(2em);
   }

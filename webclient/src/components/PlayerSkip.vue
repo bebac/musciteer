@@ -6,7 +6,7 @@
     v-on:click="toggle"
     v-on:animationend="clicked = !clicked"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
+    <svg v-once xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
       >
       <g>
         <path d="M 90,60 120,100 90,140" fill="none" stroke-width="5"></path>

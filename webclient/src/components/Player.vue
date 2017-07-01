@@ -1,8 +1,8 @@
 <template>
   <div id="player">
-    <div id="player-background">
+    <!--<div id="player-background">
       <img v-bind:src="stream.track.album.cover" v-if="stream">
-    </div>
+    </div>-->
     <div id="player-header">
       <m-player-hide></m-player-hide>
     </div>
@@ -117,7 +117,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #222;
+    background-color: #222222;
     padding: 1em;
 
     .button
@@ -133,27 +133,27 @@
     {
       &::after
       {
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.2);
       }
     }
 
-    #player-background
-    {
-      position: fixed;
-      top: -1em;
-      left: -1em;
-      right: 0;
-      bottom: 0;
+    // #player-background
+    // {
+    //   position: fixed;
+    //   top: -1em;
+    //   left: -1em;
+    //   right: 0;
+    //   bottom: 0%;
+    //   overflow: hidden;
 
-      img
-      {
-        width: 100%;
-        height: 100%;
-        filter: blur(100px) contrast(50%);
-        -webkit-filter: blur(100px) contrast(50%);
-        opacity: 0.5;
-      }
-    }
+    //   img
+    //   {
+    //     width: 100%;
+    //     height: 100%;
+    //     filter: blur(100px) brightness(75%) opacity(0.5);
+    //     -webkit-filter: blur(100px) brightness(75%) opacity(0.5);
+    //   }
+    // }
 
 
     #player-hide-button

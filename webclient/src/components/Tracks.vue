@@ -121,7 +121,7 @@
     },
 
     created () {
-      axios.get('/api/tracks').then(
+      axios.get('/api/tracks?brief=1').then(
         response => {
           this.tracks = this.sortTracksByPlays(response.data)
           this.loading = false

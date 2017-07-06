@@ -110,6 +110,7 @@
 
 <style lang="scss">
   @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
   @import "../styles/button.scss";
 
   #player
@@ -137,6 +138,52 @@
       }
     }
 
+    .title
+    {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #eee;
+
+      >div {
+        text-align: center;
+      }
+    }
+
+    .artist-album
+    {
+      >div
+      {
+        >div:nth-child(1)
+        {
+          color: #eee;
+          font-size: 1.25em;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        >div:nth-child(2)
+        {
+          color: #aaa;
+          font-size: 1em;
+          font-weight: normal;
+          text-align: center;
+        }
+      }
+    }
+
+    .progress
+    {
+      >div
+      {
+        display: flex;
+        justify-content: center;
+        flex: 1;
+        color: #aaa;
+        font-size: 1em;
+        font-weight: normal;
+      }
+    }
+
     // #player-background
     // {
     //   position: fixed;
@@ -156,124 +203,224 @@
     // }
 
 
-    #player-hide-button
+    @media all and (orientation:landscape)
     {
-      flex: 0 0 auto;
-    }
-
-    #player-content
-    {
-      display: flex;
-      flex: 1;
-      z-index: 1;
-
-      .container
+      #player-hide-button
       {
+        flex: 0 0 auto;
+      }
+
+      #player-content
+      {
+        display: flex;
         flex: 1;
-        padding: 1em 1em;
+        z-index: 1;
 
-        &:nth-child(1)
+        .container
         {
-          display: flex;
-
-          img
-          {
-            align-self: center;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            max-height: 100%;
-          }
-        }
-
-        &:nth-child(2)
-        {
-          display: flex;
-          flex-direction: column;
+          flex: 1;
           padding: 1em 1em;
 
-          .title
+          &:nth-child(1)
           {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
-            color: #eee;
-            font-size: 2.5em;
-            font-weight: bold;
 
-            >div {
-              text-align: center;
-            }
-          }
-
-          .artist-album
-          {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
-
-            >div
+            img
             {
-              >div:nth-child(1)
-              {
-                color: #eee;
-                font-size: 1.25em;
-                font-weight: bold;
-                text-align: center;
-              }
-
-              >div:nth-child(2)
-              {
-                color: #aaa;
-                font-size: 1em;
-                font-weight: normal;
-                text-align: center;
-              }
+              align-self: center;
+              width: 100%;
+              max-width: 100%;
+              height: auto;
+              max-height: 100%;
             }
           }
 
-          .controls
+          &:nth-child(2)
           {
             display: flex;
             flex-direction: column;
-            flex: 1;
-            //background-color: #08f;
+            padding: 1em 1em;
 
-            .controls-buttons
+            .title
             {
               display: flex;
+              justify-content: center;
               align-items: center;
               flex: 1;
+            }
 
-              .button
-              {
-                @include size(4em);
-              }
+            .artist-album
+            {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex: 1;
+            }
 
-              >div
+            .controls
+            {
+              display: flex;
+              flex-direction: column;
+              flex: 1;
+              //background-color: #08f;
+
+              .controls-buttons
               {
                 display: flex;
-                justify-content: center;
+                align-items: center;
+                flex: 1;
+
+                .button
+                {
+                  @include size(4em);
+                }
+
+                >div
+                {
+                  display: flex;
+                  justify-content: center;
+                  flex: 1;
+                }
+              }
+
+              .progress
+              {
+                display: flex;
+                align-items: center;
                 flex: 1;
               }
             }
+          }
+        }
+      }
+    }
 
-            .progress
+    @media all and (orientation:portrait)
+    {
+      @media (max-height: $break)
+      {
+        .title {
+          font-size: 1.5em;
+        }
+
+        .artist-album
+        {
+          >div
+          {
+            >div:nth-child(1) {
+              font-size: 1em;
+            }
+
+            >div:nth-child(2) {
+              font-size: 1em;
+            }
+          }
+        }
+
+        .progress
+        {
+          >div {
+            font-size: 0.88em;
+          }
+        }
+      }
+
+      #player-hide-button
+      {
+        flex: 0 0 auto;
+      }
+
+      #player-content
+      {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        z-index: 1;
+
+        .container
+        {
+          flex: 1;
+          //padding: 1em 1em;
+
+          &:nth-child(1)
+          {
+            display: flex;
+            justify-content: center;
+
+            img
+            {
+              align-self: center;
+              width: auto;
+              max-width: 100%;
+              height: 100%;
+              max-height: 100%;
+            }
+          }
+
+          &:nth-child(2)
+          {
+            display: flex;
+            flex-direction: column;
+            //padding: 1em 1em;
+
+            .title
             {
               display: flex;
+              justify-content: center;
               align-items: center;
               flex: 1;
+            }
 
-              >div
+            .artist-album
+            {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex: 1;
+            }
+
+            .controls
+            {
+              display: flex;
+              flex-direction: column;
+              flex: 1;
+              //background-color: #08f;
+
+              .controls-buttons
               {
                 display: flex;
-                justify-content: center;
+                align-items: center;
                 flex: 1;
-                color: #aaa;
-                font-size: 1em;
-                font-weight: normal;
+
+                @media (min-height: $break)
+                {
+                  .button
+                  {
+                    @include size(4em);
+                  }
+                }
+
+                @media (max-height: $break)
+                {
+                  .button
+                  {
+                    @include size(3em);
+                  }
+                }
+
+                >div
+                {
+                  display: flex;
+                  justify-content: center;
+                  flex: 1;
+                }
+              }
+
+              .progress
+              {
+                display: flex;
+                align-items: center;
+                flex: 1;
               }
             }
           }

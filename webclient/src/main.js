@@ -35,7 +35,6 @@ router.afterEach((to, from, next) => {
   let back = document.getElementById('header-back-button')
 
   if (back) {
-    console.log(to)
     if (to.name !== 'Albums') {
       back.style.visibility = 'visible'
     } else {

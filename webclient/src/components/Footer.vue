@@ -30,6 +30,9 @@
 </script>
 
 <style lang="scss">
+  @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
+
   #m-footer
   {
     display: flex;
@@ -52,6 +55,9 @@
       justify-content: flex-start;
       flex: 1;
       padding-left: 1em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     .center
@@ -64,6 +70,19 @@
     .right
     {
       flex: 1;
+    }
+
+    @media (max-width: $break)
+    {
+      .center
+      {
+        display: none;
+      }
+
+      .right
+      {
+        display: none;
+      }
     }
   }
 </style>

@@ -8,7 +8,7 @@
     <svg v-once xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
       >
       <g>
-        <path d="M 90,25 40,100 90,175" fill="none" stroke-width="12"></path>
+        <path d="M 90,50 50,100 90,150" fill="none" stroke-width="12"></path>
         <circle cx="100" cy="100" r="100" fill-opacity="0" stroke-width="0"></circle>
       </g>
     </svg>

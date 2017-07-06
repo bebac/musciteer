@@ -11,7 +11,7 @@
       viewBox="0 0 200 200"
       >
       <g>
-        <path d="m25,125l75,-50l75,50" fill="none" stroke-width="12"></path>
+        <path d="M 45,130 100,90 155,130" fill="none" stroke-width="12"></path>
         <circle cx="100" cy="100" r="100" fill-opacity="0" stroke-width="0"></circle>
       </g>
     </svg>

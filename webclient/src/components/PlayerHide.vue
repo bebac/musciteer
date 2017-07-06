@@ -9,7 +9,7 @@
     <svg v-once xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
       >
       <g>
-        <path d="m25,75l75,50l75,-50" fill="none" stroke-width="12"></path>
+        <path d="M 45,90 100,130 155,90" fill="none" stroke-width="12"></path>
         <circle cx="100" cy="100" r="100" fill-opacity="0" stroke-width="0"></circle>
       </g>
     </svg>

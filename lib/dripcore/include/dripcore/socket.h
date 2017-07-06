@@ -94,6 +94,14 @@ namespace dripcore
       socket cli(::accept(fd_, NULL, NULL));
       return cli;
     }
+#ifdef __linux
+  public:
+    socket accept4(struct sockaddr *cliaddr, socklen_t *addrlen, int flags)
+    {
+      socket cli(::accept4(fd_, NULL, NULL, flags));
+      return cli;
+    }
+#endif
   public:
     ssize_t recv(void *buf, size_t len, int flags=0) override
     {

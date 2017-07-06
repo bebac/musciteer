@@ -64,11 +64,17 @@ namespace dripcore
 
       do
       {
+#ifdef __linux
+        auto client = socket_.accept4(0, 0, SOCK_NONBLOCK);
+#else
         auto client = socket_.accept(0, 0);
+#endif
 
         if ( client )
         {
+#ifndef __linux
           client.nonblocking(true);
+#endif
           connection_cb_(std::move(client));
         }
         else if ( client.not_ready() )

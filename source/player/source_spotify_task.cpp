@@ -80,33 +80,33 @@ namespace musciteer
   class spotify_session : public dripcore::task
   {
   public:
-    enum class atom
-    {
-      quit,
-      play_session,
-      end_session,
-      process_events,
-      logged_in,
-      connection_error,
-      metadata_updated,
-      track_loaded
-    };
-  public:
     class message
     {
     public:
-      message(atom id) : id(id), error(SP_ERROR_OK)
+      enum class id
+      {
+        quit,
+        play_session,
+        end_session,
+        process_events,
+        logged_in,
+        connection_error,
+        metadata_updated,
+        track_loaded
+      };
+    public:
+      message(message::id id) : id(id), error(SP_ERROR_OK)
       {
       }
-      message(atom id, sp_error error) : id(id), error(error)
+      message(message::id id, sp_error error) : id(id), error(error)
       {
       }
-      message(atom id, std::shared_ptr<player_session> session)
+      message(message::id id, std::shared_ptr<player_session> session)
         : id(id), session(session)
       {
       }
     public:
-      atom id;
+      message::id id;
       sp_error error;
       std::shared_ptr<player_session> session;
     };
@@ -240,7 +240,7 @@ namespace musciteer
     {
       auto msg = ch_.recv(this);
 
-      if ( msg.id == atom::quit )
+      if ( msg.id == message::id::quit )
       {
         // NOTE: segfaults sometimes!
         // http://stackoverflow.com/questions/14350355/libspotify-destruction-procedure
@@ -250,27 +250,27 @@ namespace musciteer
 
       switch ( msg.id )
       {
-        case atom::quit:
+        case message::id::quit:
           break;
-        case atom::play_session:
+        case message::id::play_session:
           play_session(msg.session);
           break;
-        case atom::end_session:
+        case message::id::end_session:
           end_session();
           break;
-        case atom::process_events:
+        case message::id::process_events:
           process_events();
           break;
-        case atom::logged_in:
+        case message::id::logged_in:
           logged_in(msg.error);
           break;
-        case atom::connection_error:
+        case message::id::connection_error:
           connection_error(msg.error);
           break;
-        case atom::metadata_updated:
+        case message::id::metadata_updated:
           metadata_updated();
           break;
-        case atom::track_loaded:
+        case message::id::track_loaded:
           if ( !track_loaded_ )
           {
             track_loaded_ = true;
@@ -309,7 +309,7 @@ namespace musciteer
       sp_track_add_ref(track_ = link.as_track());
 
       if (sp_track_error(track_) == SP_ERROR_OK) {
-        ch_.send(message{atom::track_loaded});
+        ch_.send(message{message::id::track_loaded});
       }
     }
     else
@@ -379,7 +379,7 @@ namespace musciteer
   void spotify_session::metadata_updated()
   {
     if (sp_track_error(track_) == SP_ERROR_OK) {
-      ch_.send(message{atom::track_loaded});
+      ch_.send(message{message::id::track_loaded});
     }
   }
 
@@ -449,7 +449,7 @@ namespace musciteer
   void spotify_session::logged_in_cb(sp_session *session, sp_error error)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::logged_in, error});
+    self->ch_.send(message{message::id::logged_in, error});
   }
 
   void spotify_session::logged_out_cb(sp_session *session)
@@ -460,13 +460,13 @@ namespace musciteer
   void spotify_session::metadata_updated_cb(sp_session *session)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::metadata_updated});
+    self->ch_.send(message{message::id::metadata_updated});
   }
 
   void spotify_session::connection_error_cb(sp_session *session, sp_error error)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::connection_error, error});
+    self->ch_.send(message{message::id::connection_error, error});
   }
 
   void spotify_session::message_to_user_cb(sp_session *session, const char* message)
@@ -477,7 +477,7 @@ namespace musciteer
   void spotify_session::notify_main_thread_cb(sp_session *session)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::process_events});
+    self->ch_.send(message{message::id::process_events});
   }
 
   int spotify_session::music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
@@ -516,7 +516,7 @@ namespace musciteer
   void spotify_session::end_of_track_cb(sp_session *session)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-    self->ch_.send(message{atom::end_session});
+    self->ch_.send(message{message::id::end_session});
   }
 
   void spotify_session::stream_error_cb(sp_session *session, sp_error error)
@@ -568,7 +568,9 @@ namespace musciteer
 
   void source_spotify_task::main()
   {
-    dripcore::channel<spotify_session::message> spotify_session_ch;
+    using message = spotify_session::message;
+
+    dripcore::channel<message> spotify_session_ch;
     done_ichannel spotify_session_done_ch{done_channel{}, this};
 
     auto spotify_session_task = spawn<spotify_session>(spotify_session_ch, spotify_session_done_ch);
@@ -579,7 +581,7 @@ namespace musciteer
 
       if ( !session )
       {
-        spotify_session_ch.send(spotify_session::message{spotify_session::atom::quit}, this);
+        spotify_session_ch.send(message{message::id::quit}, this);
 
         if ( !spotify_session_task.expired() )  {
           spotify_session_done_ch.recv();
@@ -588,7 +590,7 @@ namespace musciteer
       }
 
       // Request spotify session to play session.
-      spotify_session_ch.send(spotify_session::message{spotify_session::atom::play_session, session}, this);
+      spotify_session_ch.send(message{message::id::play_session, session}, this);
 
       // Process session control messages until session done.
       auto ctrl = player_session::control::undefined;
@@ -598,7 +600,7 @@ namespace musciteer
 
         if ( ctrl == player_session::control::stop )
         {
-          spotify_session_ch.send(spotify_session::message{spotify_session::atom::end_session}, this);
+          spotify_session_ch.send(message{message::id::end_session}, this);
         }
       }
       while( ctrl != player_session::control::done );

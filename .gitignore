@@ -6,12 +6,9 @@
 
 opal/.sass-cache/
 
-public/assets/application.css*
-public/assets/android.css*
-public/assets/application.js
-public/assets/android.js
+public/assets/js/*.js
+public/assets/css/*.css
 public/index.html
-public/android.html
 
 source/player/source_spotify_app_key.cpp
 source/spotify_web/id.h
@@ -20,6 +17,8 @@ lib/json/nlohmann
 lib/libspotify-12.1.51-Linux-x86_64-release
 
 build/
+vagrant/.vagrant
+vagrant/*.log
 
 package/debian/*.deb
 package/debian/stage

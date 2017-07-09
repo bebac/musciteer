@@ -275,14 +275,25 @@ class audio_output_stream_begin_notification
 {
 public:
   audio_output_stream_begin_notification()
+    :
+    stream_id(~0),
+    replaygain_enabled(false),
+    replaygain(0.0),
+    scale(1.0)
   {
   }
   audio_output_stream_begin_notification(audio_output_stream_begin_notification&& other)
   {
     stream_id = std::move(other.stream_id);
+    replaygain_enabled = std::move(other.replaygain_enabled);
+    replaygain = std::move(other.replaygain);
+    scale = std::move(other.scale);
   }
 public:
   unsigned stream_id;
+  bool replaygain_enabled;
+  double replaygain;
+  double scale;
 };
 
 // ----------------------------------------------------------------------------

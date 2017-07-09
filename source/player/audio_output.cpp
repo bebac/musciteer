@@ -298,19 +298,20 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
           }
         }
 
-        std::cout
-          << "audio_output - stream begin replaygain is " << (rg_enabled_ ? "on" : "off")
-          << " [ rg_=" << rg_ << ", scale_=" << scale_ << " ]"
-          << std::endl;
-
         state_ = state_playing;
 
         for ( auto observer : observers_ )
         {
-          message n(message::stream_begin_notify_id);
+          message m(message::stream_begin_notify_id);
 
-          n.stream_begin_notify.stream_id = stream_id_;
-          observer.send(std::move(n));
+          auto& n = m.stream_begin_notify;
+
+          n.stream_id = stream_id_;
+          n.replaygain_enabled = rg_enabled_;
+          n.replaygain = rg_;
+          n.scale = scale_;
+
+          observer.send(std::move(m));
         }
       }
       break;

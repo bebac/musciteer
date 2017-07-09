@@ -303,7 +303,6 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
         for ( auto observer : observers_ )
         {
           message m(message::stream_begin_notify_id);
-
           auto& n = m.stream_begin_notify;
 
           n.stream_id = stream_id_;
@@ -349,10 +348,12 @@ void audio_output_alsa::handle(stream_end& m, unsigned ref)
 
         for ( auto observer : observers_ )
         {
-          message n(message::stream_end_notify_id);
+          message m(message::stream_end_notify_id);
+          auto& n = m.stream_end_notify;
 
-          n.stream_end_notify.stream_id = stream_id_;
-          observer.send(std::move(n));
+          n.stream_id = stream_id_;
+
+          observer.send(std::move(m));
         }
       }
       break;
@@ -419,12 +420,14 @@ void audio_output_alsa::update_stream_time(bool last)
 
     for ( auto observer : observers_ )
     {
-      message n(message::stream_progress_notify_id);
+      message m(message::stream_progress_notify_id);
+      auto& n = m.stream_progress_notify;
 
-      n.stream_progress_notify.stream_id = stream_id_;
-      n.stream_progress_notify.duration = duration_cast<milliseconds>(stream_time).count();
-      n.stream_progress_notify.length = duration_cast<milliseconds>(stream_length_).count();
-      observer.send(std::move(n));
+      n.stream_id = stream_id_;
+      n.duration = duration_cast<milliseconds>(stream_time).count();
+      n.length = duration_cast<milliseconds>(stream_length_).count();
+
+      observer.send(std::move(m));
     }
 
     stream_notify_next_ = now + milliseconds(1000) - offset;

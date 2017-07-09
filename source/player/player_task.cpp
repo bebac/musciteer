@@ -324,15 +324,22 @@ namespace musciteer
 
   void player_task::handle(stream_begin_notify& m)
   {
-    assert(session_);
+    if ( session_ )
+    {
+      auto track = session_->track();
 
-    auto track = session_->track();
+      assert(track);
 
-    std::cout
-      << "player_task - stream begin " << track->id()
-      << " [ replaygain: " << (m.replaygain_enabled ? "on" : "off")
-      << ", replaygain: " << m.replaygain << ", scale: " << m.scale << " ]"
-      << std::endl;
+      std::cout
+        << "player_task - stream begin " << track->id()
+        << " [ replaygain: " << (m.replaygain_enabled ? "on" : "off")
+        << ", replaygain: " << m.replaygain << ", scale: " << m.scale << " ]"
+        << std::endl;
+    }
+    else
+    {
+      std::cerr << "player_task - received stream begin notify with session_ == nullptr" << std::endl;
+    }
   }
 
   void player_task::handle(stream_progress_notify& m)

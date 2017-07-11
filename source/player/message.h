@@ -177,6 +177,18 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+class pause_request
+{
+public:
+  pause_request()
+  {
+  }
+  pause_request(pause_request&& other)
+  {
+  }
+};
+
+// ----------------------------------------------------------------------------
 class stop_request
 {
 public:
@@ -437,6 +449,7 @@ public:
     close_req_id,
     close_res_id,
     play_req_id,
+    pause_req_id,
     stop_req_id,
     skip_req_id,
     queue_req_id,
@@ -485,6 +498,9 @@ public:
         break;
       case play_req_id:
         new (&play_req) play_request();
+        break;
+      case pause_req_id:
+        new (&pause_req) pause_request();
         break;
       case stop_req_id:
         new (&stop_req) stop_request();
@@ -564,6 +580,9 @@ public:
         break;
       case play_req_id:
         new (&play_req) play_request(std::move(other.play_req));
+        break;
+      case pause_req_id:
+        new (&pause_req) pause_request(std::move(other.pause_req));
         break;
       case stop_req_id:
         new (&stop_req) stop_request(std::move(other.stop_req));
@@ -646,6 +665,9 @@ public:
       case play_req_id:
         play_req.~play_request();
         break;
+      case pause_req_id:
+        pause_req.~pause_request();
+        break;
       case stop_req_id:
         stop_req.~stop_request();
         break;
@@ -708,6 +730,7 @@ public:
     audio_output_close_request close_req;
     audio_output_close_response close_res;
     play_request play_req;
+    pause_request pause_req;
     stop_request stop_req;
     skip_request skip_req;
     queue_request queue_req;

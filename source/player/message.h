@@ -468,10 +468,10 @@ public:
     stream_data_res_id,
   };
 public:
-  message() : type(undefined_id), ref(0)
+  message() : type(undefined_id)
   {
   }
-  message(unsigned type, long long ref=0) : type(type), ref(ref)
+  message(unsigned type) : type(type)
   {
     switch ( type )
     {
@@ -634,7 +634,6 @@ public:
         break;
     }
     type = other.type;
-    ref = other.ref;
   }
 public:
   ~message()
@@ -748,8 +747,6 @@ public:
     stream_data_request stream_data_req;
     stream_data_response stream_data_res;
   };
-  //long long ref;
-  unsigned ref;
 };
 
 // ----------------------------------------------------------------------------

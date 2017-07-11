@@ -55,11 +55,11 @@ private:
   void handle(subscribe& m);
   void handle(unsubscribe& m);
 private:
-  void handle(device_list_request& m, unsigned ref);
-  void handle(open_request& m, unsigned ref);
-  void handle(close_request& m, unsigned ref);
-  void handle(stream_begin& m, unsigned ref);
-  void handle(stream_end& m, unsigned ref);
+  void handle(device_list_request& m);
+  void handle(open_request& m);
+  void handle(close_request& m);
+  void handle(stream_begin& m);
+  void handle(stream_end& m);
   void handle(stream_buffer& m);
 private:
   void update_stream_time(bool last=false);

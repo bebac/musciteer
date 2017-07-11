@@ -89,7 +89,7 @@ namespace musciteer
         handle(m.unsubscribe);
         break;
       case message::device_list_req_id:
-        handle(m.device_list_req, m.ref);
+        handle(m.device_list_req);
         break;
       case message::settings_changed_id:
         handle(m.settings_changed);
@@ -150,9 +150,9 @@ namespace musciteer
     audio_output_unsubscribe(m.channel);
   }
 
-  void player_task::handle(device_list_request& m, unsigned ref)
+  void player_task::handle(device_list_request& m)
   {
-    message am(message::device_list_req_id, ref);
+    message am(message::device_list_req_id);
 
     am.device_list_req = std::move(m);
     am.device_list_req.current = audio_output_device_;
@@ -517,7 +517,7 @@ namespace musciteer
 
   void player_task::audio_output_subscribe(message_channel& ch)
   {
-    message m(message::subscribe_id, 0);
+    message m(message::subscribe_id);
 
     m.subscribe.channel = ch;
 
@@ -526,7 +526,7 @@ namespace musciteer
 
   void player_task::audio_output_unsubscribe(message_channel& ch)
   {
-    message m(message::unsubscribe_id, 0);
+    message m(message::unsubscribe_id);
 
     m.subscribe.channel = ch;
 
@@ -536,7 +536,7 @@ namespace musciteer
   bool player_task::audio_output_open()
   {
     message_channel ch;
-    message m(message::open_req_id, 0);
+    message m(message::open_req_id);
 
     m.open_req.device_name = audio_output_device_;
     m.open_req.replaygain_enabled = replaygain_enalbed_;

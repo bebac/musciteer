@@ -26,7 +26,7 @@ namespace musciteer
   public:
     void subscribe(message_channel ch)
     {
-      message m(message::subscribe_id, 0);
+      message m(message::subscribe_id);
 
       m.subscribe.channel = ch;
 
@@ -35,7 +35,7 @@ namespace musciteer
   public:
     void unsubscribe(message_channel ch)
     {
-      message m(message::unsubscribe_id, 0);
+      message m(message::unsubscribe_id);
 
       m.unsubscribe.channel = ch;
 
@@ -44,7 +44,7 @@ namespace musciteer
   public:
     void audio_device_list(message_channel reply_ch)
     {
-      message m(message::device_list_req_id, 0);
+      message m(message::device_list_req_id);
 
       m.device_list_req.reply = reply_ch;
 
@@ -53,14 +53,14 @@ namespace musciteer
   public:
     void settings_changed()
     {
-      message m(message::settings_changed_id, 0);
+      message m(message::settings_changed_id);
 
       message_ch_.send(std::move(m));
     }
   public:
     void stream_data(unsigned stream_id, message_channel reply_ch)
     {
-      message m(message::stream_data_req_id, 0);
+      message m(message::stream_data_req_id);
 
       m.stream_data_req.stream_id = stream_id;
       m.stream_data_req.reply = reply_ch;
@@ -70,7 +70,7 @@ namespace musciteer
   public:
     void play(const std::string& id = std::string{})
     {
-      message m(message::play_req_id, 0);
+      message m(message::play_req_id);
 
       m.play_req.id = id;
 
@@ -79,21 +79,21 @@ namespace musciteer
   public:
     void stop()
     {
-      message m(message::stop_req_id, 0);
+      message m(message::stop_req_id);
 
       message_ch_.send(std::move(m));
     }
   public:
     void skip()
     {
-      message m(message::skip_req_id, 0);
+      message m(message::skip_req_id);
 
       message_ch_.send(std::move(m));
     }
   public:
     void queue(const std::string& id)
     {
-      message m(message::queue_req_id, 0);
+      message m(message::queue_req_id);
 
       m.queue_req.id = id;
 
@@ -102,7 +102,7 @@ namespace musciteer
   public:
     void source_notification(source_notification::id type, const std::string& source_name, const std::string& source_message)
     {
-      message m(message::source_notify_id, 0);
+      message m(message::source_notify_id);
 
       m.source_notify.type = type;
       m.source_notify.source_name = source_name;

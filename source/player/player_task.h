@@ -60,7 +60,7 @@ namespace musciteer
   private:
     void handle(subscribe& m);
     void handle(unsubscribe& m);
-    void handle(device_list_request& m, unsigned ref);
+    void handle(device_list_request& m);
     void handle(settings_changed_message& m);
     void handle(stream_data_request& m);
     void handle(play_request& m);

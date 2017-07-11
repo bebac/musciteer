@@ -77,19 +77,19 @@ void audio_output_alsa::dispatch(message& m)
       handle(m.unsubscribe);
       break;
     case message::device_list_req_id:
-      handle(m.device_list_req, m.ref);
+      handle(m.device_list_req);
       break;
     case message::open_req_id:
-      handle(m.open_req, m.ref);
+      handle(m.open_req);
       break;
     case message::close_req_id:
-      handle(m.open_req, m.ref);
+      handle(m.open_req);
       break;
     case message::stream_begin_id:
-      handle(m.stream_begin, m.ref);
+      handle(m.stream_begin);
       break;
     case message::stream_end_id:
-      handle(m.stream_end, m.ref);
+      handle(m.stream_end);
       break;
     case message::stream_buffer_id:
       handle(m.stream_buffer);
@@ -113,9 +113,9 @@ void audio_output_alsa::handle(unsubscribe& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(device_list_request& m, unsigned ref)
+void audio_output_alsa::handle(device_list_request& m)
 {
-  message r(message::device_list_res_id, ref);
+  message r(message::device_list_res_id);
 
   void **hints, **n;
   char *name, *descr, *io;
@@ -156,9 +156,9 @@ void audio_output_alsa::handle(device_list_request& m, unsigned ref)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(open_request& m, unsigned ref)
+void audio_output_alsa::handle(open_request& m)
 {
-  message r(message::open_res_id, ref);
+  message r(message::open_res_id);
 
   switch ( state_ )
   {
@@ -211,9 +211,9 @@ void audio_output_alsa::handle(open_request& m, unsigned ref)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(close_request& m, unsigned ref)
+void audio_output_alsa::handle(close_request& m)
 {
-  message r(message::close_res_id, ref);
+  message r(message::close_res_id);
 
   switch ( state_ )
   {
@@ -246,7 +246,7 @@ void audio_output_alsa::handle(close_request& m, unsigned ref)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(stream_begin& m, unsigned ref)
+void audio_output_alsa::handle(stream_begin& m)
 {
   switch ( state_ )
   {
@@ -322,7 +322,7 @@ void audio_output_alsa::handle(stream_begin& m, unsigned ref)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(stream_end& m, unsigned ref)
+void audio_output_alsa::handle(stream_end& m)
 {
   switch ( state_ )
   {

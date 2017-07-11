@@ -120,22 +120,6 @@ public:
     }
     size_ += num_frames;
   }
-#if 0
-public:
-  void write(std::ostream& os) const
-  {
-    if ( data_ )
-    {
-      for ( size_t i=0; i<size_; i++ ) {
-        os << "l:" << data_[i].l << ", r:" << data_[i].r << std::endl;
-      }
-    }
-    else
-    {
-      os << "<null>";
-    }
-  }
-#endif
 public:
   void scale(double factor)
   {
@@ -154,15 +138,6 @@ private:
 private:
   std::unique_ptr<s32_le_frame[]> data_;
 };
-
-// ----------------------------------------------------------------------------
-#if 0
-inline std::ostream& operator<<(std::ostream& os, const audio_buffer& obj)
-{
-   obj.write(os);
-   return os;
-}
-#endif
 
 // ----------------------------------------------------------------------------
 #endif

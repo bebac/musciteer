@@ -190,14 +190,18 @@
       thead
       {
         flex: 0;
-        color: #888;
+        color: #333;
         //background-color: desaturate(darken(rgba(241, 239, 236, 1), 2%), 10%);
-        background-color: lighten(#D4D7DB, 10%);
-        //box-shadow: 0px -2px 15px rgba(140, 139, 127, 1);
-        //border-top: 1px solid darken(#D4D7DB, 5%);
-        //border-top: 4px solid #fff;
-        //border-bottom: 4px solid #fff;
-        border-bottom: 2px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 20%);
+        //background-color: lighten(#D4D7DB, 13%);
+        box-shadow: 0px -2px 12px rgba(140, 139, 127, 0.4);
+        text-transform: uppercase;
+        font-weight: bold;
+        z-index: 1;
+
+        th
+        {
+          transform: scaleY(0.68);
+        }
 
         tr.item
         {

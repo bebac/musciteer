@@ -48,9 +48,10 @@
     #header
     {
       flex: 0 0 auto;
-      background: linear-gradient(to bottom, saturate(rgba(241, 239, 236, 1), 2%), rgba(241, 239, 236, 0.5));
-      border-top: 2px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 20%);
-      border-bottom: 2px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 20%);
+      background: linear-gradient(to bottom, saturate(rgba(241, 239, 236, 1), 2%), rgba(241, 239, 236, 0.2));
+      //background-color: rgba(241, 239, 236, 1);
+      border-top: 1px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 10%);
+      border-bottom: 1px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 5%);
     }
 
     #main

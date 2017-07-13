@@ -327,6 +327,10 @@ void websocket_recv_task::on_message(const std::string& message)
         player.play(data.get<std::string>());
       }
     }
+    else if ( event == "pause" )
+    {
+      player.pause();
+    }
     else if ( event == "stop" )
     {
       player.stop();

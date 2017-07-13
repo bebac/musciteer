@@ -64,6 +64,7 @@ namespace musciteer
     void handle(settings_changed_message& m);
     void handle(stream_data_request& m);
     void handle(play_request& m);
+    void handle(pause_request& m);
     void handle(stop_request& m);
     void handle(skip_request& m);
     void handle(queue_request& m);

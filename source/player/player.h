@@ -77,6 +77,13 @@ namespace musciteer
       message_ch_.send(std::move(m));
     }
   public:
+    void pause()
+    {
+      message m(message::pause_req_id);
+
+      message_ch_.send(std::move(m));
+    }
+  public:
     void stop()
     {
       message m(message::stop_req_id);

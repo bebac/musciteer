@@ -247,6 +247,10 @@ namespace musciteer
     }
   }
 
+  void player_task::handle(pause_request& m)
+  {
+  }
+
   void player_task::handle(stop_request& m)
   {
     switch ( state_ )

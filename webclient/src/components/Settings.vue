@@ -65,15 +65,22 @@
   {
     color: #666;
     font-family: Arial;
-    font-size: 0.88em;
-    margin-bottom: 2em;
+    font-size: 1em;
+    margin: 1em 1em 2em 1em;
 
-    .header
+    input, select
     {
-      display: flex;
-      flex-direction: column;
-      padding: 1em;
-      //border-bottom: 1px solid #eee;
+      font-family: Arial;
+    }
+
+    h1
+    {
+      font-size: 1.125em;
+    }
+
+    h2
+    {
+      font-size: 1em;
     }
 
     .section, .section-header
@@ -83,82 +90,139 @@
 
     .section-header
     {
-      border-top: 1px solid #eee;
-      padding: 1em;
-    }
-
-    .section-header
-    {
       margin-top: 1em;
+      border-top: 1px solid #eee;
     }
 
     .section-content
     {
       display: flex;
-      justify-content: flex-start;
-      align-items: center;
+      align-items: flex-start;
 
-      label
+      .header, .body, .description
       {
         flex: 1;
-        //align-self: flex-start;
-        padding: 0.25em 1em;
+        padding: 0.33em 1em;
+      }
+
+      .header
+      {
         font-weight: bold;
         text-align: right;
       }
 
-      div
+      .body
       {
-        flex: 2;
-        padding: 0.25em 1em;
+        position: relative;
+
+        ul
+        {
+          list-style: none;
+
+          li:not(:first-child)
+          {
+            padding-top: 1.33em;
+          }
+        }
       }
 
-      span
+      .body-button
       {
-        flex: 2;
-        //align-self: flex-start;
-        padding: 0.25em 1em;
+        margin: 1.33em 0;
       }
-    }
 
-    h1
-    {
-      font-size: 1.25em;
-    }
+      .description
+      {
+        text-align: left;
+      }
 
-    h2
-    {
-      font-size: 1.125em;
-    }
+      input[type="text"], input[type="password"]
+      {
+        color: #666;
+        $padding-bottom: 0.33em;
 
-    input[type="text"], input[type="password"]
-    {
-      padding: 0.5em 1em;
-      width: 100%;
-      border-radius: 20px;
-      border: 2px solid lighten(#D4D7DB, 5%);
-    }
+        padding-bottom: calc(#{$padding-bottom} + 1px);
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid lighten(#D4D7DB, 5%);
 
-    input[type="text"]:focus, input[type="password"]:focus
-    {
-      outline: none;
-      border: 2px solid darken(#D4D7DB, 5%);
+        &:focus, &:hover
+        {
+          outline: none;
+          padding-bottom: $padding-bottom;
+          border-bottom: 2px solid lighten(#ecbb71, 0%);
+        }
+      }
+
+      .select-dropdown-icon
+      {
+        position: absolute;
+        bottom: 0.66em;
+        right: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        pointer-events: none;
+
+        svg
+        {
+          @include size(1em);
+          stroke: #666;
+          fill: #666;
+        }
+      }
+
+      select
+      {
+        $padding-bottom: 0.33em;
+
+        padding-bottom: calc(#{$padding-bottom} + 1px);
+        width: 100%;
+        outline: none;
+        border: none;
+        background-color: #fff;
+        border-bottom: 1px solid lighten(#D4D7DB, 5%);
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        &:focus
+        {
+          border: none;
+          padding-bottom: $padding-bottom;
+          border-bottom: 2px solid lighten(#ecbb71, 0%);
+        }
+
+        &:hover
+        {
+          outline: none;
+          padding-bottom: $padding-bottom;
+          border-bottom: 2px solid lighten(#ecbb71, 0%);
+        }
+
+        &:-moz-focusring
+        {
+          color: transparent;
+          text-shadow: 0 0 0 #000;
+          padding-bottom: $padding-bottom;
+          border-bottom: 2px solid lighten(#ecbb71, 0%);
+        }
+      }
     }
 
     button
     {
-      background: lighten(#D4D7DB, 5%);
-      //background: linear-gradient(to bottom, #D4D7DB, lighten(#D4D7DB, 5%));
-      border: 1px solid darken(#D4D7DB, 0%);
-      //border: 1px solid #eee;
-      //border: none;
+      background-color: rgba(241, 239, 236, 1);
+      border: none;
       border-radius: 20px;
-      margin: 0.3em;
-      padding: 0.5em 20px;
+      padding: 0.5em 30px;
       outline: none;
       font-weight: bold;
       color: #666;
       position: relative;
+
+      &:hover {
+        background-color: darken(rgba(241, 239, 236, 1), 4%);
+      }
 
       .armed {
         display: none;
@@ -168,9 +232,7 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        right: 0.3em;
-        width: 1.5em;
-        //border: 1px solid #666;
+        right: 0.5em;
 
         >div {
           border-radius: 100%;

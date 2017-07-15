@@ -1,7 +1,9 @@
 <template>
   <div class="section-content">
-    <label>Directories</label>
-    <div>
+    <div class="header">
+      Directories
+    </div>
+    <div class="body">
       <ul>
         <li v-for="dir in directories">
           <input type="text" v-model="dir.value" v-on:change="set" v-on:keyup.13="set"></input>
@@ -21,7 +23,9 @@
         </li>
       </ul>
     </div>
-    <span>Configure directories to scan for local music files.</span>
+    <div class="description">
+      <span>Configure directories to scan for local music files.</span>
+    </div>
   </div>
 </template>
 
@@ -89,34 +93,4 @@
 </script>
 
 <style lang="scss">
-  @import "../styles/mixins.scss";
-  @import "../styles/base.scss";
-
-  #m-settings
-  {
-    ul
-    {
-      list-style: none;
-
-      li
-      {
-        padding: 0.25em;
-      }
-    }
-
-    input[type="text"]
-    {
-      padding: 0.5em 1em;
-      width: 100%;
-      border-radius: 20px;
-      border: 2px solid lighten(#D4D7DB, 5%);
-      //outline: 1px solid #333;
-    }
-
-    input[type="text"]:focus
-    {
-      outline: none;
-      border: 2px solid darken(#D4D7DB, 5%);
-    }
-  }
 </style>

@@ -1,15 +1,19 @@
 <template>
   <div>
     <div class="section-content">
-      <label>Authorization</label>
-      <div>
+      <div class="header">
+        Authorization
+      </div>
+      <div class="body">
         <button v-if="authorized" v-on:click="revoke">revoke</button>
         <button v-else>
           <a v-bind:href="authURL()">authorize</a>
         </button>
       </div>
-      <span v-if="authorized">Revoke spotify web access</span>
-      <span v-else>Authorize spotify web access</span>
+      <div class="description">
+        <span v-if="authorized">Revoke spotify web access</span>
+        <span v-else>Authorize spotify web access</span>
+      </div>
     </div>
   </div>
 </template>

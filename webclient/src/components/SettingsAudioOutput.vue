@@ -1,12 +1,24 @@
 <template>
   <div class="section-content">
-    <label>Output</label>
-    <div>
+    <div class="header">
+      Output
+    </div>
+    <div class="body">
       <select v-model="current" v-on:change="set">
         <option v-for="device in devices">{{device}}</option>
       </select>
+      <div class="select-dropdown-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
+          >
+          <g>
+            <path d="m30,40l60,80l60,-80" stroke-width="0"></path>
+          </g>
+        </svg>
+      </div>
     </div>
-    <span>The audio output device.</span>
+    <div class="description">
+      <span>The audio output device.</span>
+    </div>
   </div>
 </template>
 

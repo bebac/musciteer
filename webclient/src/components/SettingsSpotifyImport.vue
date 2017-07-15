@@ -1,20 +1,33 @@
 <template>
   <div>
     <div class="section-content">
-      <label>URL</label>
-      <div>
-        <input type="text" v-model="url"></input>
+      <div class="header">
+        URL
       </div>
-      <span>Enter spotify track or album url to import. Examples:
-        <ul>
-          <li>/v1/albums/08ibdX8K0GETv20UEku3sm</li>
-          <li>https://open.spotify.com/album/6WDjkO2VpWFLugL4kl13db</li>
-        </ul>
-      </span>
+      <div class="body">
+        <input type="text" v-model="url"></input>
+        <button class="body-button" v-on:click="importURL">
+          <span>import</span>
+          <div v-if="importing" class="busy">
+            <div></div>
+          </div>
+          <div v-else class="armed">
+          </div>
+        </button>
+      </div>
+      <div class="description">
+        <span>Enter spotify track or album url to import. Examples:
+          <ul>
+            <li>/v1/albums/08ibdX8K0GETv20UEku3sm</li>
+            <li>https://open.spotify.com/album/6WDjkO2VpWFLugL4kl13db</li>
+          </ul>
+        </span>
+      </div>
     </div>
-    <div class="section-content">
-      <label></label>
-      <div>
+<!--    <div class="section-content">
+      <div class="header">
+      </div>
+      <div class="body">
         <button v-on:click="importURL">
             <span>import</span>
             <div v-if="importing" class="busy">
@@ -24,8 +37,10 @@
             </div>
           </button>
       </div>
-      <span>{{temp}}</span>
-    </div>
+      <div class="description">
+        <span>{{temp}}</span>
+      </div>
+    </div>-->
   </div>
 </template>
 

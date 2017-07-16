@@ -27,6 +27,8 @@ namespace musciteer
 {
   class player_session : public std::enable_shared_from_this<player_session>
   {
+    using track_ptr = std::shared_ptr<musciteer::dm::track>;
+    using audio_output_ptr = std::shared_ptr<audio_output_alsa>;
   public:
     enum class control
     {
@@ -34,84 +36,39 @@ namespace musciteer
       done,
       undefined
     };
+    using control_channel = dripcore::channel<control>;
   public:
-    player_session()
-      : track_(), fraction_played_(0.0), audio_output_(), control_ch_()
-    {
-      auto kvstore = musciteer::kvstore();
-      id_ = kvstore.increment(stream_id_key, 1, 1);
-    }
+    player_session();
+    ~player_session() = default;
   public:
-    ~player_session()
-    {
-    }
+    unsigned id() const;
   public:
-    unsigned id() const
-    {
-      return id_;
-    }
+    track_ptr track() const;
+    void track(const musciteer::dm::track& track);
   public:
-    std::shared_ptr<musciteer::dm::track> track() const
-    {
-      return track_;
-    }
+    float fraction_played() const;
+    void fraction_played(float value);
   public:
-    float fraction_played() const
-    {
-      return fraction_played_;
-    }
-  public:
-    std::shared_ptr<audio_output_alsa> audio_output() const
-    {
-      return audio_output_;
-    }
-  public:
-    void track(const musciteer::dm::track& track)
-    {
-      track_.reset(new musciteer::dm::track(track));
-    }
-  public:
-    void fraction_played(float value)
-    {
-      fraction_played_ = value;
-    }
-  public:
-    void audio_output(std::shared_ptr<audio_output_alsa> audio_output)
-    {
-      audio_output_ = audio_output;
-    }
-  public:
-    void stop()
-    {
-      control_ch_.send(control::stop);
-    }
-  public:
-    void done()
-    {
-      std::cerr << "player_session done id=" << id_ << ", fraction_played=" << fraction_played_ << std::endl;
-      control_ch_.send(control::done);
-    }
-  public:
-    control recv(dripcore::task* task)
-    {
-      return control_ch_.recv(task);
-    }
+    std::shared_ptr<audio_output_alsa> audio_output() const;
+    void audio_output(std::shared_ptr<audio_output_alsa> audio_output);
   public:
     void play(std::shared_ptr<audio_output_alsa> audio_output);
+    void stop();
+    void done();
+  public:
+    control recv(dripcore::task* task);
   private:
     unsigned id_;
-    std::shared_ptr<musciteer::dm::track> track_;
+    track_ptr track_;
     float fraction_played_;
-    std::shared_ptr<audio_output_alsa> audio_output_;
-    dripcore::channel<control> control_ch_;
+    audio_output_ptr audio_output_;
+    control_channel control_ch_;
   private:
     static constexpr const char* stream_id_key = "__session_id__";
   };
 
   using session_channel = dripcore::channel<std::shared_ptr<player_session>>;
 }
-
-
 
 // ----------------------------------------------------------------------------
 #endif

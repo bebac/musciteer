@@ -211,7 +211,9 @@
 
     button
     {
-      background-color: rgba(241, 239, 236, 1);
+      $color: complement(rgba(241, 239, 236, 1));
+
+      background-color: darken($color, 3%);
       border: none;
       border-radius: 20px;
       padding: 0.5em 30px;
@@ -221,7 +223,7 @@
       position: relative;
 
       &:hover {
-        background-color: darken(rgba(241, 239, 236, 1), 4%);
+        background-color: darken($color, 6%);
       }
 
       .armed {

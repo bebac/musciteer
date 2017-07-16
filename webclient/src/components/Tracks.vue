@@ -221,8 +221,7 @@
         }
 
         tr.item:hover {
-          background-color: lighten(#D4D7DB, 13%);
-          //background-color: lighten(#f1efec, 4%);
+          background-color: lighten(complement(rgba(241, 239, 236, 1)), 3%);
         }
 
         tr.vspace {

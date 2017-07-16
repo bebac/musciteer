@@ -13,6 +13,9 @@
             <h2>{{album.artist.name}}</h2>
           </div>
           <div class="actions">
+            <div>
+              <button class="button" v-on:click="play_album">play</button>
+            </div>
           </div>
         </div>
       </div>
@@ -103,6 +106,9 @@
           this.$musciteer.send({ event: 'queue', data: item.id })
         }
       },
+      play_album: function () {
+        this.$musciteer.send({ event: 'play', data: this.album.id })
+      },
       set_album: function (album) {
         this.album = album
       },
@@ -137,6 +143,10 @@
 </script>
 
 <style lang="scss" scoped>
+  @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
+  @import "../styles/button.scss";
+
   #album
   {
     color: #666;
@@ -181,6 +191,24 @@
       {
         font-size: 1em;
         font-weight: normal;
+      }
+
+      button
+      {
+        $color: complement(rgba(241, 239, 236, 1));
+
+        background-color: darken($color, 3%);
+        border: none;
+        border-radius: 20px;
+        padding: 0.5em 30px;
+        outline: none;
+        font-weight: bold;
+        color: #666;
+        position: relative;
+
+        &:hover {
+          background-color: darken($color, 6%);
+        }
       }
     }
 
@@ -255,7 +283,7 @@
       }
 
       li:not(.disc-header):hover {
-        background-color: lighten(#60656B, 55%);
+        background-color: lighten(complement(rgba(241, 239, 236, 1)), 3%);
       }
     }
   }

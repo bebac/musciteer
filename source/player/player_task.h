@@ -29,6 +29,14 @@ class audio_output_alsa;
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
+  class list_provider_base
+  {
+  public:
+    virtual bool done() = 0;
+  public:
+    virtual dm::track next() = 0;
+  };
+
   class player_session;
 
   class player_task : public dripcore::task
@@ -92,6 +100,7 @@ namespace musciteer
     std::set<message_channel> observers_;
   private:
     std::deque<musciteer::dm::track> play_q_;
+    std::unique_ptr<list_provider_base> list_provider_;
     bool continuous_playback_;
     player_ctpb_provider ctpb_provider_;
     bool replaygain_enalbed_;

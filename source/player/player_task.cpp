@@ -10,11 +10,57 @@
 
 // ----------------------------------------------------------------------------
 #include "../dm/tracks.h"
+#include "../dm/albums.h"
 #include "../dm/player.h"
 
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
+  namespace
+  {
+    class album_provider : public list_provider_base
+    {
+    public:
+      album_provider(const dm::album& album) :  index_(0)
+      {
+        album.tracks_each([&](const dm::track& track)
+        {
+          if ( !track.id_is_null() ) {
+            tracks_.push_back(track);
+          }
+        });
+
+        std::sort(tracks_.begin(), tracks_.end(), [](const dm::track& a, const dm::track& b)
+        {
+          unsigned ia = (a.disc_number() << 16) | a.track_number();
+          unsigned ib = (b.disc_number() << 16) | b.track_number();
+          return ia < ib;
+        });
+      }
+    public:
+      bool done() override
+      {
+        return tracks_.size() == 0 || index_ >= tracks_.size();
+      }
+    public:
+      dm::track next() override
+      {
+        auto t = dm::track();
+
+        if ( index_ < tracks_.size() )
+        {
+          t = tracks_[index_];
+          index_++;
+        }
+
+        return t;
+      }
+    private:
+      std::vector<dm::track> tracks_;
+      size_t index_;
+    };
+  }
+
   player_task::player_task(message_channel message_ch)
     :
     state_(stopped),
@@ -100,6 +146,9 @@ namespace musciteer
       case message::play_req_id:
         handle(m.play_req);
         break;
+      case message::pause_req_id:
+        handle(m.pause_req);
+        break;
       case message::stop_req_id:
         handle(m.stop_req);
         break;
@@ -184,11 +233,13 @@ namespace musciteer
 
   void player_task::handle(play_request& m)
   {
+    auto& id = m.id;
+
     switch ( state_ )
     {
       case stopped:
       {
-        if ( m.id.empty() )
+        if ( id.empty() )
         {
           if ( !play_q_.empty() )
           {
@@ -213,27 +264,66 @@ namespace musciteer
         }
         else
         {
-          auto tracks = musciteer::dm::tracks();
-
           assert(!session_);
-          become_playing(tracks.find_by_id(m.id));
+
+          if ( id[0] == 't' )
+          {
+            auto tracks = musciteer::dm::tracks();
+
+            become_playing(tracks.find_by_id(id));
+          }
+          else if ( id.length() > 2 && id[0] == 'a' && id[1] == 'l' )
+          {
+            auto albums = musciteer::dm::albums();
+            auto album = albums.find_by_id(id);
+
+            if ( !album.id_is_null() )
+            {
+              list_provider_ = std::unique_ptr<album_provider>(new album_provider(album));
+              become_playing(list_provider_->next());
+            }
+            else
+            {
+              std::cerr << "player_task - album with id " << id << " not found!" << std::endl;
+            }
+          }
+          else
+          {
+            std::cerr << "player_task - cannot play " << id << std::endl;
+          }
         }
         break;
       }
       case playing:
       {
-        auto tracks = musciteer::dm::tracks();
-
-        auto track = tracks.find_by_id(m.id);
-
-        if ( track.id_is_null() )
+        if ( id[0] == 't' )
         {
-          // ERROR!
-          return;
-        }
+          auto tracks = musciteer::dm::tracks();
+          auto track = tracks.find_by_id(id);
 
-        // Put track in front of the queue.
-        play_q_.push_front(track);
+          if ( track.id_is_null() )
+          {
+            // ERROR!
+            return;
+          }
+
+          // Put track in front of the queue.
+          play_q_.push_front(track);
+        }
+        else if ( id.length() > 2 && id[0] == 'a' && id[1] == 'l' )
+        {
+          auto albums = musciteer::dm::albums();
+          auto album = albums.find_by_id(id);
+
+          if ( !album.id_is_null() )
+          {
+            list_provider_ = std::unique_ptr<album_provider>(new album_provider(album));
+          }
+          else
+          {
+            std::cerr << "player_task - album with id " << id << " not found!" << std::endl;
+          }
+        }
 
         // Stop playing track.
         assert(session_);
@@ -259,10 +349,12 @@ namespace musciteer
         break;
       case playing:
         assert(session_);
+        list_provider_.reset();
         session_->stop();
         state_ = stopping;
         break;
       case stopping:
+        list_provider_.reset();
         break;
       case paused:
         break;
@@ -459,7 +551,15 @@ namespace musciteer
       {
         session_->done();
 
-        if ( !play_q_.empty() )
+        if ( list_provider_ && list_provider_->done() ) {
+          list_provider_.reset();
+        }
+
+        if ( list_provider_ )
+        {
+          become_playing(list_provider_->next());
+        }
+        else if ( !play_q_.empty() )
         {
           become_playing(play_q_.front());
           play_q_.pop_front();

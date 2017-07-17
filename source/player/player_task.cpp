@@ -251,8 +251,11 @@ namespace musciteer
           if ( !play_q_.empty() )
           {
             assert(!session_);
-            become_playing(play_q_.front());
+
+            auto track = play_q_.front();
             play_q_.pop_front();
+
+            become_playing(track);
           }
           else if ( ctpb_provider_.is_loaded() )
           {
@@ -407,9 +410,7 @@ namespace musciteer
       case stopped:
       {
         assert(!session_);
-        play_q_.push_front(track);
-        become_playing(play_q_.front());
-        play_q_.pop_front();
+        become_playing(track);
         break;
       }
       case playing:
@@ -569,8 +570,10 @@ namespace musciteer
         }
         else if ( !play_q_.empty() )
         {
-          become_playing(play_q_.front());
+          auto track = play_q_.front();
           play_q_.pop_front();
+
+          become_playing(track);
         }
         else if ( continuous_playback_ )
         {

@@ -55,7 +55,7 @@ A somewhat prioritized list of features / tasks.
 - [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
 - [ ] Improve Spotify integration
 - [ ] Remove content on rescan when local flac files are removed
-- [ ] Play albums
+- [x] Play albums
 - [ ] Playlists
 - [ ] Support additional targets, like arm
 - [ ] Ubuntu Touch app
@@ -77,7 +77,7 @@ API
 
 | HTTP Methods | URL
 | ------------ | ---
-| GET          | /api/tracks
+| GET          | /api/tracks[?brief=1]
 | GET, DELETE  | /api/tracks/:id
 | GET          | /api/albums
 | GET, DELETE  | /api/albums/:id
@@ -101,7 +101,7 @@ Client -> Server
 
 ```json
 { "event": "play" }
-{ "event": "play", "data" : "<track-id>" }
+{ "event": "play", "data" : "<track-id>|<album-id>" }
 { "event": "stop" }
 { "event": "skip" }
 { "event": "queue", "data" : "<track-id>" }

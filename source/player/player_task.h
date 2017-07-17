@@ -35,6 +35,8 @@ namespace musciteer
     virtual bool done() = 0;
   public:
     virtual dm::track next() = 0;
+  public:
+    virtual std::string info() = 0;
   };
 
   class player_session;
@@ -84,7 +86,7 @@ namespace musciteer
     void become_playing(const musciteer::dm::track& track);
     void become_stopped();
     void end_session();
-    void player_state_notify(unsigned state);
+    void player_state_notify();
     void queue_update_notify(const musciteer::dm::track& track);
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);

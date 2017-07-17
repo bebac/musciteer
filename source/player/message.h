@@ -369,9 +369,11 @@ public:
   player_state_notification(player_state_notification&& other)
   {
     state = std::move(other.state);
+    provider = std::move(other.provider);
   }
 public:
   unsigned state;
+  std::string provider;
 };
 
 // ----------------------------------------------------------------------------

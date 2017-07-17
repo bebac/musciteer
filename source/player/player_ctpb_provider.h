@@ -513,6 +513,7 @@ namespace musciteer
       else {
         throw std::runtime_error("player_ctpb_provider - unknown type");
       }
+      ctpb_type_ = type;
     }
   public:
     void unload()
@@ -527,9 +528,15 @@ namespace musciteer
     {
       return channel_.recv(task_);
     }
+  public:
+    std::string info()
+    {
+      return ctpb_type_;
+    }
   private:
     player_ctpb_channel channel_;
     std::shared_ptr<dripcore::task> ctpb_task_;
+    std::string ctpb_type_;
   private:
     dripcore::task* task_;
   };

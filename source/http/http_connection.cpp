@@ -164,8 +164,9 @@ void websocket_send_task::handle(const player_state_notification& m, std::ostrea
 {
   json event = {
     { "event", "player_state"},
-    { "data",  {
-      { "state", m.state } }
+    { "data", {
+      { "state", m.state },
+      { "provider", m.provider } }
     }
   };
 

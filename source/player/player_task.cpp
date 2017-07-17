@@ -55,6 +55,11 @@ namespace musciteer
 
         return t;
       }
+    public:
+      std::string info() override
+      {
+        return "album";
+      }
     private:
       std::vector<dm::track> tracks_;
       size_t index_;
@@ -122,6 +127,8 @@ namespace musciteer
       << ", ctpb_enabled=" << continuous_playback_
       << ", replaygain_enabled=" << replaygain_enalbed_
       << std::endl;
+
+    player_state_notify();
   }
 
   void player_task::dispatch(message& m)
@@ -190,7 +197,7 @@ namespace musciteer
       m.channel.send(std::move(n));
     }
 
-    player_state_notify(state_);
+    player_state_notify();
   }
 
   void player_task::handle(unsubscribe& m)
@@ -409,6 +416,7 @@ namespace musciteer
       {
         play_q_.push_back(track);
         queue_update_notify(track);
+        player_state_notify();
         break;
       }
       case stopping:
@@ -528,7 +536,7 @@ namespace musciteer
 
     state_ = playing;
 
-    player_state_notify(state_);
+    player_state_notify();
   }
 
   void player_task::become_stopped()
@@ -538,7 +546,7 @@ namespace musciteer
 
     state_ = stopped;
 
-    player_state_notify(state_);
+    player_state_notify();
   }
 
   void player_task::end_session()
@@ -594,13 +602,34 @@ namespace musciteer
     }
   }
 
-  void player_task::player_state_notify(unsigned state)
+  void player_task::player_state_notify()
   {
     for ( auto observer : observers_ )
     {
       message n(message::player_state_id);
 
-      n.player_state.state = state;
+      n.player_state.state = state_;
+
+      if ( list_provider_ )
+      {
+        n.player_state.provider = list_provider_->info();
+      }
+      else if ( !play_q_.empty() )
+      {
+        std::stringstream ss;
+
+        ss << "queue (" << play_q_.size() << ")";
+
+        n.player_state.provider = ss.str();
+      }
+      else if ( continuous_playback_ )
+      {
+        n.player_state.provider = ctpb_provider_.info();
+      }
+      else
+      {
+        n.player_state.provider = "[none]";
+      }
 
       observer.send(std::move(n));
     }

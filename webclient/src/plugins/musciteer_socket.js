@@ -6,12 +6,16 @@ export default {
 
       data: function () {
         return {
-          timer: null
+          timer: null,
+          player_state: null
         }
       },
 
       created () {
         this.create_websocket(this)
+        this.$on('player_state', function (data) {
+          this.player_state = data
+        })
       },
 
       methods: {

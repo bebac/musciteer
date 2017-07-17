@@ -33,6 +33,11 @@
         </div>
       </div>
     </div>
+    <div id="player-footer">
+      <div v-if="player_state">
+        {{player_state.provider}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,7 +55,8 @@
 
     data () {
       return {
-        stream: null
+        stream: null,
+        player_state: this.$musciteer.player_state
       }
     },
 
@@ -71,6 +77,7 @@
         if (data.state !== 1) {
           this.stream = null
         }
+        this.player_state = data
       },
       stream_begin: function (data) {
         this.stream_sync(data.stream_id)
@@ -183,6 +190,24 @@
         font-weight: normal;
       }
     }
+
+    #player-footer
+    {
+      display: flex;
+      align-items: center;
+      color: #555;
+
+      >div
+      {
+        flex: 1;
+      }
+
+      >div:nth-child(1)
+      {
+        text-align: center;
+      }
+    }
+
 
     // #player-background
     // {

@@ -32,6 +32,9 @@
     },
 
     created () {
+      if (this.$musciteer.player_state) {
+        this.playing = (this.$musciteer.player_state.state === 1)
+      }
     },
 
     methods: {

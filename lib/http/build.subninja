@@ -1,0 +1,21 @@
+build build/http.d/base64.o: cc lib/http/source/base64.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/common.o: cc lib/http/source/common.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/request.o: cc lib/http/source/request.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/response.o: cc lib/http/source/response.cpp
+  includes = -Ilib/http/include
+
+build build/http.d/websocket_handler_base.o: cc lib/http/source/handlers/websocket_handler_base.cpp
+  includes = -Ilib/http/include
+
+build build/libhttp.a: ar $
+  build/http.d/base64.o $
+  build/http.d/common.o $
+  build/http.d/request.o $
+  build/http.d/response.o $
+  build/http.d/websocket_handler_base.o

@@ -1,0 +1,9 @@
+build build/dripcore.d/loop.o: cc lib/dripcore/source/loop.cpp
+  includes = -Ilib/dripcore/include
+
+build build/dripcore.d/task.o: cc lib/dripcore/source/task.cpp
+  includes = -Ilib/dripcore/include
+
+build build/libdripcore.a: ar $
+  build/dripcore.d/loop.o $
+  build/dripcore.d/task.o

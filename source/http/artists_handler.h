@@ -73,7 +73,7 @@ private:
       return true;
     });
 
-    ok(std::move(j));
+    ok(j);
   }
 private:
   void get_artist(const std::string& id)

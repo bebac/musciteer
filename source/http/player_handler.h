@@ -110,14 +110,14 @@ private:
     j["output"] = get_output_json();
     j["ctpb"] = get_ctpb_json();
 
-    ok(std::move(j));
+    ok(j);
   }
 private:
   void get_player_output()
   {
     json j = get_output_json();
 
-    ok(std::move(j));
+    ok(j);
   }
 private:
   void post_player_output()
@@ -140,7 +140,7 @@ private:
 
       json j = get_output_json();
 
-      ok(std::move(j));
+      ok(j);
     }
     else
     {

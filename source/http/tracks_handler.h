@@ -117,7 +117,7 @@ protected:
       return true;
     });
 
-    ok(std::move(j));
+    ok(j);
   }
 private:
   void get_track(const std::string& id)

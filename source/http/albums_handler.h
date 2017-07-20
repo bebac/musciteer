@@ -106,7 +106,7 @@ protected:
       return true;
     });
 
-    ok(std::move(j));
+    ok(j);
   }
 private:
   void get_album(const std::string& id)
@@ -175,7 +175,7 @@ private:
         }
       });
 
-      ok(std::move(j));
+      ok(j);
     }
     else
     {

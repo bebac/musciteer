@@ -36,7 +36,7 @@ protected:
       << crlf;
   }
 protected:
-  void ok(json body)
+  void ok(const json& body)
   {
     env.os << "HTTP/1.1 200 OK" << crlf
       << "Content-Type: " << "application/json" << crlf

@@ -117,7 +117,7 @@ protected:
 
     j = source_local.directories();
 
-    ok(std::move(j));
+    ok(j);
   }
 protected:
   void post_sources_local_directories()
@@ -150,7 +150,7 @@ protected:
 
     json res = source_local.directories();
 
-    ok(std::move(res));
+    ok(res);
   }
 protected:
   void post_sources_local_scan()
@@ -188,7 +188,7 @@ protected:
     // Maybe we should'nt send the password.
     //j["password"] = settings.password();
 
-    ok(std::move(j));
+    ok(j);
   }
 protected:
   void post_sources_spotify_settings()

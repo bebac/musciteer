@@ -9,6 +9,7 @@
 
 // ----------------------------------------------------------------------------
 #include <http/request.h>
+#include <http/transfer_encoding/chunked.h>
 
 // ----------------------------------------------------------------------------
 #include <regex>
@@ -37,13 +38,12 @@ protected:
 protected:
   void ok(json body)
   {
-    auto payload = body.dump();
-
     env.os << "HTTP/1.1 200 OK" << crlf
       << "Content-Type: " << "application/json" << crlf
-      << "Content-Length: " << payload.length() << crlf
+      << "Transfer-Encoding: chunked" << crlf
       << crlf
-      << payload;
+      << http::chunk << body
+      << crlf;
   }
 protected:
   void redirect(const std::string& location)

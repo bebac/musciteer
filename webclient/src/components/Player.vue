@@ -230,6 +230,42 @@
 
     @media all and (orientation:landscape)
     {
+      @media (max-width: $break)
+      {
+        .title {
+          font-size: 1.5em;
+        }
+
+        .artist-album
+        {
+          >div
+          {
+            >div:nth-child(1) {
+              font-size: 1em;
+            }
+
+            >div:nth-child(2) {
+              font-size: 0.88em;
+            }
+          }
+        }
+
+        .progress
+        {
+          >div {
+            font-size: 0.88em;
+          }
+        }
+
+        #player-footer
+        {
+          >div
+          {
+            font-size: 0.88em;
+          }
+        }
+      }
+
       #player-hide-button
       {
         flex: 0 0 auto;
@@ -254,7 +290,7 @@
             {
               align-self: center;
               width: 100%;
-              max-width: 100%;
+              object-fit: contain;
               height: auto;
               max-height: 100%;
             }
@@ -295,9 +331,20 @@
                 align-items: center;
                 flex: 1;
 
-                .button
+                @media (min-width: $break)
                 {
-                  @include size(4em);
+                  .button
+                  {
+                    @include size(4em);
+                  }
+                }
+
+                @media (max-width: $break)
+                {
+                  .button
+                  {
+                    @include size(2.5em);
+                  }
                 }
 
                 >div
@@ -337,7 +384,7 @@
             }
 
             >div:nth-child(2) {
-              font-size: 1em;
+              font-size: 0.88em;
             }
           }
         }
@@ -345,6 +392,14 @@
         .progress
         {
           >div {
+            font-size: 0.88em;
+          }
+        }
+
+        #player-footer
+        {
+          >div
+          {
             font-size: 0.88em;
           }
         }
@@ -365,7 +420,7 @@
         .container
         {
           flex: 1;
-          //padding: 1em 1em;
+          padding: 1em 1em;
 
           &:nth-child(1)
           {
@@ -378,7 +433,7 @@
               width: auto;
               max-width: 100%;
               height: 100%;
-              max-height: 100%;
+              object-fit: contain;
             }
           }
 
@@ -429,7 +484,7 @@
                 {
                   .button
                   {
-                    @include size(3em);
+                    @include size(2.5em);
                   }
                 }
 

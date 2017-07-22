@@ -33,7 +33,7 @@ namespace musciteer
     class random : public dripcore::task
     {
     public:
-      random(const player_ctpb_ochannel& channel) : channel_(channel, this)
+      random(const player_ctpb_ochannel& channel) : channel_(channel, this), generator_(rd_())
       {
       }
     private:
@@ -76,14 +76,8 @@ namespace musciteer
         if ( !track_ids.empty() )
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
-          std::mt19937 gen;
 
-          std::seed_seq seq{time(0), idx_};
-          gen.seed(seq);
-
-          idx_ = dist(gen);
-
-          return track_ids[idx_];
+          return track_ids[dist(generator_)];
         }
         else
         {
@@ -91,9 +85,10 @@ namespace musciteer
         }
       }
     private:
-      long int idx_;
-    private:
       player_ctpb_ochannel channel_;
+    private:
+      std::random_device rd_;
+      std::mt19937 generator_;
     };
 
     //
@@ -109,7 +104,8 @@ namespace musciteer
           240, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11,
           10, 9, 8, 7, 6, 5, 4, 3, 2, 1 }
         },
-        channel_(channel, this)
+        channel_(channel, this),
+        generator_(rd_())
       {
       }
     private:
@@ -167,14 +163,8 @@ namespace musciteer
         if ( !track_ids.empty() )
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
-          std::mt19937 gen;
 
-          std::seed_seq seq{time(0), idx_};
-          gen.seed(seq);
-
-          idx_ = dist(gen);
-
-          return track_ids[idx_];
+          return track_ids[dist(generator_)];
         }
         else
         {
@@ -184,9 +174,10 @@ namespace musciteer
     private:
       std::array<int, 25> count_to_weight_tab_;
     private:
-      long int idx_;
-    private:
       player_ctpb_ochannel channel_;
+    private:
+      std::random_device rd_;
+      std::mt19937 generator_;
     };
 
     //
@@ -198,7 +189,7 @@ namespace musciteer
     public:
       more_played(const player_ctpb_ochannel& channel)
         :
-        channel_(channel, this)
+        channel_(channel, this), generator_(rd_())
       {
       }
     private:
@@ -256,14 +247,8 @@ namespace musciteer
         if ( !track_ids.empty() )
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
-          std::mt19937 gen;
 
-          std::seed_seq seq{time(0), idx_};
-          gen.seed(seq);
-
-          idx_ = dist(gen);
-
-          return track_ids[idx_];
+          return track_ids[dist(generator_)];
         }
         else
         {
@@ -271,9 +256,10 @@ namespace musciteer
         }
       }
     private:
-      long int idx_;
-    private:
       player_ctpb_ochannel channel_;
+    private:
+      std::random_device rd_;
+      std::mt19937 generator_;
     };
 
 
@@ -284,7 +270,7 @@ namespace musciteer
     class top_played : public dripcore::task
     {
     public:
-      top_played(const player_ctpb_ochannel& channel) : channel_(channel, this)
+      top_played(const player_ctpb_ochannel& channel) : channel_(channel, this), generator_(rd_())
       {
       }
     private:
@@ -459,14 +445,8 @@ namespace musciteer
         if ( !track_entries.empty() )
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
-          std::mt19937 gen;
 
-          std::seed_seq seq{time(0), idx_};
-          gen.seed(seq);
-
-          idx_ = dist(gen);
-
-          return track_entries[idx_].id;
+          return track_entries[dist(generator_)].id;
         }
         else
         {
@@ -474,9 +454,10 @@ namespace musciteer
         }
       }
     private:
-      long int idx_;
-    private:
       player_ctpb_ochannel channel_;
+    private:
+      std::random_device rd_;
+      std::mt19937 generator_;
     };
   }
 

@@ -36,7 +36,7 @@ task :dpkg do
   end
 
   name = "musciteer"
-  version = "0.1-8"
+  version = "0.1-9"
   architecture = %x[dpkg --print-architecture].strip
   lsb_release = %x[lsb_release -sr].strip
 

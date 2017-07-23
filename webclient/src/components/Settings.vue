@@ -152,6 +152,11 @@
           padding-bottom: $padding-bottom;
           border-bottom: 2px solid lighten(#ecbb71, 0%);
         }
+
+        @include placeholder
+        {
+          color: #ccc;
+        }
       }
 
       .select-dropdown-icon

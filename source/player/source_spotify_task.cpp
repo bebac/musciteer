@@ -86,7 +86,9 @@ namespace musciteer
     logged_in,
     connection_error,
     metadata_updated,
-    track_loaded
+    track_loaded,
+    token_lost,
+    stream_error
   };
 
   /////
@@ -130,6 +132,9 @@ namespace musciteer
     void connection_error(sp_error error);
     void metadata_updated();
     void track_loaded();
+    void token_lost();
+    void stream_error(sp_error error);
+  private:
     void release_track();
   private:
     template<typename... M_args>
@@ -296,6 +301,12 @@ namespace musciteer
             track_loaded();
           }
           break;
+        case message_id::token_lost:
+          token_lost();
+          break;
+        case message_id::stream_error:
+          stream_error(msg.error);
+          break;
       }
     }
 
@@ -452,6 +463,28 @@ namespace musciteer
     }
   }
 
+  void spotify_session::token_lost()
+  {
+    auto player = musciteer::player();
+
+    player.source_notification(
+      source_notification::id::session_error,
+      name,
+      "token lost"
+    );
+  }
+
+  void spotify_session::stream_error(sp_error error)
+  {
+    auto player = musciteer::player();
+
+    player.source_notification(
+      source_notification::id::session_error,
+      name,
+      sp_error_message(error)
+    );
+  }
+
   void spotify_session::release_track()
   {
     if ( track_ )
@@ -520,7 +553,7 @@ namespace musciteer
 
   void spotify_session::play_token_lost_cb(sp_session *session)
   {
-    std::cerr << "spotify session token lost" << std::endl;
+    notify(session, message_id::token_lost);
   }
 
   void spotify_session::log_message_cb(sp_session *session, const char* data)
@@ -535,7 +568,7 @@ namespace musciteer
 
   void spotify_session::stream_error_cb(sp_session *session, sp_error error)
   {
-    std::cerr << "spotify session stream error!" << sp_error_message(error) << std::endl;
+    notify(session, message_id::stream_error, error);
   }
 
   void spotify_session::user_info_updated_cb(sp_session *session)

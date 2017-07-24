@@ -384,7 +384,8 @@ public:
   {
     status,
     error,
-    track_unavailable
+    track_unavailable,
+    session_error
   };
 public:
   source_notification()

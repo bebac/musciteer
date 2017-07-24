@@ -520,6 +520,10 @@ namespace musciteer
     {
       end_session();
     }
+    else if ( m.type == source_notification::id::session_error )
+    {
+      become_stopped();
+    }
   }
 
   void player_task::become_playing(const musciteer::dm::track& track)

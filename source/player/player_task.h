@@ -105,7 +105,7 @@ namespace musciteer
     std::unique_ptr<list_provider_base> list_provider_;
     bool continuous_playback_;
     player_ctpb_provider ctpb_provider_;
-    bool replaygain_enalbed_;
+    bool replaygain_enabled_;
   private:
     std::shared_ptr<player_session> session_;
   private:

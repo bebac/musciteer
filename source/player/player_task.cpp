@@ -76,7 +76,7 @@ namespace musciteer
     play_q_(),
     continuous_playback_(true),
     ctpb_provider_(this),
-    replaygain_enalbed_(false)
+    replaygain_enabled_(false)
   {
     audio_output_subscribe(message_ch_);
   }
@@ -108,7 +108,7 @@ namespace musciteer
 
     audio_output_device_ = settings.audio_device();
     continuous_playback_ = settings.ctpb_enabled();
-    replaygain_enalbed_  = settings.replaygain_enabled();
+    replaygain_enabled_  = settings.replaygain_enabled();
 
     if ( continuous_playback_ )
     {
@@ -125,7 +125,7 @@ namespace musciteer
     std::cout
       << "player_task - loaded settings audio_device=" << audio_output_device_
       << ", ctpb_enabled=" << continuous_playback_
-      << ", replaygain_enabled=" << replaygain_enalbed_
+      << ", replaygain_enabled=" << replaygain_enabled_
       << std::endl;
 
     player_state_notify();
@@ -679,7 +679,7 @@ namespace musciteer
     message m(message::open_req_id);
 
     m.open_req.device_name = audio_output_device_;
-    m.open_req.replaygain_enabled = replaygain_enalbed_;
+    m.open_req.replaygain_enabled = replaygain_enabled_;
     m.open_req.reply = ch;
 
     audio_output_->send(std::move(m));

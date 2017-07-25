@@ -421,45 +421,8 @@ void http_connection::loop(std::streambuf* sbuf)
 
           if ( env.get_header("Sec-WebSocket-Key", sec_websocket_key) )
           {
-            std::string sec_websocket_accept = sec_websocket_key+guid;
-
-            byte digest[CryptoPP::SHA1::DIGESTSIZE];
-
-            CryptoPP::SHA1().CalculateDigest(
-              digest,
-              reinterpret_cast<const unsigned char*>(sec_websocket_accept.data()),
-              sec_websocket_accept.length()
-            );
-
-            env.os << "HTTP/1.1 101 Switching Protocols" << crlf
-              << "Upgrade: websocket" << crlf
-              << "Connection: Upgrade" << crlf
-              << "Sec-WebSocket-Accept: " << http::base64::encode(digest, sizeof(digest)) << crlf
-              << crlf
-              << std::flush;
-
-            // Protect against dead connections.
-            socket_.keepalive();
-
-            message_channel channel;
-
-            auto recv_task = spawn<websocket_recv_task>(*this, socket_, channel).lock();
-            auto send_task = spawn<websocket_send_task>(*this, socket_, channel).lock();
-
-            std::cout << "http_connection " << size_t(this) << " - switched to websocket protocol" << std::endl;
-
-            while ( !recv_task->done() || !send_task->done() )
-            {
-              yield();
-
-              if ( !recv_task->done() ) {
-                recv_task->stop();
-              }
-
-              if ( !send_task->done() ) {
-                send_task->stop();
-              }
-            }
+            switching_protocols(env.os, sec_websocket_key);
+            websocket();
           }
           else
           {
@@ -485,6 +448,49 @@ void http_connection::loop(std::streambuf* sbuf)
       break;
     }
   }
+}
+
+// ----------------------------------------------------------------------------
+void http_connection::websocket()
+{
+  message_channel channel;
+
+  // Protect against dead connections.
+  socket_.keepalive();
+
+  auto recv_task = spawn<websocket_recv_task>(*this, socket_, channel).lock();
+  auto send_task = spawn<websocket_send_task>(*this, socket_, channel).lock();
+
+  std::cout << "http_connection " << size_t(this) << " - switched to websocket protocol" << std::endl;
+
+  while ( !recv_task->done() || !send_task->done() )
+  {
+    yield();
+
+    if ( !recv_task->done() ) {
+      recv_task->stop();
+    }
+
+    if ( !send_task->done() ) {
+      send_task->stop();
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+std::string http_connection::sec_websocket_accept_digest(const std::string& sec_websocket_key)
+{
+  std::string sec_websocket_accept = sec_websocket_key+guid;
+
+  byte digest[CryptoPP::SHA1::DIGESTSIZE];
+
+  CryptoPP::SHA1().CalculateDigest(
+    digest,
+    reinterpret_cast<const unsigned char*>(sec_websocket_accept.data()),
+    sec_websocket_accept.length()
+  );
+
+  return http::base64::encode(digest, sizeof(digest));
 }
 
 // ----------------------------------------------------------------------------
@@ -549,12 +555,12 @@ void http_connection::dispatch(http::request_environment& env)
       }
       else
       {
-        not_found(env);
+        not_found(env.os);
       }
     }
     else
     {
-      not_found(env);
+      not_found(env.os);
     }
   }
   else if ( std::regex_match(path, match, assets_re_) )
@@ -566,19 +572,32 @@ void http_connection::dispatch(http::request_environment& env)
     }
     else
     {
-      not_found(env);
+      not_found(env.os);
     }
   }
   else
   {
-    not_found(env);
+    not_found(env.os);
   }
 }
 
 // ----------------------------------------------------------------------------
-void http_connection::not_found(http::request_environment& env)
+void http_connection::switching_protocols(std::ostream& os, const std::string& sec_websocket_key)
 {
-  env.os << "HTTP/1.1 404 Not Found" << crlf
+  os
+    << "HTTP/1.1 101 Switching Protocols" << crlf
+    << "Upgrade: websocket" << crlf
+    << "Connection: Upgrade" << crlf
+    << "Sec-WebSocket-Accept: " << sec_websocket_accept_digest(sec_websocket_key) << crlf
+    << crlf
+    << std::flush;
+}
+
+// ----------------------------------------------------------------------------
+void http_connection::not_found(std::ostream& os)
+{
+  os
+    << "HTTP/1.1 404 Not Found" << crlf
     << "Content-Length: 0" << crlf
     << crlf;
 }

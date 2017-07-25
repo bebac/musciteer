@@ -80,9 +80,14 @@ public:
 protected:
   void loop(std::streambuf* sbuf);
 protected:
+  void websocket();
+private:
+  std::string sec_websocket_accept_digest(const std::string& sec_websocket_key);
+protected:
   void dispatch(http::request_environment& env);
 protected:
-  void not_found(http::request_environment& env);
+  void switching_protocols(std::ostream& os, const std::string& sec_websocket_key);
+  void not_found(std::ostream& os);
 private:
   dripcore::socket socket_;
   std::unique_ptr<dripcore::streambuf> streambuf_;

@@ -22,20 +22,11 @@
       <div class="album-tracks">
         <ol>
           <li
+            is="m-item"
             v-for="item in discs"
-            v-on:click="queue(item)"
-            :class="item.is_header ? 'disc-header' : 'track'"
+            v-bind:key="item.id"
+            v-bind:item="item"
           >
-            <div v-if="item.is_track">
-              <div class="tn">{{ item.tn }}</div>
-              <div class="title">{{ item.title }}</div>
-            </div>
-            <div v-if="item.is_track">
-              <div class="duration">{{ item.duration_mmss }}</div>
-            </div>
-            <div v-if="item.is_header">
-              Disc {{item.dn}}
-            </div>
           </li>
         </ol>
       </div>
@@ -45,9 +36,14 @@
 
 <script>
   import axios from 'axios'
+  import AlbumItem from '@/components/AlbumItem'
 
   export default {
     name: 'album',
+
+    components: {
+      'm-item': AlbumItem
+    },
 
     props: [
       'albumId'
@@ -91,7 +87,7 @@
 
         for (var i = 0; i < keys.length; i++) {
           if (i > 0) {
-            tracks.push({is_header: true, dn: keys[i]})
+            tracks.push({is_header: true, id: 'dn-' + keys[i], dn: keys[i]})
           }
           tracks = tracks.concat(discs[keys[i]])
         }
@@ -101,11 +97,6 @@
     },
 
     methods: {
-      queue: function (item) {
-        if (item.is_track) {
-          this.$musciteer.send({ event: 'queue', data: item.id })
-        }
-      },
       play_album: function () {
         this.$musciteer.send({ event: 'play', data: this.album.id })
       },
@@ -236,55 +227,6 @@
     {
       padding: 0;
       margin: 0;
-
-      li
-      {
-        display: flex;
-        padding: 0.66em 1em;
-        border-bottom: 1px solid #eee;
-
-        >div
-        {
-          display: flex;
-        }
-
-        >div:nth-child(1)
-        {
-          justify-content: flex-start;
-          flex: 3;
-          min-width: 0;
-        }
-
-        >div:nth-child(2)
-        {
-          justify-content: flex-end;
-          flex: 1;
-        }
-
-        .tn
-        {
-          width: 1.33em;
-          text-align: right;
-          flex: 0 0 auto;
-        }
-
-        .title
-        {
-          padding-left: 0.66em;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-        }
-
-        .duration
-        {
-          padding-right: 0.66em;
-        }
-      }
-
-      li:not(.disc-header):hover {
-        background-color: lighten(complement(rgba(241, 239, 236, 1)), 3%);
-      }
     }
   }
 </style>

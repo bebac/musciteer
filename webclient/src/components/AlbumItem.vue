@@ -85,6 +85,7 @@
 
 <style lang="scss" scoped>
   @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
   @import "../styles/button.scss";
 
   li
@@ -113,7 +114,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        flex: 3 0 auto;
+        flex: 3 1 auto;
         min-width: 0;
       }
 
@@ -156,20 +157,31 @@
       }
     }
 
-    .more
+    @media (min-width: $break)
     {
-      svg
-      {
-        @include size(1em);
-        stroke: #bbb;
-      }
-
-      &:hover
+      .more
       {
         svg
         {
-          stroke: #666;
+          @include size(1em);
+          stroke: #bbb;
         }
+
+        &:hover
+        {
+          svg
+          {
+            stroke: #666;
+          }
+        }
+      }
+    }
+
+    @media (max-width: $break)
+    {
+      .more
+      {
+        display: none;
       }
     }
 

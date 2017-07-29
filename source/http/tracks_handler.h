@@ -82,6 +82,25 @@ public:
             }
           }
         }
+        else if ( match[2] == "tags" )
+        {
+          if ( match[3].length() == 0 )
+          {
+            if ( method == http::method::get ) {
+              get_track_tags(match[1]);
+            }
+            else if ( method == http::method::post ) {
+              post_track_tags(match[1]);
+            }
+            else {
+              method_not_allowed();
+            }
+          }
+          else
+          {
+            method_not_allowed();
+          }
+        }
         else
         {
           not_found();
@@ -224,6 +243,66 @@ private:
       track.sources_remove(source_name);
       tracks.save(track);
       ok();
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void get_track_tags(const std::string& id)
+  {
+    auto tracks = musciteer::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      ok(track.tags());
+    }
+    else
+    {
+      not_found();
+    }
+  }
+private:
+  void post_track_tags(const std::string& id)
+  {
+    auto tracks = musciteer::dm::tracks();
+    auto track = tracks.find_by_id(id);
+
+    if ( !track.id_is_null() )
+    {
+      auto content_type = std::string{};
+      auto content_length = size_t{0};
+      auto content = std::string{};
+
+      if ( !env.get_header("Content-Type", content_type) ) {
+        throw std::runtime_error("no content-type header");
+      }
+
+      if ( !env.get_content_length(content_length) ) {
+        throw std::runtime_error("no content-length header");
+      }
+
+      for ( size_t i=0; i<content_length; ++i ) {
+        content += env.is.get();
+      }
+
+      json j = json::parse(content);
+
+      if ( !j.is_array() ) {
+        throw std::runtime_error("track tags must be an array");
+      }
+
+      // Convert json to tag set.
+      std::set<std::string> tags = j;
+
+      // Update track
+      track.tags(tags);
+      tracks.save(track);
+
+      // Return new tag set.
+      ok(track.tags());
     }
     else
     {

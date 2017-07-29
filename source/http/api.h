@@ -98,6 +98,7 @@ namespace musciteer
       });
 
       jtrack["sources"] = jsources;
+      jtrack["tags"] = track.tags();
     }
 
     return jtrack;

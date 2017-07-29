@@ -33,6 +33,7 @@ namespace musciteer
     {
       using artist_id_list = std::vector<std::string>;
       using source_list = std::vector<track_source>;
+      using tag_list = std::set<std::string>;
     public:
       track();
     public:
@@ -50,6 +51,7 @@ namespace musciteer
       void sources_each(std::function<void(const dm::track_source& source)>) const;
       unsigned play_count() const;
       unsigned skip_count() const;
+      const tag_list& tags() const;
     public:
       void id(const std::string&);
       void title(const std::string&);
@@ -65,6 +67,8 @@ namespace musciteer
       void increment_play_count();
       void increment_skip_count();
     public:
+      void tags(const tag_list&);
+    public:
       void read(msgpack::istream& is);
       void write(msgpack::ostream& os) const;
     private:
@@ -78,6 +82,7 @@ namespace musciteer
       source_list sources_;
       unsigned play_count_;
       unsigned skip_count_;
+      tag_list tags_;
     };
 
     inline msgpack::istream& operator>>(msgpack::istream& is, track& value)

@@ -104,6 +104,11 @@ namespace musciteer
       return skip_count_;
     }
 
+    const track::tag_list& track::tags() const
+    {
+      return tags_;
+    }
+
     void track::id(const std::string& id)
     {
       id_ = id;
@@ -179,6 +184,11 @@ namespace musciteer
       skip_count_++;
     }
 
+    void track::tags(const tag_list& value)
+    {
+      tags_ = value;
+    }
+
     void track::read(msgpack::istream& is)
     {
       msgpack::map map;
@@ -203,6 +213,7 @@ namespace musciteer
               case  8: is >> sources_; break;
               case  9: is >> play_count_; break;
               case 10: is >> skip_count_; break;
+              case 11: is >> tags_; break;
               default:
                 is >> msgpack::skip;
                 break;
@@ -224,7 +235,7 @@ namespace musciteer
 
     void track::write(msgpack::ostream& os) const
     {
-      msgpack::map map{10};
+      msgpack::map map{11};
 
       os << map
         <<  1 << id_
@@ -236,7 +247,8 @@ namespace musciteer
         <<  7 << artist_ids_
         <<  8 << sources_
         <<  9 << play_count_
-        << 10 << skip_count_;
+        << 10 << skip_count_
+        << 11 << tags_;
     }
   }
 }

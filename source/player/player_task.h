@@ -9,6 +9,7 @@
 
 // ----------------------------------------------------------------------------
 #include "message.h"
+#include "player_list_provider_base.h"
 #include "player_ctpb_provider.h"
 
 // ----------------------------------------------------------------------------
@@ -29,16 +30,6 @@ class audio_output_alsa;
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
-  class list_provider_base
-  {
-  public:
-    virtual bool done() = 0;
-  public:
-    virtual dm::track next() = 0;
-  public:
-    virtual std::string info() = 0;
-  };
-
   class player_session;
 
   class player_task : public dripcore::task

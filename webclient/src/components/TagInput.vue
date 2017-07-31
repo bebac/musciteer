@@ -19,7 +19,7 @@
           return (this.value || []).join(',')
         },
         set: function (value) {
-          this.$emit('input', value.split(','))
+          this.$emit('input', value.split(/[\s,]+/))
         }
       }
     },

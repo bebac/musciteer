@@ -23,19 +23,11 @@ namespace musciteer
     {
       auto tracks = musciteer::dm::tracks();
 
-      std::cerr << "find tag " << tag << std::endl;
-
       tracks.each([&](musciteer::dm::track& track)
       {
         const auto& tags = track.tags();
 
-        for ( auto& tag : tags ) {
-          std::cerr << tag << ", ";
-        }
-        std::cerr << std::endl;
-
         if ( tags.find(tag) != tags.end() ) {
-          std::cerr << "tag found" << std::endl;
           tracks_.push_back(track);
         }
 

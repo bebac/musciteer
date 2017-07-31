@@ -4,7 +4,10 @@
     <div v-else>
       <ul>
         <li v-for="playlist in playlists" v-on:click="play(playlist)">
-          {{ playlist }}
+          <m-tag-icon></m-tag-icon>
+          <div>
+            {{ playlist }}
+          </div>
         </li>
       </ul>
     </div>
@@ -14,10 +17,12 @@
 <script>
   import axios from 'axios'
   import Loader from '@/components/Loader'
+  import TagIcon from '@/components/TagIcon'
 
   export default {
     components: {
-      'm-loader': Loader
+      'm-loader': Loader,
+      'm-tag-icon': TagIcon
     },
 
     data () {
@@ -63,6 +68,7 @@
         li
         {
           display: flex;
+          align-items: center;
           padding: 0.66em 1em;
           border-bottom: 1px solid #eee;
 
@@ -70,6 +76,14 @@
             background-color: lighten(complement(rgba(241, 239, 236, 1)), 4%);
           }
         }
+      }
+
+      svg
+      {
+        @include size(1em);
+        margin-right: 1em;
+        stroke: #666;
+        fill: #666;
       }
     }
   }

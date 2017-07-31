@@ -7,6 +7,7 @@
 #include "player_task.h"
 #include "player_session.h"
 #include "player_album_provider.h"
+#include "player_tag_provider.h"
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
@@ -25,6 +26,8 @@ namespace musciteer
     audio_output_device_(),
     observers_(),
     play_q_(),
+    list_provider_(),
+    tag_provider_re_("pl:tag:(.*)"),
     continuous_playback_(true),
     ctpb_provider_(this),
     replaygain_enabled_(false)
@@ -227,6 +230,8 @@ namespace musciteer
         {
           assert(!session_);
 
+          std::smatch match;
+
           if ( id[0] == 't' )
           {
             auto tracks = musciteer::dm::tracks();
@@ -248,6 +253,19 @@ namespace musciteer
               std::cerr << "player_task - album with id " << id << " not found!" << std::endl;
             }
           }
+          else if ( std::regex_match(id, match, tag_provider_re_) )
+          {
+            auto& tag = match[1];
+
+            list_provider_ = std::unique_ptr<tag_provider>(new tag_provider(tag));
+
+            if ( !list_provider_->done() ) {
+              become_playing(list_provider_->next());
+            }
+            else {
+              std::cerr << "player_task - no tracks with tag " << tag << std::endl;
+            }
+          }
           else
           {
             std::cerr << "player_task - cannot play " << id << std::endl;
@@ -257,6 +275,8 @@ namespace musciteer
       }
       case playing:
       {
+        std::smatch match;
+
         if ( id[0] == 't' )
         {
           auto tracks = musciteer::dm::tracks();
@@ -276,13 +296,21 @@ namespace musciteer
           auto albums = musciteer::dm::albums();
           auto album = albums.find_by_id(id);
 
-          if ( !album.id_is_null() )
-          {
+          if ( !album.id_is_null() ) {
             list_provider_ = std::unique_ptr<album_provider>(new album_provider(album));
           }
-          else
-          {
+          else {
             std::cerr << "player_task - album with id " << id << " not found!" << std::endl;
+          }
+        }
+        else if ( std::regex_match(id, match, tag_provider_re_) )
+        {
+          auto& tag = match[1];
+
+          list_provider_ = std::unique_ptr<tag_provider>(new tag_provider(tag));
+
+          if ( list_provider_->done() ) {
+            std::cerr << "player_task - no tracks with tag " << tag << std::endl;
           }
         }
 

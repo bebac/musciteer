@@ -23,6 +23,7 @@
 #include <cassert>
 #include <deque>
 #include <unordered_map>
+#include <regex>
 
 // ----------------------------------------------------------------------------
 class audio_output_alsa;
@@ -94,6 +95,7 @@ namespace musciteer
   private:
     std::deque<musciteer::dm::track> play_q_;
     std::unique_ptr<list_provider_base> list_provider_;
+    std::regex tag_provider_re_;
     bool continuous_playback_;
     player_ctpb_provider ctpb_provider_;
     bool replaygain_enabled_;

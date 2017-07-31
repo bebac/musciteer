@@ -11,6 +11,7 @@
 #include "player_handler.h"
 #include "sources_handler.h"
 #include "spotify_handler.h"
+#include "playlists_handler.h"
 #include "static_file_handler.h"
 #include "api.h"
 
@@ -552,6 +553,11 @@ void http_connection::dispatch(http::request_environment& env)
       {
         spotify_handler handler(env, this);
         handler.call(match[2], query);
+      }
+      else if ( match[1] == "playlists" )
+      {
+        playlists_handler handler(env, this);
+        handler.call(match[2]);
       }
       else
       {

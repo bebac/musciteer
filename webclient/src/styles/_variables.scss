@@ -1,1 +1,9 @@
 $break: 800px;
+
+$color-base: rgba(241, 239, 236, 1);
+$color-complement: complement($color-base);
+
+$color-btn-base: $color-complement;
+$color-btn-hover: darken($color-btn-base, 3%);
+
+$color-lst-hover: lighten($color-complement, 4%);

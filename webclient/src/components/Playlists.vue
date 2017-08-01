@@ -52,6 +52,7 @@
 
 <style lang="scss">
   @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
 
   #m-playlists
   {
@@ -73,7 +74,7 @@
           border-bottom: 1px solid #eee;
 
           &:hover {
-            background-color: lighten(complement(rgba(241, 239, 236, 1)), 4%);
+            background-color: $color-lst-hover;
           }
         }
       }

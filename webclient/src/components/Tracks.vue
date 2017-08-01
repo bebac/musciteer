@@ -170,6 +170,9 @@
 </script>
 
 <style lang="scss">
+  @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
+
   #m-tracks
   {
     height: 100%;
@@ -221,7 +224,7 @@
         }
 
         tr.item:hover {
-          background-color: lighten(complement(rgba(241, 239, 236, 1)), 3%);
+          background-color: $color-lst-hover;
         }
 
         tr.vspace {

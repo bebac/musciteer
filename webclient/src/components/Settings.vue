@@ -60,6 +60,7 @@
 
 <style lang="scss">
   @import "../styles/mixins.scss";
+  @import "../styles/variables.scss";
 
   #m-settings
   {
@@ -216,9 +217,7 @@
 
     button
     {
-      $color: complement(rgba(241, 239, 236, 1));
-
-      background-color: darken($color, 3%);
+      background-color: $color-btn-base;
       border: none;
       border-radius: 20px;
       padding: 0.5em 30px;
@@ -228,7 +227,7 @@
       position: relative;
 
       &:hover {
-        background-color: darken($color, 6%);
+        background-color: $color-btn-hover;
       }
 
       .armed {

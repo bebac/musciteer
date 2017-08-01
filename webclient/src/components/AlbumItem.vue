@@ -240,6 +240,6 @@
   }
 
   li:not(.disc-header):hover {
-    background-color: lighten(complement(rgba(241, 239, 236, 1)), 4%);
+    background-color: $color-lst-hover;
   }
 </style>

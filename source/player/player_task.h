@@ -26,7 +26,7 @@
 #include <regex>
 
 // ----------------------------------------------------------------------------
-class audio_output_alsa;
+class audio_output;
 
 // ----------------------------------------------------------------------------
 namespace musciteer
@@ -88,7 +88,7 @@ namespace musciteer
   private:
     message_channel message_ch_;
   private:
-    std::shared_ptr<audio_output_alsa> audio_output_;
+    std::shared_ptr<audio_output> audio_output_;
     std::string audio_output_device_;
   private:
     std::set<message_channel> observers_;

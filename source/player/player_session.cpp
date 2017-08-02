@@ -47,17 +47,17 @@ namespace musciteer
     fraction_played_ = value;
   }
 
-  std::shared_ptr<audio_output_alsa> player_session::audio_output() const
+  std::shared_ptr<audio_output> player_session::get_audio_output() const
   {
     return audio_output_;
   }
 
-  void player_session::audio_output(std::shared_ptr<audio_output_alsa> audio_output)
+  void player_session::set_audio_output(std::shared_ptr<audio_output> ptr)
   {
-    audio_output_ = audio_output;
+    audio_output_ = ptr;
   }
 
-  void player_session::play(std::shared_ptr<audio_output_alsa> audio_output)
+  void player_session::play(std::shared_ptr<audio_output> audio_output)
   {
     auto sources = musciteer::sources();
     audio_output_ = audio_output;

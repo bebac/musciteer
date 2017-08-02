@@ -9,15 +9,13 @@
 
 // ----------------------------------------------------------------------------
 #include "message.h"
-
-// ----------------------------------------------------------------------------
-#include <alsa/asoundlib.h>
+#include "audio_output_alsa.h"
 
 // ----------------------------------------------------------------------------
 #include <chrono>
 
 // ----------------------------------------------------------------------------
-class audio_output_alsa
+class audio_output
 {
 public:
   using device_list_request = audio_output_device_list_request;
@@ -42,9 +40,9 @@ private:
     state_playing
   };
 public:
-  audio_output_alsa();
+  audio_output();
 public:
-  ~audio_output_alsa();
+  ~audio_output();
 public:
   void send(message&& m);
   void send(audio_buffer&& buffer);
@@ -74,7 +72,7 @@ private:
   double rg_;
   double scale_;
 private:
-  snd_pcm_t* handle_;
+  audio_output_alsa output_;
 private:
   message_channel msg_ch_;
 private:

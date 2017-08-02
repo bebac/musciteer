@@ -13,7 +13,7 @@
 #include <cmath>
 
 // ----------------------------------------------------------------------------
-audio_output_alsa::audio_output_alsa()
+audio_output::audio_output()
   :
   state_(state_closed),
   stream_begin_time_(),
@@ -22,27 +22,27 @@ audio_output_alsa::audio_output_alsa()
   rg_enabled_(false),
   rg_(0),
   scale_(1.0),
-  handle_(nullptr),
+  output_(),
   msg_ch_(),
-  thr_(&audio_output_alsa::loop, this)
+  thr_(&audio_output::loop, this)
 {
 }
 
 // ----------------------------------------------------------------------------
-audio_output_alsa::~audio_output_alsa()
+audio_output::~audio_output()
 {
   msg_ch_.send(message());
   thr_.join();
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::send(message&& m)
+void audio_output::send(message&& m)
 {
   msg_ch_.send(std::move(m));
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::send(audio_buffer&& buffer)
+void audio_output::send(audio_buffer&& buffer)
 {
   message m(message::stream_buffer_id);
 
@@ -51,7 +51,7 @@ void audio_output_alsa::send(audio_buffer&& buffer)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::loop()
+void audio_output::loop()
 {
   while ( true )
   {
@@ -66,7 +66,7 @@ void audio_output_alsa::loop()
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::dispatch(message& m)
+void audio_output::dispatch(message& m)
 {
   switch ( m.type )
   {
@@ -101,53 +101,25 @@ void audio_output_alsa::dispatch(message& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(subscribe& m)
+void audio_output::handle(subscribe& m)
 {
   observers_.insert(m.channel);
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(unsubscribe& m)
+void audio_output::handle(unsubscribe& m)
 {
   observers_.erase(m.channel);
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(device_list_request& m)
+void audio_output::handle(device_list_request& m)
 {
   message r(message::device_list_res_id);
 
-  void **hints, **n;
-  char *name, *descr, *io;
-
-  if (snd_device_name_hint(-1, "pcm", &hints) < 0)
-    return;
-
-  n = hints;
-
-  while (*n != NULL)
-  {
-    name = snd_device_name_get_hint(*n, "NAME");
-    descr = snd_device_name_get_hint(*n, "DESC");
-    io = snd_device_name_get_hint(*n, "IOID");
-
-    if ( (io == NULL) || (io && strcmp(io, "Output") == 0) ) {
-      r.device_list_res.device_names.push_back(name);
-    }
-
-    if (name != NULL) {
-      free(name);
-    }
-    if (descr != NULL) {
-      free(descr);
-    }
-    if (io != NULL) {
-      free(io);
-    }
-
-    n++;
-  }
-  snd_device_name_free_hint(hints);
+  audio_output_alsa::each([&](std::string&& device_name) {
+    r.device_list_res.device_names.push_back(device_name);
+  });
 
   // Just loopback current.
   r.device_list_res.current = m.current;
@@ -156,47 +128,36 @@ void audio_output_alsa::handle(device_list_request& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(open_request& m)
+void audio_output::handle(open_request& m)
 {
   message r(message::open_res_id);
+
+  rg_enabled_ = m.replaygain_enabled;
 
   switch ( state_ )
   {
     case state_closed:
     {
-      assert(handle_ == nullptr);
-
-      rg_enabled_ = m.replaygain_enabled;
-
-      int err = snd_pcm_open(&handle_, m.device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
-
-      if ( err == 0 )
+      try
       {
+        output_.open(m.device_name);
         state_ = state_open;
         r.open_res.error_code = 0;
       }
-      else
+      catch(const audio_output_error& err)
       {
-        r.open_res.error_code = err;
-        r.open_res.error_message = snd_strerror(err);
+        r.open_res.error_code = err.error_code();
+        r.open_res.error_message = err.what();
       }
       break;
     }
     case state_open:
     {
-      assert(handle_);
-
-      rg_enabled_ = m.replaygain_enabled;
-
       r.open_res.error_code = 0;
       break;
     }
     case state_playing:
     {
-      assert(handle_);
-
-      rg_enabled_ = m.replaygain_enabled;
-
       r.open_res.error_code = 0;
       break;
     }
@@ -211,7 +172,7 @@ void audio_output_alsa::handle(open_request& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(close_request& m)
+void audio_output::handle(close_request& m)
 {
   message r(message::close_res_id);
 
@@ -223,20 +184,16 @@ void audio_output_alsa::handle(close_request& m)
     case state_open:
     case state_playing:
     {
-      assert(handle_);
-
-      int err = snd_pcm_close(handle_);
-
-      if ( err == 0 )
+      try
       {
-        handle_ = nullptr;
+        output_.close();
         state_ = state_closed;
         r.close_res.error_code = 0;
       }
-      else
+      catch(const audio_output_error& err)
       {
-        r.open_res.error_code = err;
-        r.open_res.error_message = snd_strerror(err);
+        r.open_res.error_code = err.error_code();
+        r.open_res.error_message = err.what();
       }
       break;
     }
@@ -246,7 +203,7 @@ void audio_output_alsa::handle(close_request& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(stream_begin& m)
+void audio_output::handle(stream_begin& m)
 {
   switch ( state_ )
   {
@@ -254,25 +211,11 @@ void audio_output_alsa::handle(stream_begin& m)
       break;
     case state_open:
     {
-      assert(handle_);
-
-      int err;
-
-      err = snd_pcm_set_params(handle_, SND_PCM_FORMAT_S32_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, m.sample_rate, 0, 100000);
-
-      if ( err < 0 ) {
-        //_log_(error) << "snd_pcm_set_params failed! " << snd_strerror(err);
-        std::cerr << "snd_pcm_set_params failed! " << snd_strerror(err);
-        break;
-      }
-
-      err = snd_pcm_prepare(handle_);
-
-      if ( err < 0 ) {
-        std::cerr << "prepare pcm error " << snd_strerror(err) << std::endl;
-      }
-      else
+      try
       {
+        output_.set_params(2, m.sample_rate);
+        output_.prepare();
+
         completed_buffer_ch_ = m.completed_buffer_ch;
         stream_id_ = m.stream_id;
         stream_begin_time_ = std::chrono::steady_clock::now();
@@ -313,6 +256,10 @@ void audio_output_alsa::handle(stream_begin& m)
           observer.send(std::move(m));
         }
       }
+      catch(const audio_output_error& err)
+      {
+        std::cerr << "alsa output error " << err.what() << std::endl;
+      }
       break;
     }
     case state_playing:
@@ -322,7 +269,7 @@ void audio_output_alsa::handle(stream_begin& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(stream_end& m)
+void audio_output::handle(stream_end& m)
 {
   switch ( state_ )
   {
@@ -332,29 +279,19 @@ void audio_output_alsa::handle(stream_end& m)
       break;
     case state_playing:
     {
-      assert(handle_);
+      output_.drain();
 
-      auto res = snd_pcm_drain(handle_);
+      m.reply.send(true);
+      state_ = state_open;
 
-      //update_stream_time(true);
-
-      if ( res < 0 ) {
-        std::cerr << "drain pcm error " << snd_strerror(res) << std::endl;
-      }
-      else
+      for ( auto observer : observers_ )
       {
-        m.reply.send(true);
-        state_ = state_open;
+        message m(message::stream_end_notify_id);
+        auto& n = m.stream_end_notify;
 
-        for ( auto observer : observers_ )
-        {
-          message m(message::stream_end_notify_id);
-          auto& n = m.stream_end_notify;
+        n.stream_id = stream_id_;
 
-          n.stream_id = stream_id_;
-
-          observer.send(std::move(m));
-        }
+        observer.send(std::move(m));
       }
       break;
     }
@@ -362,7 +299,7 @@ void audio_output_alsa::handle(stream_end& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::handle(stream_buffer& m)
+void audio_output::handle(stream_buffer& m)
 {
   switch ( state_ )
   {
@@ -372,8 +309,6 @@ void audio_output_alsa::handle(stream_buffer& m)
       break;
     case state_playing:
     {
-      assert(handle_);
-
       auto buffer = std::move(m.buffer);
 
       update_stream_time();
@@ -382,18 +317,7 @@ void audio_output_alsa::handle(stream_buffer& m)
         buffer.scale(scale_);
       }
 
-      snd_pcm_sframes_t frames = snd_pcm_writei(handle_, buffer.data(), buffer.size());
-
-      if ( frames < 0 ) {
-        std::cerr << "audio output underrun" << std::endl;
-        frames = snd_pcm_recover(handle_, frames, 0);
-      }
-
-      if ( frames < 0 ) {
-        std::cerr << "audio output error! " << snd_strerror(frames) << std::endl;
-      }
-      else {
-      }
+      output_.writei(buffer.data(), buffer.size());
 
       update_stream_time();
 
@@ -405,7 +329,7 @@ void audio_output_alsa::handle(stream_buffer& m)
 }
 
 // ----------------------------------------------------------------------------
-void audio_output_alsa::update_stream_time(bool last)
+void audio_output::update_stream_time(bool last)
 {
   using std::chrono::steady_clock;
   using std::chrono::milliseconds;

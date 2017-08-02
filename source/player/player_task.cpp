@@ -22,7 +22,7 @@ namespace musciteer
     :
     state_(stopped),
     message_ch_(message_ch),
-    audio_output_(new audio_output_alsa()),
+    audio_output_(new audio_output()),
     audio_output_device_(),
     observers_(),
     play_q_(),

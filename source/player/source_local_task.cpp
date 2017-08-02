@@ -66,7 +66,7 @@ namespace musciteer
   {
     friend class flac_decoder_file<flac_decoder_task>;
   public:
-    using milliseconds = audio_output_alsa::milliseconds;
+    using milliseconds = audio_output::milliseconds;
   public:
     flac_decoder_task(std::shared_ptr<player_session> session)
       :
@@ -102,7 +102,7 @@ namespace musciteer
 
       m.stream_end.reply = done;
 
-      send(*session_->audio_output(), std::move(m));
+      send(*session_->get_audio_output(), std::move(m));
 
       done.recv(this);
     }
@@ -127,7 +127,7 @@ namespace musciteer
       m.stream_begin.replaygain_peak = replaygain_peak ? replaygain_peak.value() : 1;
       m.stream_begin.completed_buffer_ch = buffer_ch_;
 
-      send(*session_->audio_output(), std::move(m));
+      send(*session_->get_audio_output(), std::move(m));
     }
   private:
     FLAC__StreamDecoderReadStatus read_callback(FLAC__byte buffer[], size_t *bytes)
@@ -142,7 +142,7 @@ namespace musciteer
       buf.clear();
       buf.writen(buffer, frame->header.blocksize, bits_per_sample_);
 
-      send(*session_->audio_output(), std::move(buf));
+      send(*session_->get_audio_output(), std::move(buf));
 
       if ( stopping() || done() ) {
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;

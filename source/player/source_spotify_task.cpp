@@ -354,7 +354,7 @@ namespace musciteer
     {
       sp_session_player_unload(session_);
 
-      auto audio_output = player_session_->audio_output();
+      auto audio_output = player_session_->get_audio_output();
       assert(audio_output);
 
       message_channel done;
@@ -441,7 +441,7 @@ namespace musciteer
       auto track = player_session_->track();
       assert(track);
 
-      auto audio_output = player_session_->audio_output();
+      auto audio_output = player_session_->get_audio_output();
       assert(audio_output);
 
       auto replaygain = source_.rg_track_gain();
@@ -534,7 +534,7 @@ namespace musciteer
 
     if ( self->player_session_ )
     {
-      auto audio_output = self->player_session_->audio_output();
+      auto audio_output = self->player_session_->get_audio_output();
       assert(audio_output);
 
       // There is a risk that we can block here which is not so good according to

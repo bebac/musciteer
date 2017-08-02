@@ -20,7 +20,7 @@
 #include <memory>
 
 // ----------------------------------------------------------------------------
-class audio_output_alsa;
+class audio_output;
 
 // ----------------------------------------------------------------------------
 namespace musciteer
@@ -28,7 +28,7 @@ namespace musciteer
   class player_session : public std::enable_shared_from_this<player_session>
   {
     using track_ptr = std::shared_ptr<musciteer::dm::track>;
-    using audio_output_ptr = std::shared_ptr<audio_output_alsa>;
+    using audio_output_ptr = std::shared_ptr<audio_output>;
   public:
     enum class control
     {
@@ -49,10 +49,10 @@ namespace musciteer
     float fraction_played() const;
     void fraction_played(float value);
   public:
-    std::shared_ptr<audio_output_alsa> audio_output() const;
-    void audio_output(std::shared_ptr<audio_output_alsa> audio_output);
+    std::shared_ptr<audio_output> get_audio_output() const;
+    void set_audio_output(std::shared_ptr<audio_output>);
   public:
-    void play(std::shared_ptr<audio_output_alsa> audio_output);
+    void play(std::shared_ptr<audio_output> audio_output);
     void stop();
     void done();
   public:

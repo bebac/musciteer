@@ -94,6 +94,9 @@ void audio_output::dispatch(message& m)
     case message::stream_buffer_id:
       handle(m.stream_buffer);
       break;
+    case message::replaygain_req_id:
+      handle(m.replaygain_req);
+      break;
     default:
       std::cerr << "audio output unhandled message type " << m.type << std::endl;
       break;
@@ -213,33 +216,18 @@ void audio_output::handle(stream_begin& m)
     {
       try
       {
-        output_.set_params(2, m.sample_rate);
-        output_.prepare();
-
         completed_buffer_ch_ = m.completed_buffer_ch;
         stream_id_ = m.stream_id;
         stream_begin_time_ = std::chrono::steady_clock::now();
         stream_notify_next_ = stream_begin_time_ + std::chrono::seconds(1);
         stream_length_ = m.length;
         rg_ = m.replaygain;
+        rg_peak_ = m.replaygain_peak;
 
-        if ( rg_enabled_ ) {
-          scale_ = std::pow(10, rg_ / 20);
-        }
-        else {
-          scale_ = 1.0;
-        }
+        output_.set_params(2, m.sample_rate);
+        output_.prepare();
 
-        if ( scale_ > 1.0 )
-        {
-          auto peak = m.replaygain_peak;
-
-          if ( scale_*peak > 1.0 )
-          {
-            std::cerr << "audio_output - calculated scale " << scale_ << " will cause clipping, adjusting..." << std::endl;
-            scale_ = 0.99/peak;
-          }
-        }
+        calculate_scale();
 
         state_ = state_playing;
 
@@ -324,6 +312,49 @@ void audio_output::handle(stream_buffer& m)
       // Return completed buffer for recycling.
       completed_buffer_ch_.send(std::move(buffer));
       break;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+void audio_output::handle(replaygain_request& m)
+{
+  rg_enabled_ = m.replaygain_enabled;
+
+  switch ( state_ )
+  {
+    case state_closed:
+      break;
+    case state_open:
+      break;
+    case state_playing:
+      calculate_scale();
+      break;
+  }
+}
+
+// ----------------------------------------------------------------------------
+void audio_output::calculate_scale()
+{
+  if ( rg_enabled_ ) {
+    scale_ = std::pow(10, rg_ / 20);
+  }
+  else {
+    scale_ = 1.0;
+  }
+
+  if ( scale_ > 1.0 )
+  {
+    auto peak = rg_peak_;
+
+    if ( scale_ * peak > 1.0 )
+    {
+      std::cerr
+        << "audio_output - calculated scale " << scale_
+        << " will cause clipping, adjusting..."
+        << std::endl;
+
+      scale_ = 0.99 / peak;
     }
   }
 }

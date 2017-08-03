@@ -162,6 +162,21 @@ public:
 using audio_output_close_response = audio_output_response;
 
 // ----------------------------------------------------------------------------
+class audio_output_replaygain_request
+{
+public:
+  audio_output_replaygain_request() : replaygain_enabled(false)
+  {
+  }
+  audio_output_replaygain_request(audio_output_replaygain_request&& other)
+  {
+    replaygain_enabled = std::move(other.replaygain_enabled);
+  }
+public:
+  bool replaygain_enabled;
+};
+
+// ----------------------------------------------------------------------------
 class play_request
 {
 public:
@@ -451,6 +466,7 @@ public:
     open_res_id,
     close_req_id,
     close_res_id,
+    replaygain_req_id,
     play_req_id,
     pause_req_id,
     stop_req_id,
@@ -498,6 +514,9 @@ public:
         break;
       case close_res_id:
         new (&close_res) audio_output_close_response();
+        break;
+      case replaygain_req_id:
+        new (&replaygain_req) audio_output_replaygain_request();
         break;
       case play_req_id:
         new (&play_req) play_request();
@@ -580,6 +599,9 @@ public:
         break;
       case close_res_id:
         new (&close_res) audio_output_close_response(std::move(other.close_res));
+        break;
+      case replaygain_req_id:
+        new (&replaygain_req) audio_output_replaygain_request(std::move(other.replaygain_req));
         break;
       case play_req_id:
         new (&play_req) play_request(std::move(other.play_req));
@@ -664,6 +686,9 @@ public:
       case close_res_id:
         close_res.~audio_output_close_response();
         break;
+      case replaygain_req_id:
+        replaygain_req.~audio_output_replaygain_request();
+        break;
       case play_req_id:
         play_req.~play_request();
         break;
@@ -731,6 +756,7 @@ public:
     audio_output_open_response open_res;
     audio_output_close_request close_req;
     audio_output_close_response close_res;
+    audio_output_replaygain_request replaygain_req;
     play_request play_req;
     pause_request pause_req;
     stop_request stop_req;

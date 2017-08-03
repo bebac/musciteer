@@ -29,6 +29,7 @@ public:
   using stream_progress_notify =  audio_output_stream_progress_notification;
   using subscribe = audio_output_subscribe_message;
   using unsubscribe = audio_output_unsubscribe_message;
+  using replaygain_request = audio_output_replaygain_request;
 public:
   using time_point = std::chrono::steady_clock::time_point;
   using milliseconds = std::chrono::milliseconds;
@@ -59,7 +60,9 @@ private:
   void handle(stream_begin& m);
   void handle(stream_end& m);
   void handle(stream_buffer& m);
+  void handle(replaygain_request& m);
 private:
+  void calculate_scale();
   void update_stream_time(bool last=false);
 private:
   state state_;
@@ -70,6 +73,7 @@ private:
   milliseconds stream_length_;
   bool rg_enabled_;
   double rg_;
+  double rg_peak_;
   double scale_;
 private:
   audio_output_alsa output_;

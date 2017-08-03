@@ -76,6 +76,15 @@ namespace musciteer
       }
     }
 
+    if ( audio_output_ )
+    {
+      message m(message::replaygain_req_id);
+
+      m.replaygain_req.replaygain_enabled = replaygain_enabled_;
+
+      audio_output_->send(std::move(m));
+    }
+
     std::cout
       << "player_task - loaded settings audio_device=" << audio_output_device_
       << ", ctpb_enabled=" << continuous_playback_

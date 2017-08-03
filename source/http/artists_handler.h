@@ -90,7 +90,6 @@ private:
       not_found();
     }
   }
-
 protected:
   dripcore::task* task_;
 };

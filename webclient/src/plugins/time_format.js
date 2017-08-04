@@ -4,7 +4,7 @@ export default {
     Vue.mixin({
       methods: {
         format_mmss: function (milliseconds) {
-          let seconds = milliseconds / 1000
+          let seconds = Math.round(milliseconds / 1000)
           let min = Math.floor(seconds / 60)
           let sec = seconds % 60
 

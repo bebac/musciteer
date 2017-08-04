@@ -221,6 +221,62 @@
       }
     }
 
+    @media all and (orientation:portrait)
+    {
+      .album-header
+      {
+        display: flex;
+        flex-direction: column;
+
+        div:nth-child(1)
+        {
+          padding: 0 0 0 0;
+
+          .cover {
+            padding-top: 1em;
+          }
+        }
+
+        div:nth-child(2)
+        {
+          padding: 1em;
+
+          .title {
+            padding: 1em 0;
+          }
+        }
+      }
+
+      .title
+      {
+        text-align: center;
+      }
+
+      .actions
+      {
+        text-align: center;
+      }
+
+      .cover
+      {
+        position: relative;
+        width: 100%;
+        border: none;
+        background-color: #fff;
+
+        img
+        {
+          position: absolute;
+          top: 1em;
+          left: 0;
+          min-width: 100%;
+          max-width: 100%;
+          max-height: 12em;
+          object-fit: contain;
+        }
+      }
+    }
+
     ol
     {
       padding: 0;

@@ -52,17 +52,8 @@
     },
 
     musciteer: {
-      onopen: function (data) {
-        console.log('got musciteer:onopen')
-        // console.log(this)
-      },
       player_state: function (data) {
-        console.log('got musciteer:player_state ')
-        if (data.state === 1) {
-          this.playing = true
-        } else {
-          this.playing = false
-        }
+        this.playing = data.state === 1
       }
     }
   }

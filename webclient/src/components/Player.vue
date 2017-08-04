@@ -16,7 +16,7 @@
         </div>
         <div class="artist-album">
           <div>
-            <div v-if="stream">{{stream.track.artists[0].name}}</div>
+            <div v-if="stream">{{artists}}</div>
             <div v-if="stream">{{stream.track.album.title}}</div>
           </div>
         </div>
@@ -61,6 +61,9 @@
     },
 
     computed: {
+      artists: function () {
+        return this.stream.track.artists.map((artist) => { return artist.name }).join(', ')
+      },
       stream_progress: function () {
         return this.format_mmss(this.stream.duration) + ' / ' + this.format_mmss(this.stream.length)
       }

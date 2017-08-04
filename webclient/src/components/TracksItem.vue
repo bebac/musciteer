@@ -1,7 +1,7 @@
 <template>
   <tr v-on:click="queue">
     <td>{{track.title}}</td>
-    <td>{{track.artists[0].name}}</td>
+    <td>{{artists}}</td>
     <td>{{track.album.title}}</td>
     <td>{{track.play_count}}</td>
     <td>{{track.skip_count}}</td>
@@ -16,6 +16,12 @@
 
     data: function () {
       return {
+      }
+    },
+
+    computed: {
+      artists: function () {
+        return this.track.artists.map((artist) => { return artist.name }).join(', ')
       }
     },
 

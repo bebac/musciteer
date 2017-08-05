@@ -51,17 +51,18 @@ A somewhat prioritized list of features / tasks.
 - [x] Browse and queue music from mobile web app. Works best on a tablet, on
       small screens it is not very usable.
 - [x] Replay gain. Fairly straight forward for FLAC files. Not so for Spotify. See [spotify audio features](doc/spotify_audio_features.md)
-- [ ] Tagging
-- [ ] More advanced Continuous playback. Most liked, less played, by tag etc.
+- [x] Tagging
+- [x] More advanced Continuous playback. random, more-played, less-played, top-played.
 - [ ] Improve Spotify integration
+- [ ] Search
 - [ ] Remove content on rescan when local flac files are removed
 - [x] Play albums
+- [ ] Tidal
 - [ ] Playlists
 - [ ] Support additional targets, like arm
-- [ ] Ubuntu Touch app
+- [ ] ~~Ubuntu Touch app~~
 - [ ] FLAC file tagging from web interface / Integrate with online music meta
       data service.
-- [ ] Tidal
 - [ ] MP3 local files
 - [ ] Native Android app
 - [ ] OGG local files
@@ -79,6 +80,9 @@ API
 | ------------ | ---
 | GET          | /api/tracks[?brief=1]
 | GET, DELETE  | /api/tracks/:id
+| GET          | /api/tracks/:id/sources
+| GET, DELETE  | /api/tracks/:id/sources/:name
+| GET, POST    | /api/tracks/:id/tags
 | GET          | /api/albums
 | GET, DELETE  | /api/albums/:id
 | GET          | /api/albums/:id/tracks
@@ -101,7 +105,7 @@ Client -> Server
 
 ```json
 { "event": "play" }
-{ "event": "play", "data" : "<track-id>|<album-id>" }
+{ "event": "play", "data" : "<track-id>|<album-id>|pl:tag:<tag>" }
 { "event": "stop" }
 { "event": "skip" }
 { "event": "queue", "data" : "<track-id>" }

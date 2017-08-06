@@ -48,9 +48,9 @@
     #header
     {
       flex: 0 0 auto;
-      background: linear-gradient(to bottom, saturate(rgba(241, 239, 236, 1), 2%), rgba(241, 239, 236, 0.2));
-      border-top: 1px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 10%);
-      border-bottom: 1px solid desaturate(darken(rgba(241, 239, 236, 1), 2%), 5%);
+      background: linear-gradient(to bottom, saturate($color-base, 2%), transparentize($color-base, 0.4));
+      //border-top: 1px solid desaturate(darken($color-base, 5%), 10%);
+      border-bottom: 1px solid desaturate(darken($color-base, 10%), 5%);
     }
 
     #main
@@ -63,7 +63,7 @@
     #footer
     {
       flex: 0 0 4em;
-      background-color: rgba(241, 239, 236, 1);
+      background-color: $color-base;
     }
   }
 </style>

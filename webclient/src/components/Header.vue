@@ -85,7 +85,7 @@
       align-items: center;
       flex: 1;
       padding: 1em;
-      color: #b5a871;
+      color: darken($color-base, 25%);
 
       >div:nth-child(2)
       {
@@ -123,9 +123,9 @@
         a
         {
           padding: 0 1em;
-          font-weight: 600;
+          font-weight: bold;
           text-transform: uppercase;
-          color: #aaa;
+          color: desaturate(darken($color-complement, 15%), 10%);
         }
 
         a:link
@@ -144,7 +144,7 @@
 
         a.router-link-active
         {
-          color: #666;
+          color: desaturate(darken($color-complement, 40%), 10%);
         }
       }
 

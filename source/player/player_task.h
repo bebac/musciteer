@@ -83,6 +83,7 @@ namespace musciteer
     void audio_output_subscribe(message_channel&);
     void audio_output_unsubscribe(message_channel&);
     bool audio_output_open();
+    bool audio_output_close();
   private:
     state state_;
   private:

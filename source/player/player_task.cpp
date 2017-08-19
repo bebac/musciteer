@@ -537,6 +537,8 @@ namespace musciteer
     session_->done();
     session_.reset();
 
+    audio_output_close();
+
     state_ = stopped;
 
     player_state_notify();
@@ -682,6 +684,30 @@ namespace musciteer
     else
     {
       std::cout << "audio output open response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
+      // TODO: Send some sort of notification.
+      return false;
+    }
+  }
+
+  bool player_task::audio_output_close()
+  {
+    message_channel ch;
+    message m(message::close_req_id);
+
+    m.close_req.reply = ch;
+
+    audio_output_->send(std::move(m));
+
+    auto r = ch.recv(this);
+
+    if ( r.open_res.error_code == 0 )
+    {
+      std::cout << "audio output " << audio_output_device_ << " closed ok" << std::endl;
+      return true;
+    }
+    else
+    {
+      std::cout << "audio output close response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
       // TODO: Send some sort of notification.
       return false;
     }

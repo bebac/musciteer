@@ -83,7 +83,7 @@ void audio_output::dispatch(message& m)
       handle(m.open_req);
       break;
     case message::close_req_id:
-      handle(m.open_req);
+      handle(m.close_req);
       break;
     case message::stream_begin_id:
       handle(m.stream_begin);

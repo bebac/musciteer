@@ -531,20 +531,27 @@ namespace musciteer
   int spotify_session::music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
+    auto player_session = self->player_session_;
 
-    if ( self->player_session_ )
+    if ( player_session )
     {
-      auto audio_output = self->player_session_->get_audio_output();
-      assert(audio_output);
+      auto audio_output = player_session->get_audio_output();
 
-      // There is a risk that we can block here which is not so good according to
-      // docs. Hope it will go if we have enough buffers in the pipe.
-      auto buf = self->buffer_ch_.recv();
+      if ( audio_output )
+      {
+        // There is a risk that we can block here which is not so good according to
+        // docs. Hope it will go if we have enough buffers in the pipe.
+        auto buf = self->buffer_ch_.recv();
 
-      buf.clear();
-      buf.write_s16_le_i(frames, num_frames);
+        buf.clear();
+        buf.write_s16_le_i(frames, num_frames);
 
-      audio_output->send(std::move(buf));
+        audio_output->send(std::move(buf));
+      }
+      else
+      {
+        std::cerr << "spotify_session::music_delivery audio_output == null" << std::endl;
+      }
     }
 
     //std::cerr << "spotify_session::music_delivery num_frames=" << num_frames << std::endl;

@@ -41,23 +41,37 @@ namespace musciteer
       {
         while ( !stopping() )
         {
-          auto tracks   = musciteer::dm::tracks();
-          auto start    = std::chrono::steady_clock::now();
-          auto track_id = generate_track_id();
-          auto track    = tracks.find_by_id(track_id);
-          auto end      = std::chrono::steady_clock::now();
+          auto tracks = musciteer::dm::tracks();
+          auto start  = std::chrono::steady_clock::now();
+          auto ids    = generate_track_ids(10);
+          auto end    = std::chrono::steady_clock::now();
 
           std::cout
            << "player_ctpb::random - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
-           << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+           << "generated " << ids.size() << " track ids"
            << std::endl;
 
-          channel_.send(std::move(track));
+          for ( auto id : ids )
+          {
+            auto track = tracks.find_by_id(id);
+
+            if ( stopping() ) {
+              break;
+            }
+
+            std::cout
+             << "player_ctpb::random - queue "
+             << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+             << std::endl;
+
+            channel_.send(std::move(track));
+          }
         }
       }
     private:
-      std::string generate_track_id()
+      std::vector<std::string> generate_track_ids(std::size_t count)
       {
+        auto result = std::vector<std::string>();
         auto tracks = musciteer::dm::tracks();
 
         std::vector<std::string> track_ids;
@@ -77,12 +91,11 @@ namespace musciteer
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
 
-          return track_ids[dist(generator_)];
+          for ( std::size_t i=0; i<count; ++i ) {
+            result.push_back(track_ids[dist(generator_)]);
+          }
         }
-        else
-        {
-          return std::string();
-        }
+        return result;
       }
     private:
       player_ctpb_ochannel channel_;
@@ -113,23 +126,37 @@ namespace musciteer
       {
         while ( !stopping() )
         {
-          auto tracks   = musciteer::dm::tracks();
-          auto start    = std::chrono::steady_clock::now();
-          auto track_id = generate_track_id();
-          auto track    = tracks.find_by_id(track_id);
-          auto end      = std::chrono::steady_clock::now();
+          auto tracks = musciteer::dm::tracks();
+          auto start  = std::chrono::steady_clock::now();
+          auto ids    = generate_track_ids(10);
+          auto end    = std::chrono::steady_clock::now();
 
           std::cout
            << "player_ctpb::less_played - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
-           << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+           << "generated " << ids.size() << " track ids"
            << std::endl;
 
-          channel_.send(std::move(track));
+          for ( auto id : ids )
+          {
+            auto track = tracks.find_by_id(id);
+
+            if ( stopping() ) {
+              break;
+            }
+
+            std::cout
+             << "player_ctpb::less_played - queue "
+             << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+             << std::endl;
+
+            channel_.send(std::move(track));
+          }
         }
       }
     private:
-      std::string generate_track_id()
+      std::vector<std::string> generate_track_ids(std::size_t count)
       {
+        auto result = std::vector<std::string>();
         auto tracks = musciteer::dm::tracks();
 
         std::vector<std::string> track_ids;
@@ -164,12 +191,11 @@ namespace musciteer
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
 
-          return track_ids[dist(generator_)];
+          for ( std::size_t i=0; i<count; ++i ) {
+            result.push_back(track_ids[dist(generator_)]);
+          }
         }
-        else
-        {
-          return std::string();
-        }
+        return result;
       }
     private:
       std::array<int, 25> count_to_weight_tab_;
@@ -199,21 +225,35 @@ namespace musciteer
         {
           auto tracks   = musciteer::dm::tracks();
           auto start    = std::chrono::steady_clock::now();
-          auto track_id = generate_track_id();
-          auto track    = tracks.find_by_id(track_id);
+          auto ids      = generate_track_ids(10);
           auto end      = std::chrono::steady_clock::now();
 
           std::cout
            << "player_ctpb::more_played - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
-           << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+           << "generated " << ids.size() << " track ids"
            << std::endl;
 
-          channel_.send(std::move(track));
+          for ( auto id : ids )
+          {
+            auto track = tracks.find_by_id(id);
+
+            if ( stopping() ) {
+              break;
+            }
+
+            std::cout
+             << "player_ctpb::more_played - queue "
+             << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+             << std::endl;
+
+            channel_.send(std::move(track));
+          }
         }
       }
     private:
-      std::string generate_track_id()
+      std::vector<std::string> generate_track_ids(std::size_t count)
       {
+        auto result = std::vector<std::string>();
         auto tracks = musciteer::dm::tracks();
 
         std::vector<std::string> track_ids;
@@ -248,12 +288,12 @@ namespace musciteer
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
 
-          return track_ids[dist(generator_)];
+          for ( std::size_t i=0; i<count; ++i ) {
+            result.push_back(track_ids[dist(generator_)]);
+          }
         }
-        else
-        {
-          return std::string();
-        }
+
+        return result;
       }
     private:
       player_ctpb_ochannel channel_;
@@ -278,23 +318,37 @@ namespace musciteer
       {
         while ( !stopping() )
         {
-          auto tracks   = musciteer::dm::tracks();
-          auto start    = std::chrono::steady_clock::now();
-          auto track_id = generate_track_id();
-          auto track    = tracks.find_by_id(track_id);
-          auto end      = std::chrono::steady_clock::now();
+          auto tracks = musciteer::dm::tracks();
+          auto start  = std::chrono::steady_clock::now();
+          auto ids    = generate_track_ids(10);
+          auto end    = std::chrono::steady_clock::now();
 
           std::cout
            << "player_ctpb::top_played - took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms "
-           << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+           << "generated " << ids.size() << " track ids"
            << std::endl;
 
-          channel_.send(std::move(track));
+          for ( auto id : ids )
+          {
+            auto track = tracks.find_by_id(id);
+
+            if ( stopping() ) {
+              break;
+            }
+
+            std::cout
+             << "player_ctpb::top_played - queue "
+             << "track id '" << track.id() << "', play_count " << track.play_count() << ", skip_count " << track.skip_count()
+             << std::endl;
+
+            channel_.send(std::move(track));
+          }
         }
       }
     private:
-      std::string generate_track_id()
+      std::vector<std::string> generate_track_ids(std::size_t count)
       {
+        auto result = std::vector<std::string>();
         auto tracks = musciteer::dm::tracks();
 
         struct track_entry
@@ -446,12 +500,11 @@ namespace musciteer
         {
           std::discrete_distribution<> dist(weights.begin(), weights.end());
 
-          return track_entries[dist(generator_)].id;
+          for ( std::size_t i=0; i<count; ++i ) {
+            result.push_back(track_entries[dist(generator_)].id);
+          }
         }
-        else
-        {
-          return std::string();
-        }
+        return result;
       }
     private:
       player_ctpb_ochannel channel_;

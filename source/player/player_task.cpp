@@ -426,7 +426,9 @@ namespace musciteer
       std::cout
         << "player_task - stream begin " << track->id()
         << " [ replaygain: " << (m.replaygain_enabled ? "on" : "off")
-        << ", replaygain: " << m.replaygain << ", scale: " << m.scale << " ]"
+        << ", replaygain: " << m.replaygain << ", scale: " << m.scale
+        << ", plays/skips: " << track->play_count() << "/" << track->skip_count()
+        << " ]"
         << std::endl;
     }
     else

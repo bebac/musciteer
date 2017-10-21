@@ -14,6 +14,10 @@
 #include <alsa/asoundlib.h>
 
 // ----------------------------------------------------------------------------
+#include <functional>
+#include <iostream>
+
+// ----------------------------------------------------------------------------
 class alsa_error : public audio_output_error
 {
 public:

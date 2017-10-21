@@ -18,6 +18,7 @@
 #include <mutex>
 #include <atomic>
 #include <algorithm>
+#include <functional>
 
 // ----------------------------------------------------------------------------
 #include <sys/epoll.h>

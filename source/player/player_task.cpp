@@ -171,12 +171,15 @@ namespace musciteer
 
   void player_task::handle(device_list_request& m)
   {
-    message am(message::device_list_req_id);
+    message r(message::device_list_res_id);
 
-    am.device_list_req = std::move(m);
-    am.device_list_req.current = audio_output_device_;
+    audio_output::each([&](std::string&& device_name) {
+      r.device_list_res.device_names.push_back(device_name);
+    });
 
-    audio_output_->send(std::move(am));
+    r.device_list_res.current = audio_output_device_;
+
+    m.reply.send(std::move(r));
   }
 
   void player_task::handle(settings_changed_message& m)

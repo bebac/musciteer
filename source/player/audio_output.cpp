@@ -10,6 +10,7 @@
 #include "audio_output.h"
 
 // ----------------------------------------------------------------------------
+#include <string>
 #include <cmath>
 
 // ----------------------------------------------------------------------------
@@ -51,6 +52,12 @@ void audio_output::send(audio_buffer&& buffer)
 }
 
 // ----------------------------------------------------------------------------
+void audio_output::each(std::function<void(std::string&& device_name)> value_cb)
+{
+  audio_output_alsa::each(value_cb);
+}
+
+// ----------------------------------------------------------------------------
 void audio_output::loop()
 {
   while ( true )
@@ -75,9 +82,6 @@ void audio_output::dispatch(message& m)
       break;
     case message::unsubscribe_id:
       handle(m.unsubscribe);
-      break;
-    case message::device_list_req_id:
-      handle(m.device_list_req);
       break;
     case message::open_req_id:
       handle(m.open_req);
@@ -113,21 +117,6 @@ void audio_output::handle(subscribe& m)
 void audio_output::handle(unsubscribe& m)
 {
   observers_.erase(m.channel);
-}
-
-// ----------------------------------------------------------------------------
-void audio_output::handle(device_list_request& m)
-{
-  message r(message::device_list_res_id);
-
-  audio_output_alsa::each([&](std::string&& device_name) {
-    r.device_list_res.device_names.push_back(device_name);
-  });
-
-  // Just loopback current.
-  r.device_list_res.current = m.current;
-
-  m.reply.send(std::move(r));
 }
 
 // ----------------------------------------------------------------------------

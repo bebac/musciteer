@@ -18,7 +18,6 @@
 class audio_output
 {
 public:
-  using device_list_request = audio_output_device_list_request;
   using open_request = audio_output_open_request;
   using close_request = audio_output_close_request;
   using stream_begin = audio_output_stream_begin;
@@ -47,6 +46,8 @@ public:
 public:
   void send(message&& m);
   void send(audio_buffer&& buffer);
+public:
+  static void each(std::function<void(std::string&& device_name)> value_cb);
 private:
   void loop();
   void dispatch(message& m);
@@ -54,7 +55,6 @@ private:
   void handle(subscribe& m);
   void handle(unsubscribe& m);
 private:
-  void handle(device_list_request& m);
   void handle(open_request& m);
   void handle(close_request& m);
   void handle(stream_begin& m);

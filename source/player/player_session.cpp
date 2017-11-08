@@ -6,17 +6,17 @@
 // ----------------------------------------------------------------------------
 #include "player_session.h"
 #include "sources.h"
-#include "audio_output.h"
 
 // ----------------------------------------------------------------------------
 namespace musciteer
 {
-  player_session::player_session()
+  player_session::player_session(message_channel notification_channel)
     :
     track_(),
     fraction_played_(0.0),
     audio_output_(),
-    control_ch_()
+    control_ch_(),
+    notification_ch_(notification_channel)
   {
     auto kvstore = musciteer::kvstore();
     id_ = kvstore.increment(stream_id_key, 1, 1);
@@ -47,17 +47,17 @@ namespace musciteer
     fraction_played_ = value;
   }
 
-  std::shared_ptr<audio_output> player_session::get_audio_output() const
+  audio_output_alsa player_session::get_audio_output() const
   {
     return audio_output_;
   }
 
-  void player_session::set_audio_output(std::shared_ptr<audio_output> ptr)
+  void player_session::set_audio_output(audio_output_alsa audio_output)
   {
-    audio_output_ = ptr;
+    audio_output_ = audio_output;
   }
 
-  void player_session::play(std::shared_ptr<audio_output> audio_output)
+  void player_session::play(audio_output_alsa audio_output)
   {
     auto sources = musciteer::sources();
     audio_output_ = audio_output;

@@ -11,6 +11,7 @@
 #include "message.h"
 #include "player_list_provider_base.h"
 #include "player_ctpb_provider.h"
+#include "audio_output_alsa.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/track.h"
@@ -80,16 +81,12 @@ namespace musciteer
     void end_session();
     void player_state_notify();
     void queue_update_notify(const musciteer::dm::track& track);
-    void audio_output_subscribe(message_channel&);
-    void audio_output_unsubscribe(message_channel&);
-    bool audio_output_open();
-    bool audio_output_close();
   private:
     state state_;
   private:
     message_channel message_ch_;
   private:
-    std::shared_ptr<audio_output> audio_output_;
+    audio_output_alsa audio_output_;
     std::string audio_output_device_;
   private:
     std::set<message_channel> observers_;

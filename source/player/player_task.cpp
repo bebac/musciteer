@@ -8,7 +8,6 @@
 #include "player_session.h"
 #include "player_album_provider.h"
 #include "player_tag_provider.h"
-#include "audio_output.h"
 
 // ----------------------------------------------------------------------------
 #include "../dm/tracks.h"
@@ -22,7 +21,7 @@ namespace musciteer
     :
     state_(stopped),
     message_ch_(message_ch),
-    audio_output_(new audio_output()),
+    audio_output_(),
     audio_output_device_(),
     observers_(),
     play_q_(),
@@ -32,12 +31,10 @@ namespace musciteer
     ctpb_provider_(this),
     replaygain_enabled_(false)
   {
-    audio_output_subscribe(message_ch_);
   }
 
   player_task::~player_task()
   {
-    audio_output_unsubscribe(message_ch_);
   }
 
   void player_task::main()
@@ -76,14 +73,7 @@ namespace musciteer
       }
     }
 
-    if ( audio_output_ )
-    {
-      message m(message::replaygain_req_id);
-
-      m.replaygain_req.replaygain_enabled = replaygain_enabled_;
-
-      audio_output_->send(std::move(m));
-    }
+    audio_output_.set_replaygain_enabled(replaygain_enabled_);
 
     std::cout
       << "player_task - loaded settings audio_device=" << audio_output_device_
@@ -146,7 +136,6 @@ namespace musciteer
   void player_task::handle(subscribe& m)
   {
     observers_.insert(m.channel);
-    audio_output_subscribe(m.channel);
 
     // Send source status to new observer.
     for ( const auto& s : source_status_ )
@@ -166,14 +155,13 @@ namespace musciteer
   void player_task::handle(unsubscribe& m)
   {
     observers_.erase(m.channel);
-    audio_output_unsubscribe(m.channel);
   }
 
   void player_task::handle(device_list_request& m)
   {
     message r(message::device_list_res_id);
 
-    audio_output::each([&](std::string&& device_name) {
+    audio_output_alsa::each([&](std::string&& device_name) {
       r.device_list_res.device_names.push_back(device_name);
     });
 
@@ -433,6 +421,19 @@ namespace musciteer
         << ", plays/skips: " << track->play_count() << "/" << track->skip_count()
         << " ]"
         << std::endl;
+
+      for ( auto observer : observers_ )
+      {
+        message n(message::stream_begin_notify_id);
+        auto& body = n.stream_begin_notify;
+
+        body.stream_id = m.stream_id;
+        body.replaygain_enabled = m.replaygain_enabled;
+        body.replaygain = m.replaygain;
+        body.scale = m.scale;
+
+        observer.send(std::move(n));
+      }
     }
     else
     {
@@ -455,6 +456,18 @@ namespace musciteer
       {
         std::cerr << "player_task - session id mismatch on stream progress notification" << std::endl;
       }
+
+      for ( auto observer : observers_ )
+      {
+        message n(message::stream_progress_notify_id);
+        auto& body = n.stream_progress_notify;
+
+        body.stream_id = m.stream_id;
+        body.duration = m.duration;
+        body.length = m.length;
+
+        observer.send(std::move(n));
+      }
     }
     else
     {
@@ -473,6 +486,16 @@ namespace musciteer
 
       if ( session_->fraction_played() > 0.80 ) {
         track->increment_play_count();
+      }
+
+      for ( auto observer : observers_ )
+      {
+        message n(message::stream_end_notify_id);
+        auto& body = n.stream_end_notify;
+
+        body.stream_id = m.stream_id;
+
+        observer.send(std::move(n));
       }
 
       tracks.update(*track);
@@ -523,12 +546,10 @@ namespace musciteer
   {
     if ( state_ == stopped )
     {
-      if ( !audio_output_open() ) {
-        return;
-      }
+      audio_output_.open(audio_output_device_);
     }
 
-    session_ = std::make_shared<player_session>();
+    session_ = std::make_shared<player_session>(message_ch_);
     session_->track(track);
     session_->play(audio_output_);
 
@@ -542,7 +563,7 @@ namespace musciteer
     session_->done();
     session_.reset();
 
-    audio_output_close();
+    audio_output_.close();
 
     state_ = stopped;
 
@@ -647,74 +668,6 @@ namespace musciteer
       n.queue_update.track = std::make_shared<musciteer::dm::track>(track);
 
       observer.send(std::move(n));
-    }
-  }
-
-  void player_task::audio_output_subscribe(message_channel& ch)
-  {
-    message m(message::subscribe_id);
-
-    m.subscribe.channel = ch;
-
-    audio_output_->send(std::move(m));
-  }
-
-  void player_task::audio_output_unsubscribe(message_channel& ch)
-  {
-    message m(message::unsubscribe_id);
-
-    m.subscribe.channel = ch;
-
-    audio_output_->send(std::move(m));
-  }
-
-  bool player_task::audio_output_open()
-  {
-    message_channel ch;
-    message m(message::open_req_id);
-
-    m.open_req.device_name = audio_output_device_;
-    m.open_req.replaygain_enabled = replaygain_enabled_;
-    m.open_req.reply = ch;
-
-    audio_output_->send(std::move(m));
-
-    auto r = ch.recv(this);
-
-    if ( r.open_res.error_code == 0 )
-    {
-      std::cout << "audio output " << audio_output_device_ << " open ok" << std::endl;
-      return true;
-    }
-    else
-    {
-      std::cout << "audio output open response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
-      // TODO: Send some sort of notification.
-      return false;
-    }
-  }
-
-  bool player_task::audio_output_close()
-  {
-    message_channel ch;
-    message m(message::close_req_id);
-
-    m.close_req.reply = ch;
-
-    audio_output_->send(std::move(m));
-
-    auto r = ch.recv(this);
-
-    if ( r.open_res.error_code == 0 )
-    {
-      std::cout << "audio output " << audio_output_device_ << " closed ok" << std::endl;
-      return true;
-    }
-    else
-    {
-      std::cout << "audio output close response error_code=" << r.open_res.error_code << ", error_message=" << r.open_res.error_message << std::endl;
-      // TODO: Send some sort of notification.
-      return false;
     }
   }
 }

@@ -114,7 +114,7 @@ build build/libmusciteer_dm.a: ar $
 build build/http_connection.o: cc source/http/http_connection.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
 
-build build/player/audio_output.o: cc source/player/audio_output.cpp
+build build/player/audio_output_alsa.o: cc source/player/audio_output_alsa.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
 build build/player/player.o: cc source/player/player.cpp
@@ -146,7 +146,7 @@ build build/spotify_web/api.o: cc source/spotify_web/api.cpp
 
 build build/musciteer: ld $
   build/http_connection.o $
-  build/player/audio_output.o $
+  build/player/audio_output_alsa.o $
   build/player/player.o $
   build/player/player_task.o $
   build/player/player_session.o $
@@ -156,7 +156,7 @@ build build/musciteer: ld $
   build/player/sources.o $
   build/spotify_web/api.o $
   build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a build/libprogram-options.a
-  libs = -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC++ -lanl -lssl -lcrypto -lcrypto++ -lkyotocabinet -lspotify
+  libs = -lrt -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC -lFLAC++ -lanl -lssl -lcrypto -lcrypto++ -lkyotocabinet -lspotify
 
 
 ###

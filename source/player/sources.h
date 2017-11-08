@@ -8,7 +8,6 @@
 #define __player__sources_h__
 
 // ----------------------------------------------------------------------------
-#include "audio_output.h"
 #include "player_session.h"
 #include "source.h"
 #include "source_local.h"

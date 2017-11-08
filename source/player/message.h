@@ -8,9 +8,6 @@
 #define __player__message_h__
 
 // ----------------------------------------------------------------------------
-#include "audio_buffer.h"
-
-// ----------------------------------------------------------------------------
 #include "../dm/track.h"
 
 // ----------------------------------------------------------------------------
@@ -22,23 +19,6 @@ class message;
 
 // ----------------------------------------------------------------------------
 using message_channel = dripcore::channel<message>;
-
-// ----------------------------------------------------------------------------
-class audio_output_response
-{
-public:
-  audio_output_response() : error_code(0)
-  {
-  }
-  audio_output_response(audio_output_response&& other)
-  {
-    error_code = std::move(other.error_code);
-    error_message = std::move(other.error_message);
-  }
-public:
-  int error_code;
-  std::string error_message;
-};
 
 // ----------------------------------------------------------------------------
 class audio_output_notification_message
@@ -122,61 +102,6 @@ public:
 };
 
 // ----------------------------------------------------------------------------
-class audio_output_open_request
-{
-public:
-  audio_output_open_request() : device_name(), replaygain_enabled(false)
-  {
-  }
-  audio_output_open_request(audio_output_open_request&& other)
-  {
-    device_name = std::move(other.device_name);
-    replaygain_enabled = std::move(other.replaygain_enabled);
-    reply = std::move(other.reply);
-  }
-public:
-  std::string device_name;
-  bool replaygain_enabled;
-  message_channel reply;
-};
-
-// ----------------------------------------------------------------------------
-using audio_output_open_response = audio_output_response;
-
-// ----------------------------------------------------------------------------
-class audio_output_close_request
-{
-public:
-  audio_output_close_request()
-  {
-  }
-  audio_output_close_request(audio_output_close_request&& other)
-  {
-    reply = std::move(other.reply);
-  }
-public:
-  message_channel reply;
-};
-
-// ----------------------------------------------------------------------------
-using audio_output_close_response = audio_output_response;
-
-// ----------------------------------------------------------------------------
-class audio_output_replaygain_request
-{
-public:
-  audio_output_replaygain_request() : replaygain_enabled(false)
-  {
-  }
-  audio_output_replaygain_request(audio_output_replaygain_request&& other)
-  {
-    replaygain_enabled = std::move(other.replaygain_enabled);
-  }
-public:
-  bool replaygain_enabled;
-};
-
-// ----------------------------------------------------------------------------
 class play_request
 {
 public:
@@ -240,61 +165,6 @@ public:
   }
 public:
   std::string id;
-};
-
-// ----------------------------------------------------------------------------
-class audio_output_stream_begin
-{
-public:
-  audio_output_stream_begin() : stream_id(0), replaygain(0), replaygain_peak(1)
-  {
-  }
-  audio_output_stream_begin(audio_output_stream_begin&& other)
-  {
-    stream_id = std::move(other.stream_id);
-    sample_rate = std::move(other.sample_rate);
-    length = std::move(other.length);
-    replaygain = std::move(other.replaygain);
-    replaygain_peak = std::move(other.replaygain_peak);
-    completed_buffer_ch = std::move(other.completed_buffer_ch);
-  }
-public:
-  unsigned stream_id;
-  unsigned sample_rate;
-  std::chrono::milliseconds length;
-  float replaygain;
-  float replaygain_peak;
-  dripcore::channel<audio_buffer> completed_buffer_ch;
-};
-
-// ----------------------------------------------------------------------------
-class audio_output_stream_end
-{
-public:
-  audio_output_stream_end()
-  {
-  }
-  audio_output_stream_end(audio_output_stream_end&& other)
-  {
-    reply = std::move(other.reply);
-  }
-public:
-  message_channel reply;
-};
-
-// ----------------------------------------------------------------------------
-class audio_output_stream_buffer
-{
-public:
-  audio_output_stream_buffer() : buffer()
-  {
-  }
-  audio_output_stream_buffer(audio_output_stream_buffer&& other)
-  {
-    buffer = std::move(other.buffer);
-  }
-public:
-  audio_buffer buffer;
 };
 
 // ----------------------------------------------------------------------------
@@ -462,19 +332,11 @@ public:
     device_list_req_id,
     device_list_res_id,
     settings_changed_id,
-    open_req_id,
-    open_res_id,
-    close_req_id,
-    close_res_id,
-    replaygain_req_id,
     play_req_id,
     pause_req_id,
     stop_req_id,
     skip_req_id,
     queue_req_id,
-    stream_begin_id,
-    stream_end_id,
-    stream_buffer_id,
     stream_begin_notify_id,
     stream_end_notify_id,
     stream_progress_notify_id,
@@ -503,21 +365,6 @@ public:
       case settings_changed_id:
         new (&settings_changed) settings_changed_message();
         break;
-      case open_req_id:
-        new (&open_req) audio_output_open_request();
-        break;
-      case open_res_id:
-        new (&open_res) audio_output_open_response();
-        break;
-      case close_req_id:
-        new (&close_req) audio_output_close_request();
-        break;
-      case close_res_id:
-        new (&close_res) audio_output_close_response();
-        break;
-      case replaygain_req_id:
-        new (&replaygain_req) audio_output_replaygain_request();
-        break;
       case play_req_id:
         new (&play_req) play_request();
         break;
@@ -532,15 +379,6 @@ public:
         break;
       case queue_req_id:
         new (&queue_req) queue_request();
-        break;
-      case stream_begin_id:
-        new (&stream_begin) audio_output_stream_begin();
-        break;
-      case stream_end_id:
-        new (&stream_end) audio_output_stream_end();
-        break;
-      case stream_buffer_id:
-        new (&stream_buffer) audio_output_stream_buffer();
         break;
       case stream_begin_notify_id:
         new (&stream_begin_notify) audio_output_stream_begin_notification();
@@ -588,21 +426,6 @@ public:
       case settings_changed_id:
         new (&settings_changed) settings_changed_message(std::move(other.settings_changed));
         break;
-      case open_req_id:
-        new (&open_req) audio_output_open_request(std::move(other.open_req));
-        break;
-      case open_res_id:
-        new (&open_res) audio_output_open_response(std::move(other.open_res));
-        break;
-      case close_req_id:
-        new (&close_req) audio_output_close_request(std::move(other.close_req));
-        break;
-      case close_res_id:
-        new (&close_res) audio_output_close_response(std::move(other.close_res));
-        break;
-      case replaygain_req_id:
-        new (&replaygain_req) audio_output_replaygain_request(std::move(other.replaygain_req));
-        break;
       case play_req_id:
         new (&play_req) play_request(std::move(other.play_req));
         break;
@@ -617,15 +440,6 @@ public:
         break;
       case queue_req_id:
         new (&queue_req) queue_request(std::move(other.queue_req));
-        break;
-      case stream_begin_id:
-        new (&stream_begin) audio_output_stream_begin(std::move(other.stream_begin));
-        break;
-      case stream_end_id:
-        new (&stream_end) audio_output_stream_end(std::move(other.stream_end));
-        break;
-      case stream_buffer_id:
-        new (&stream_buffer) audio_output_stream_buffer(std::move(other.stream_buffer));
         break;
       case stream_begin_notify_id:
         new (&stream_begin_notify) audio_output_stream_begin_notification(std::move(other.stream_begin_notify));
@@ -674,21 +488,6 @@ public:
       case settings_changed_id:
         settings_changed.~settings_changed_message();
         break;
-      case open_req_id:
-        open_req.~audio_output_open_request();
-        break;
-      case open_res_id:
-        open_res.~audio_output_open_response();
-        break;
-      case close_req_id:
-        close_req.~audio_output_close_request();
-        break;
-      case close_res_id:
-        close_res.~audio_output_close_response();
-        break;
-      case replaygain_req_id:
-        replaygain_req.~audio_output_replaygain_request();
-        break;
       case play_req_id:
         play_req.~play_request();
         break;
@@ -703,15 +502,6 @@ public:
         break;
       case queue_req_id:
         queue_req.~queue_request();
-        break;
-      case stream_begin_id:
-        stream_begin.~audio_output_stream_begin();
-        break;
-      case stream_end_id:
-        stream_end.~audio_output_stream_end();
-        break;
-      case stream_buffer_id:
-        stream_buffer.~audio_output_stream_buffer();
         break;
       case stream_begin_notify_id:
         stream_begin_notify.~audio_output_stream_begin_notification();
@@ -752,19 +542,11 @@ public:
     audio_output_device_list_request device_list_req;
     audio_output_device_list_response device_list_res;
     settings_changed_message settings_changed;
-    audio_output_open_request open_req;
-    audio_output_open_response open_res;
-    audio_output_close_request close_req;
-    audio_output_close_response close_res;
-    audio_output_replaygain_request replaygain_req;
     play_request play_req;
     pause_request pause_req;
     stop_request stop_req;
     skip_request skip_req;
     queue_request queue_req;
-    audio_output_stream_begin stream_begin;
-    audio_output_stream_end stream_end;
-    audio_output_stream_buffer stream_buffer;
     audio_output_stream_begin_notification stream_begin_notify;
     audio_output_stream_end_notification stream_end_notify;
     audio_output_stream_progress_notification stream_progress_notify;

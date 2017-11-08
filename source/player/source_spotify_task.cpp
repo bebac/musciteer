@@ -4,10 +4,9 @@
 //                  Copyright (C) 2016
 //
 // ----------------------------------------------------------------------------
+#include "player_notification_sender.h"
 #include "source_spotify_task.h"
 #include "message.h"
-#include "audio_buffer.h"
-#include "audio_output.h"
 #include "player.h"
 
 // ----------------------------------------------------------------------------
@@ -81,6 +80,8 @@ namespace musciteer
   {
     quit,
     play_session,
+    begin_session,
+    progress_session,
     end_session,
     process_events,
     logged_in,
@@ -97,6 +98,7 @@ namespace musciteer
   class spotify_session : public dripcore::task
   {
     using message_id = spotify_session_message_id;
+    using notification_sender = musciteer::player_notification_sender;
   public:
     class message
     {
@@ -123,9 +125,9 @@ namespace musciteer
   private:
     void main() final;
   private:
-    void init_audio_buffer_channel();
-  private:
     void play_session(std::shared_ptr<player_session>);
+    void begin_session();
+    void progress_session();
     void end_session();
     void process_events();
     void logged_in(sp_error error);
@@ -179,7 +181,7 @@ namespace musciteer
   private:
     std::shared_ptr<player_session> player_session_;
     dm::track_source source_;
-    dripcore::channel<audio_buffer> buffer_ch_;
+    std::unique_ptr<notification_sender> notifier_;
   private:
     static constexpr const char* name = "spotify";
   };
@@ -205,7 +207,7 @@ namespace musciteer
       0, //&user_info_updated_cb,
       0, //&start_playback_cb,
       0, //&stop_playback_cb,
-      0, //&get_audio_buffer_stats_cb,
+      &get_audio_buffer_stats_cb,
       0, //&offline_status_updated_cb,
       0, //&offline_error_cb,
       0, //&credentials_blob_updated_cb
@@ -258,8 +260,6 @@ namespace musciteer
 
   void spotify_session::main()
   {
-    init_audio_buffer_channel();
-
     while ( true )
     {
       auto msg = ch_.recv(this);
@@ -278,6 +278,12 @@ namespace musciteer
           break;
         case message_id::play_session:
           play_session(msg.session);
+          break;
+        case message_id::begin_session:
+          begin_session();
+          break;
+        case message_id::progress_session:
+          progress_session();
           break;
         case message_id::end_session:
           end_session();
@@ -313,14 +319,6 @@ namespace musciteer
     done_ch_.send(true);
   }
 
-  void spotify_session::init_audio_buffer_channel()
-  {
-    for ( size_t i=0; i<10; ++i )
-    {
-      buffer_ch_.send(audio_buffer{}, this);
-    }
-  }
-
   void spotify_session::play_session(std::shared_ptr<player_session> ps)
   {
     assert(!player_session_);
@@ -329,6 +327,8 @@ namespace musciteer
 
     auto track = player_session_->track();
     assert(track);
+
+    notifier_.reset(new notification_sender(player_session_->id(), player_session_->get_notification_channel()));
 
     source_ = track->sources_get("spotify");
 
@@ -348,22 +348,35 @@ namespace musciteer
     }
   }
 
+  void spotify_session::begin_session()
+  {
+    if ( notifier_ )
+    {
+      notifier_->stream_begin(player_session_->get_audio_output());
+    }
+    else {
+      std::cerr << "spotify session - begin_session - notifier_ is null" << std::endl;
+    }
+  }
+
+  void spotify_session::progress_session()
+  {
+    if ( notifier_ ) {
+      notifier_->stream_progress();
+    }
+    else {
+      std::cerr << "spotify session - progress_session - notifier_ is null" << std::endl;
+    }
+  }
+
   void spotify_session::end_session()
   {
     if ( player_session_ )
     {
       sp_session_player_unload(session_);
 
-      auto audio_output = player_session_->get_audio_output();
-      assert(audio_output);
-
-      message_channel done;
-      ::message m(::message::stream_end_id);
-
-      m.stream_end.reply = done;
-      audio_output->send(std::move(m));
-
-      done.recv(this);
+      auto output = player_session_->get_audio_output();
+      output.drain();
 
       release_track();
       player_session_.reset();
@@ -371,6 +384,15 @@ namespace musciteer
     else
     {
       std::cerr << "spotify session - player_session_ is null" << std::endl;
+    }
+
+    if ( notifier_ )
+    {
+      notifier_->stream_end();
+      notifier_.reset();
+    }
+    else {
+      std::cerr << "spotify session - end_session - notifier_ is null" << std::endl;
     }
   }
 
@@ -439,23 +461,19 @@ namespace musciteer
       }
 
       auto track = player_session_->track();
+
       assert(track);
+      assert(notifier_);
 
-      auto audio_output = player_session_->get_audio_output();
-      assert(audio_output);
+      notifier_->set_stream_length(std::chrono::milliseconds(track->duration()));
 
+      auto output = player_session_->get_audio_output();
       auto replaygain = source_.rg_track_gain();
       auto replaygain_peak = source_.rg_track_peak();
 
-      ::message m(::message::stream_begin_id);
-
-      m.stream_begin.stream_id = player_session_->id();
-      m.stream_begin.sample_rate = 44100;
-      m.stream_begin.length = std::chrono::milliseconds(track->duration());
-      m.stream_begin.replaygain = replaygain ? replaygain.value() : 0;
-      m.stream_begin.replaygain_peak = replaygain_peak ? replaygain_peak.value() : 1;
-      m.stream_begin.completed_buffer_ch = buffer_ch_;
-      audio_output->send(std::move(m));
+      output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
+      output.set_params(2, 44100);
+      output.prepare();
 
       if ( (err=sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
         std::cerr << "sp_session_player_play error " << err << std::endl;
@@ -535,27 +553,53 @@ namespace musciteer
 
     if ( player_session )
     {
-      auto audio_output = player_session->get_audio_output();
+      auto samples = reinterpret_cast<const s16_le_i_frame*>(frames);
+      auto i = 0;
+      auto output = player_session->get_audio_output();
+      auto avail = output.avail_update();
+      auto len = std::min(num_frames, static_cast<int>(avail));
+      auto remaining = len;
+      auto scale = (1<<16) * output.get_replaygain_scale();
 
-      if ( audio_output )
-      {
-        // There is a risk that we can block here which is not so good according to
-        // docs. Hope it will go if we have enough buffers in the pipe.
-        auto buf = self->buffer_ch_.recv();
-
-        buf.clear();
-        buf.write_s16_le_i(frames, num_frames);
-
-        audio_output->send(std::move(buf));
+      if ( avail < 0 ) {
+        std::cerr << "spotify_session::music_delivery error avail=" << avail << std::endl;
       }
-      else
+
+      while ( remaining > 0 )
       {
-        std::cerr << "spotify_session::music_delivery audio_output == null" << std::endl;
+        const snd_pcm_channel_area_t* areas;
+        snd_pcm_uframes_t offset;
+        snd_pcm_uframes_t frames = remaining;
+
+        output.mmap_begin(&areas, &offset, &frames);
+
+        auto obuf = reinterpret_cast<s32_le_i_frame*>(areas[0].addr) + offset;
+
+        for( size_t x = 0; x < frames; x++, i++ )
+        {
+          obuf[x].l = static_cast<int32_t>(samples[i].l) * scale;
+          obuf[x].r = static_cast<int32_t>(samples[i].r) * scale;
+        }
+
+        auto committed = output.mmap_commit(offset, frames);
+
+        remaining -= committed;
       }
+
+      if ( output.is_prepared() )
+      {
+        output.start();
+        notify(session, message_id::begin_session);
+      }
+      else {
+        notify(session, message_id::progress_session);
+      }
+
+      return len;
     }
-
-    //std::cerr << "spotify_session::music_delivery num_frames=" << num_frames << std::endl;
-    return num_frames;
+    else {
+      return 0;
+    }
   }
 
   void spotify_session::play_token_lost_cb(sp_session *session)
@@ -598,6 +642,8 @@ namespace musciteer
 
   void spotify_session::get_audio_buffer_stats_cb(sp_session *session, sp_audio_buffer_stats *stats)
   {
+    stats->samples = 1024;
+    stats->stutter = 0;
   }
 
   void spotify_session::offline_status_updated_cb(sp_session *session)

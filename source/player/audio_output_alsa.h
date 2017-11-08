@@ -15,7 +15,8 @@
 
 // ----------------------------------------------------------------------------
 #include <functional>
-#include <iostream>
+#include <memory>
+#include <atomic>
 
 // ----------------------------------------------------------------------------
 class alsa_error : public audio_output_error
@@ -30,121 +31,61 @@ public:
 };
 
 // ----------------------------------------------------------------------------
-class audio_output_alsa
+struct s16_le_i_frame
 {
-public:
-  audio_output_alsa()
-  {
-  }
-public:
-  ~audio_output_alsa()
-  {
-    if ( handle_ )
-    {
-      try {
-        close();
-      }
-      catch(const alsa_error& err) {
-        std::cerr << err.what() << std::endl;
-      }
-    }
-  }
-public:
-  void open(const std::string& device_name)
-  {
-    auto err = snd_pcm_open(&handle_, device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
-  }
-public:
-  void set_params(int channels, unsigned sample_rate)
-  {
-    auto err = snd_pcm_set_params(handle_, SND_PCM_FORMAT_S32_LE, SND_PCM_ACCESS_RW_INTERLEAVED, channels, sample_rate, 0, 100000);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
-  }
-public:
-  void prepare()
-  {
-    auto err = snd_pcm_prepare(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
-  }
-public:
-  void writei(const void *buffer, snd_pcm_uframes_t size)
-  {
-    snd_pcm_sframes_t frames = snd_pcm_writei(handle_, buffer, size);
+  int16_t l;
+  int16_t r;
+};
 
-    if ( frames < 0 )
-    {
-      std::cerr << "alsa output " << snd_strerror(frames) << std::endl;
-      frames = snd_pcm_recover(handle_, frames, 0);
-    }
+// Interleaved signed 32 bit frame
+struct s32_le_i_frame
+{
+  int32_t l;
+  int32_t r;
+};
 
-    if ( frames < 0 ) {
-      throw alsa_error(frames);
-    }
-  }
-public:
-  void drain()
-  {
-    auto err = snd_pcm_drain(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
-  }
-public:
-  void close()
-  {
-    auto err = snd_pcm_close(handle_);
-    if ( err == 0 ) {
-      handle_ = nullptr;
-    }
-    else {
-      throw alsa_error(err);
-    }
-  }
-public:
-  static void each(std::function<void(std::string&& device_name)> value_cb)
-  {
-    void **hints, **n;
-    char *name, *descr, *io;
-
-    if (snd_device_name_hint(-1, "pcm", &hints) < 0)
-      return;
-
-    n = hints;
-
-    while (*n != NULL)
-    {
-      name = snd_device_name_get_hint(*n, "NAME");
-      descr = snd_device_name_get_hint(*n, "DESC");
-      io = snd_device_name_get_hint(*n, "IOID");
-
-      if ( (io == NULL) || (io && strcmp(io, "Output") == 0) ) {
-        value_cb(name);
-      }
-
-      if (name != NULL) {
-        free(name);
-      }
-      if (descr != NULL) {
-        free(descr);
-      }
-      if (io != NULL) {
-        free(io);
-      }
-
-      n++;
-    }
-    snd_device_name_free_hint(hints);
-  }
-private:
-  snd_pcm_t* handle_;
+// FLAC delivers samples non interleaved in 32 bit. Only handle 2 channels.
+struct s32_le_n_frame
+{
+  int32_t* l;
+  int32_t* r;
 };
 
 // ----------------------------------------------------------------------------
+class audio_output_alsa
+{
+public:
+  audio_output_alsa();
+public:
+  void open(const std::string& device_name);
+  void close();
+public:
+  float get_replaygain_scale() const;
+public:
+  bool get_replaygain_enabled() const;
+  void set_replaygain_enabled(bool value);
+  float get_replaygain() const;
+  void set_replaygain(float rg, float peak);
+  void set_params(int channels, unsigned sample_rate);
+public:
+  unsigned int hw_period_samples() const;
+public:
+  void prepare();
+  void start();
+  void drain();
+public:
+  snd_pcm_sframes_t avail_update();
+  void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames);
+  snd_pcm_uframes_t mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames);
+public:
+  bool is_open();
+  bool is_prepared();
+  bool is_running();
+public:
+  static void each(std::function<void(std::string&& device_name)> value_cb);
+private:
+  class audio_output_alsa_impl;
+  std::shared_ptr<audio_output_alsa_impl> pimpl_;
+};
+
 #endif

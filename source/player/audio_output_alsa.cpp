@@ -73,7 +73,7 @@ public:
     replaygain_scale_ = scale;
   }
 public:
-  constexpr unsigned int hw_period_samples() const { return 1024; }
+  unsigned int hw_period_samples() const { return 1024; }
 public:
   void set_params(int channels, unsigned sample_rate)
   {

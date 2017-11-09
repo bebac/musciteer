@@ -134,10 +134,8 @@ namespace musciteer
     void connection_error(sp_error error);
     void metadata_updated();
     void track_loaded();
-    void token_lost();
-    void stream_error(sp_error error);
-  private:
     void release_track();
+    void session_error(const char* message);
   private:
     template<typename... M_args>
     static void notify(sp_session* session, M_args... message_args)
@@ -308,10 +306,10 @@ namespace musciteer
           }
           break;
         case message_id::token_lost:
-          token_lost();
+          session_error("token_lost");
           break;
         case message_id::stream_error:
-          stream_error(msg.error);
+          session_error(sp_error_message(msg.error));
           break;
       }
     }
@@ -456,8 +454,9 @@ namespace musciteer
     {
       sp_error err;
 
-      if ( (err=sp_session_player_load(session_, track_)) != SP_ERROR_OK ) {
-        std::cerr << "sp_session_player_load error " << err << std::endl;
+      if ( (err = sp_session_player_load(session_, track_)) != SP_ERROR_OK ) {
+        session_error(sp_error_message(err));
+        return;
       }
 
       auto track = player_session_->track();
@@ -475,32 +474,10 @@ namespace musciteer
       output.set_params(2, 44100);
       output.prepare();
 
-      if ( (err=sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
-        std::cerr << "sp_session_player_play error " << err << std::endl;
+      if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
+        session_error(sp_error_message(err));
       }
     }
-  }
-
-  void spotify_session::token_lost()
-  {
-    auto player = musciteer::player();
-
-    player.source_notification(
-      source_notification::id::session_error,
-      name,
-      "token lost"
-    );
-  }
-
-  void spotify_session::stream_error(sp_error error)
-  {
-    auto player = musciteer::player();
-
-    player.source_notification(
-      source_notification::id::session_error,
-      name,
-      sp_error_message(error)
-    );
   }
 
   void spotify_session::release_track()
@@ -511,6 +488,17 @@ namespace musciteer
       track_ = 0;
       track_loaded_ = false;
     }
+  }
+
+  void spotify_session::session_error(const char* message)
+  {
+    auto player = musciteer::player();
+
+    player.source_notification(
+      source_notification::id::session_error,
+      name,
+      message
+    );
   }
 
   /////

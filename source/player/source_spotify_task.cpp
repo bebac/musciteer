@@ -588,7 +588,6 @@ namespace musciteer
 
       if ( output.is_prepared() )
       {
-        std::cerr << "spotify_session::music_delivery start avail=" << avail << std::endl;
         output.start();
         notify(session, message_id::begin_session);
       }

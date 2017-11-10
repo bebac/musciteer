@@ -95,8 +95,12 @@ namespace musciteer
     {
       auto bps   = frame->header.bits_per_sample;
       auto scale = (1 << (32 - bps)) * output_.get_replaygain_scale();
+      auto obuf  = reinterpret_cast<const s32_le_n_frame*>(buffer);
+      auto size  = frame->header.blocksize;
 
-      write_samples(reinterpret_cast<const s32_le_n_frame*>(buffer), frame->header.blocksize, scale);
+      if ( ! write_samples(obuf, size, scale) ) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+      }
 
       if ( output_.is_prepared() )
       {
@@ -137,13 +141,20 @@ namespace musciteer
       output_.prepare();
     }
   public:
-    void write_samples(const s32_le_n_frame* const samples, std::size_t len, float scale)
+    bool write_samples(const s32_le_n_frame* const samples, std::size_t len, float scale)
     {
       auto i = size_t{0};
 
       while ( len > 0 )
       {
         auto avail = output_.avail_update();
+
+        if ( avail < 0 )
+        {
+          if ( output_.recover(avail, 1) < 0 ) {
+            return false;
+          }
+        }
 
         if ( avail > output_.hw_period_samples() )
         {
@@ -168,6 +179,8 @@ namespace musciteer
           sleep_for(std::chrono::duration<double, std::milli>(50));
         }
       }
+
+      return true;
     }
   public:
     template<class Rep, class Period>

@@ -21,7 +21,6 @@
 
 // ----------------------------------------------------------------------------
 #include <string>
-#include <cassert>
 #include <deque>
 #include <unordered_map>
 #include <regex>

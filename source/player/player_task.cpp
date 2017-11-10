@@ -15,6 +15,9 @@
 #include "../dm/player.h"
 
 // ----------------------------------------------------------------------------
+#include <cassert>
+
+// ----------------------------------------------------------------------------
 namespace musciteer
 {
   player_task::player_task(message_channel message_ch)

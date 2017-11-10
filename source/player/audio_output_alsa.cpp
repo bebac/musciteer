@@ -170,6 +170,11 @@ public:
     return snd_pcm_mmap_commit(handle_, offset, frames);
   }
 public:
+  int recover(int error, int silent)
+  {
+    return snd_pcm_recover(handle_, error, silent);
+  }
+public:
   bool is_open()     { return snd_pcm_state(handle_) == SND_PCM_STATE_OPEN; }
   bool is_prepared() { return snd_pcm_state(handle_) == SND_PCM_STATE_PREPARED; }
   bool is_running()  { return snd_pcm_state(handle_) == SND_PCM_STATE_RUNNING; }
@@ -295,6 +300,11 @@ void audio_output_alsa::mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pc
 snd_pcm_uframes_t audio_output_alsa::mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames)
 {
   return pimpl_->mmap_commit(offset, frames);
+}
+
+int audio_output_alsa::recover(int error, int silent)
+{
+  return pimpl_->recover(error, silent);
 }
 
 bool audio_output_alsa::is_open()

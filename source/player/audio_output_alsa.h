@@ -78,6 +78,8 @@ public:
   void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames);
   snd_pcm_uframes_t mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames);
 public:
+  int recover(int error, int silent);
+public:
   bool is_open();
   bool is_prepared();
   bool is_running();

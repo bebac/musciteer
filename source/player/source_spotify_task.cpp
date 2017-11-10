@@ -89,7 +89,8 @@ namespace musciteer
     metadata_updated,
     track_loaded,
     token_lost,
-    stream_error
+    stream_error,
+    audio_error
   };
 
   /////
@@ -128,7 +129,7 @@ namespace musciteer
     void play_session(std::shared_ptr<player_session>);
     void begin_session();
     void progress_session();
-    void end_session();
+    void end_session(bool audio_error = false);
     void process_events();
     void logged_in(sp_error error);
     void connection_error(sp_error error);
@@ -311,6 +312,9 @@ namespace musciteer
         case message_id::stream_error:
           session_error(sp_error_message(msg.error));
           break;
+        case message_id::audio_error:
+          end_session(true);
+          break;
       }
     }
 
@@ -367,14 +371,17 @@ namespace musciteer
     }
   }
 
-  void spotify_session::end_session()
+  void spotify_session::end_session(bool audio_error)
   {
     if ( player_session_ )
     {
       sp_session_player_unload(session_);
 
-      auto output = player_session_->get_audio_output();
-      output.drain();
+      if ( ! audio_error )
+      {
+        auto output = player_session_->get_audio_output();
+        output.drain();
+      }
 
       release_track();
       player_session_.reset();
@@ -549,8 +556,13 @@ namespace musciteer
       auto remaining = len;
       auto scale = (1<<16) * output.get_replaygain_scale();
 
-      if ( avail < 0 ) {
-        std::cerr << "spotify_session::music_delivery error avail=" << avail << std::endl;
+      if ( avail < 0 )
+      {
+        if ( output.recover(avail, 1) < 0 ) {
+          std::cerr << "spotify_session::music_delivery audio output recover failed avail=" << avail << std::endl;
+          notify(session, message_id::audio_error);
+          return 0;
+        }
       }
 
       while ( remaining > 0 )
@@ -576,6 +588,7 @@ namespace musciteer
 
       if ( output.is_prepared() )
       {
+        std::cerr << "spotify_session::music_delivery start avail=" << avail << std::endl;
         output.start();
         notify(session, message_id::begin_session);
       }
@@ -630,7 +643,7 @@ namespace musciteer
 
   void spotify_session::get_audio_buffer_stats_cb(sp_session *session, sp_audio_buffer_stats *stats)
   {
-    stats->samples = 1024;
+    stats->samples = 2048;
     stats->stutter = 0;
   }
 

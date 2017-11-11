@@ -49,9 +49,11 @@ namespace musciteer
     }
     void main() override
     {
-      if ( decode() )
-      {
+      if ( decode() ) {
         output_.drain();
+      }
+      else {
+        output_.drop();
       }
       notifier_.stream_end();
     }

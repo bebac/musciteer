@@ -73,6 +73,7 @@ public:
   void prepare();
   void start();
   void drain();
+  void drop();
 public:
   snd_pcm_sframes_t avail_update();
   void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames);

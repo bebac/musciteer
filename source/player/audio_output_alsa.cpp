@@ -152,6 +152,14 @@ public:
     }
   }
 public:
+  void drop()
+  {
+    auto err = snd_pcm_drop(handle_);
+    if ( err != 0 ) {
+      throw alsa_error(err);
+    }
+  }
+public:
   snd_pcm_sframes_t avail_update()
   {
     return snd_pcm_avail_update(handle_);
@@ -285,6 +293,11 @@ void audio_output_alsa::start()
 void audio_output_alsa::drain()
 {
   pimpl_->drain();
+}
+
+void audio_output_alsa::drop()
+{
+  pimpl_->drop();
 }
 
 snd_pcm_sframes_t audio_output_alsa::avail_update()

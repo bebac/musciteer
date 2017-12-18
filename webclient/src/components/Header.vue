@@ -7,6 +7,9 @@
       </div>
       <m-menu-show v-on:click="show_nav = !show_nav"></m-menu-show>
     </div>
+    <div>
+      <m-header-search v-on:click=""></m-header-search>
+    </div>
     <div v-show="show_nav">
       <nav>
         <router-link to='/albums'>Albums</router-link>
@@ -20,11 +23,13 @@
 
 <script>
   import HeaderBack from '@/components/HeaderBack'
+  import HeaderSearch from '@/components/HeaderSearch'
   import MenuShow from '@/components/MenuShow'
 
   export default {
     components: {
       'm-header-back': HeaderBack,
+      'm-header-search': HeaderSearch,
       'm-menu-show': MenuShow
     },
 

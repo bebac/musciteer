@@ -1,26 +1,43 @@
 <template>
-  <div id="m-playlists">
-    <m-loader v-if="loading"></m-loader>
-    <div v-else>
-      <ul>
-        <li v-for="playlist in playlists" v-on:click="play(playlist)">
-          <m-tag-icon></m-tag-icon>
-          <div>
-            {{ playlist }}
-          </div>
-        </li>
-      </ul>
+  <div id="playlists-page">
+    <div id="header">
+      <m-header></m-header>
+    </div>
+    <div id="main">
+      <m-queue-update></m-queue-update>
+      <div id="m-playlists">
+        <m-loader v-if="loading"></m-loader>
+        <div v-else>
+          <ul>
+            <li v-for="playlist in playlists" v-on:click="play(playlist)">
+              <m-tag-icon></m-tag-icon>
+              <div>
+                {{ playlist }}
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <m-footer></m-footer>
     </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+  import QueueUpdate from '@/components/QueueUpdate'
   import Loader from '@/components/Loader'
   import TagIcon from '@/components/TagIcon'
 
   export default {
     components: {
+      'm-header': Header,
+      'm-footer': Footer,
+      'm-queue-update': QueueUpdate,
       'm-loader': Loader,
       'm-tag-icon': TagIcon
     },
@@ -53,6 +70,11 @@
 <style lang="scss">
   @import "../styles/mixins.scss";
   @import "../styles/variables.scss";
+
+  #playlists-page
+  {
+    background-color: #fff;
+  }
 
   #m-playlists
   {

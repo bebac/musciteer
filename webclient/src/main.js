@@ -13,34 +13,18 @@ Vue.use(Socket, 'ws://' + window.location.host)
 // Vue.use(Socket, 'ws://localhost:8214')
 
 router.afterEach((to, from, next) => {
-  let h = document.getElementById('header')
-  let f = document.getElementById('footer')
+})
 
-  if (h) {
-    if (to.name === 'Player') {
-      h.style.display = 'none'
-    } else {
-      h.style.display = 'block'
-    }
+router.beforeEach((to, from, next) => {
+  let body = document.getElementsByTagName('BODY')[0]
+
+  if (from.name === 'Player') {
+    body.style.backgroundColor = '#333'
+  } else {
+    body.style.backgroundColor = '#fff'
   }
 
-  if (f) {
-    if (to.name === 'Player') {
-      f.style.display = 'none'
-    } else {
-      f.style.display = 'block'
-    }
-  }
-
-  let back = document.getElementById('header-back-button')
-
-  if (back) {
-    if (to.name !== 'Albums') {
-      back.style.visibility = 'visible'
-    } else {
-      back.style.visibility = 'hidden'
-    }
-  }
+  next()
 })
 
 /* eslint-disable no-new */

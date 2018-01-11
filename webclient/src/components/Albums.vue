@@ -1,20 +1,34 @@
 <template>
-  <div id="m-albums">
-    <m-loader v-if="loading"></m-loader>
-    <ol v-else>
-      <li
-        is="m-album-thumb"
-        v-for="album in albumsSortedByArtist"
-        v-bind:key="album.id"
-        v-bind:album="album"
-      >
-      </li>
-    </ol>
+  <div id="albums-page">
+    <div id="header">
+      <m-header></m-header>
+    </div>
+    <div id="main">
+      <m-queue-update></m-queue-update>
+      <div id="m-albums">
+        <m-loader v-if="loading"></m-loader>
+        <ol v-else>
+          <li
+            is="m-album-thumb"
+            v-for="album in albumsSortedByArtist"
+            v-bind:key="album.id"
+            v-bind:album="album"
+          >
+          </li>
+        </ol>
+      </div>
+    </div>
+    <div id="footer">
+      <m-footer></m-footer>
+    </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+  import QueueUpdate from '@/components/QueueUpdate'
   import Loader from '@/components/Loader'
   import AlbumThumb from '@/components/AlbumThumb'
 
@@ -22,6 +36,9 @@
     name: 'albums',
 
     components: {
+      'm-header': Header,
+      'm-footer': Footer,
+      'm-queue-update': QueueUpdate,
       'm-loader': Loader,
       'm-album-thumb': AlbumThumb
     },
@@ -89,6 +106,11 @@
 <style lang="scss">
   @import "../styles/mixins.scss";
   @import "../styles/variables.scss";
+
+  #albums-page
+  {
+    background-color: #fff;
+  }
 
   #m-albums
   {

@@ -30,7 +30,8 @@
       classes: function () {
         return {
           'button': true,
-          'button-click': this.clicked
+          'button-click': this.clicked,
+          'hidden': history.length === 0
         }
       }
     },
@@ -53,7 +54,12 @@
 
   #header-back-button
   {
-    visibility: hidden;
+    //visibility: hidden;
     @include size(2em);
+  }
+
+  .hidden
+  {
+    visibility: hidden;
   }
 </style>

@@ -1,37 +1,51 @@
 <template>
-  <div id="m-settings">
-    <div class="header">
-      <h1>Settings</h1>
+  <div id="settings-page">
+    <div id="header">
+      <m-header></m-header>
     </div>
-    <div class="section-header">
-      <h2>Audio</h2>
+    <div id="main">
+      <m-queue-update></m-queue-update>
+      <div id="m-settings">
+        <div class="header">
+          <h1>Settings</h1>
+        </div>
+        <div class="section-header">
+          <h2>Audio</h2>
+        </div>
+        <m-audio-output></m-audio-output>
+        <m-replay-gain></m-replay-gain>
+        <div class="section-header">
+          <h2>Continuous Playback</h2>
+        </div>
+        <m-continuous-playback></m-continuous-playback>
+        <div class="section-header">
+          <h2>Local Source</h2>
+        </div>
+        <m-local-source></m-local-source>
+        <div class="section-header">
+          <h2>Spotify Source</h2>
+        </div>
+        <m-spotify-source></m-spotify-source>
+        <div class="section-header">
+          <h2>Spotify Web</h2>
+        </div>
+        <m-spotify-web></m-spotify-web>
+        <div class="section-header">
+          <h2>Spotify Import</h2>
+        </div>
+        <m-spotify-import></m-spotify-import>
+      </div>
     </div>
-    <m-audio-output></m-audio-output>
-    <m-replay-gain></m-replay-gain>
-    <div class="section-header">
-      <h2>Continuous Playback</h2>
+    <div id="footer">
+      <m-footer></m-footer>
     </div>
-    <m-continuous-playback></m-continuous-playback>
-    <div class="section-header">
-      <h2>Local Source</h2>
-    </div>
-    <m-local-source></m-local-source>
-    <div class="section-header">
-      <h2>Spotify Source</h2>
-    </div>
-    <m-spotify-source></m-spotify-source>
-    <div class="section-header">
-      <h2>Spotify Web</h2>
-    </div>
-    <m-spotify-web></m-spotify-web>
-    <div class="section-header">
-      <h2>Spotify Import</h2>
-    </div>
-    <m-spotify-import></m-spotify-import>
   </div>
 </template>
 
 <script>
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+  import QueueUpdate from '@/components/QueueUpdate'
   import ReplayGain from '@/components/SettingsReplayGain'
   import AudioOutput from '@/components/SettingsAudioOutput'
   import ContinuousPlayback from '@/components/SettingsContinuousPlayback'
@@ -42,6 +56,9 @@
 
   export default {
     components: {
+      'm-header': Header,
+      'm-footer': Footer,
+      'm-queue-update': QueueUpdate,
       'm-audio-output': AudioOutput,
       'm-replay-gain': ReplayGain,
       'm-continuous-playback': ContinuousPlayback,
@@ -61,6 +78,11 @@
 <style lang="scss">
   @import "../styles/mixins.scss";
   @import "../styles/variables.scss";
+
+  #settings-page
+  {
+    background-color: #fff;
+  }
 
   #m-settings
   {

@@ -1,5 +1,5 @@
 <template>
-  <div id="player">
+  <div id="player-page">
     <!--<div id="player-background">
       <img v-bind:src="stream.track.album.cover" v-if="stream">
     </div>-->
@@ -104,16 +104,6 @@
     },
 
     mounted: function () {
-      let h = document.getElementById('header')
-      let f = document.getElementById('footer')
-
-      if (h) {
-        h.style.display = 'none'
-      }
-
-      if (f) {
-        f.style.display = 'none'
-      }
     }
   }
 </script>
@@ -123,7 +113,7 @@
   @import "../styles/variables.scss";
   @import "../styles/button.scss";
 
-  #player
+  #player-page
   {
     display: flex;
     flex-direction: column;

@@ -1,47 +1,64 @@
 <template>
-  <div id="album">
-    <div v-if="album" key="album" >
-      <div class="album-header">
-        <div>
-          <div key="album" class="cover">
-            <img v-bind:src="album.cover" v-on:error="coverOk = false" v-if="coverOk">
-          </div>
-        </div>
-        <div>
-          <div class="title">
-            <h1>{{album.title}}</h1>
-            <h2>{{album.artist.name}}</h2>
-          </div>
-          <div class="actions">
+  <div id="album-page">
+    <div id="header">
+      <m-header></m-header>
+    </div>
+    <div id="main">
+      <m-queue-update></m-queue-update>
+      <div id="album">
+        <div v-if="album" key="album" >
+          <div class="album-header">
             <div>
-              <button class="button" v-on:click="play_album">play</button>
+              <div key="album" class="cover">
+                <img v-bind:src="album.cover" v-on:error="coverOk = false" v-if="coverOk">
+              </div>
+            </div>
+            <div>
+              <div class="title">
+                <h1>{{album.title}}</h1>
+                <h2>{{album.artist.name}}</h2>
+              </div>
+              <div class="actions">
+                <div>
+                  <button class="button" v-on:click="play_album">play</button>
+                </div>
+              </div>
             </div>
           </div>
+          <div class="album-tracks">
+            <ol>
+              <li
+                is="m-item"
+                v-for="item in discs"
+                v-bind:key="item.id"
+                v-bind:item="item"
+              >
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
-      <div class="album-tracks">
-        <ol>
-          <li
-            is="m-item"
-            v-for="item in discs"
-            v-bind:key="item.id"
-            v-bind:item="item"
-          >
-          </li>
-        </ol>
-      </div>
+    </div>
+    <div id="footer">
+      <m-footer></m-footer>
     </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+  import QueueUpdate from '@/components/QueueUpdate'
   import AlbumItem from '@/components/AlbumItem'
 
   export default {
     name: 'album',
 
     components: {
+      'm-header': Header,
+      'm-footer': Footer,
+      'm-queue-update': QueueUpdate,
       'm-item': AlbumItem
     },
 
@@ -137,6 +154,11 @@
   @import "../styles/mixins.scss";
   @import "../styles/variables.scss";
   @import "../styles/button.scss";
+
+  #album-page
+  {
+    background-color: #fff;
+  }
 
   #album
   {

@@ -1,42 +1,59 @@
 <template>
-  <div id="m-tracks">
-    <m-loader v-if="loading"></m-loader>
-    <div v-else>
-      <table>
-        <thead ref="thead">
-          <tr class="item">
-            <th>Track</th>
-            <th>Artist</th>
-            <th>Album</th>
-            <th>Plays</th>
-            <th>Skips</th>
-            <th v-bind:style="{ paddingRight: srcollBarWidth + 'px' }"></th>
-          </tr>
-        </thead>
-        <tbody ref="tbody" v-on:scroll="scroll">
-          <tr class="vspace vspace-top" v-bind:style="{ height: vspaceTop + 'px' }"></tr>
-          <tr
-            is="m-track"
-            class="item item-data"
-            v-for="track in tracksSlice"
-            v-bind:key="track.id"
-            v-bind:track="track"
-          >
-          </tr>
-          <tr class="vspace vspace-bottom" v-bind:style="{ height: vspaceBottom + 'px' }"></tr>
-        </tbody>
-      </table>
+  <div>
+    <div id="header">
+      <m-header></m-header>
+    </div>
+    <div id="main">
+      <m-queue-update></m-queue-update>
+      <div id="m-tracks">
+        <m-loader v-if="loading"></m-loader>
+        <div v-else>
+          <table>
+            <thead ref="thead">
+              <tr class="item">
+                <th>Track</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Plays</th>
+                <th>Skips</th>
+                <th v-bind:style="{ paddingRight: srcollBarWidth + 'px' }"></th>
+              </tr>
+            </thead>
+            <tbody ref="tbody" v-on:scroll="scroll">
+              <tr class="vspace vspace-top" v-bind:style="{ height: vspaceTop + 'px' }"></tr>
+              <tr
+                is="m-track"
+                class="item item-data"
+                v-for="track in tracksSlice"
+                v-bind:key="track.id"
+                v-bind:track="track"
+              >
+              </tr>
+              <tr class="vspace vspace-bottom" v-bind:style="{ height: vspaceBottom + 'px' }"></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <m-footer></m-footer>
     </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import Header from '@/components/Header'
+  import Footer from '@/components/Footer'
+  import QueueUpdate from '@/components/QueueUpdate'
   import Loader from '@/components/Loader'
   import TracksItem from '@/components/TracksItem'
 
   export default {
     components: {
+      'm-header': Header,
+      'm-footer': Footer,
+      'm-queue-update': QueueUpdate,
       'm-loader': Loader,
       'm-track': TracksItem
     },

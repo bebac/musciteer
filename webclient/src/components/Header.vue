@@ -1,22 +1,24 @@
 <template>
-  <div id="m-header">
-    <div>
-      <m-header-back></m-header-back>
+  <div class="header">
+    <div id="m-header">
       <div>
-        Musciteer
+        <m-header-back></m-header-back>
+        <div>
+          Musciteer
+        </div>
+        <m-menu-show v-on:click="show_nav = !show_nav"></m-menu-show>
       </div>
-      <m-menu-show v-on:click="show_nav = !show_nav"></m-menu-show>
-    </div>
-    <div>
-      <m-header-search v-on:click=""></m-header-search>
-    </div>
-    <div v-show="show_nav">
-      <nav>
-        <router-link to='/albums'>Albums</router-link>
-        <router-link to='/tracks'>Tracks</router-link>
-        <router-link to='/playlists'>Playlists</router-link>
-        <router-link to='/settings'>Settings</router-link>
-      </nav>
+      <div>
+        <m-header-search v-on:click=""></m-header-search>
+      </div>
+      <div v-show="show_nav">
+        <nav>
+          <router-link to='/albums'>Albums</router-link>
+          <router-link to='/tracks'>Tracks</router-link>
+          <router-link to='/playlists'>Playlists</router-link>
+          <router-link to='/settings'>Settings</router-link>
+        </nav>
+      </div>
     </div>
   </div>
 </template>

@@ -1,13 +1,15 @@
 <template>
-  <div id="m-footer">
-    <div class="left">
-      <m-player-show></m-player-show>
-      <m-player-mini></m-player-mini>
+  <div class="footer">
+    <div id="m-footer">
+      <div class="left">
+        <m-player-show></m-player-show>
+        <m-player-mini></m-player-mini>
+      </div>
+      <div class="center">
+        <m-player-toggle></m-player-toggle>
+      </div>
+      <div class="right"></div>
     </div>
-    <div class="center">
-      <m-player-toggle></m-player-toggle>
-    </div>
-    <div class="right"></div>
   </div>
 </template>
 

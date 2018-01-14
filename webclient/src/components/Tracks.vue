@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="header">
-      <m-header></m-header>
-    </div>
+    <m-header></m-header>
     <div id="tracks" class="main">
       <m-queue-update></m-queue-update>
       <div id="m-tracks">
@@ -35,9 +33,7 @@
         </div>
       </div>
     </div>
-    <div class="footer">
-      <m-footer></m-footer>
-    </div>
+    <m-footer></m-footer>
   </div>
 </template>
 

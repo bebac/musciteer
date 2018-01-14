@@ -1,8 +1,6 @@
 <template>
   <div id="albums-page">
-    <div class="header">
-      <m-header></m-header>
-    </div>
+    <m-header></m-header>
     <div id="albums" class="main">
       <m-queue-update></m-queue-update>
       <div id="m-albums">
@@ -18,9 +16,7 @@
         </ol>
       </div>
     </div>
-    <div class="footer">
-      <m-footer></m-footer>
-    </div>
+    <m-footer></m-footer>
   </div>
 </template>
 

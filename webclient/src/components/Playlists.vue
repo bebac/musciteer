@@ -1,8 +1,6 @@
 <template>
   <div id="playlists-page">
-    <div class="header">
-      <m-header></m-header>
-    </div>
+    <m-header></m-header>
     <div class="main">
       <m-queue-update></m-queue-update>
       <div id="m-playlists">
@@ -19,9 +17,7 @@
         </div>
       </div>
     </div>
-    <div class="footer">
-      <m-footer></m-footer>
-    </div>
+    <m-footer></m-footer>
   </div>
 </template>
 

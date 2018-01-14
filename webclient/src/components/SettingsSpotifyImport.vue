@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="section-content">
-      <div class="header">
+      <div class="setting-header">
         URL
       </div>
-      <div class="body">
+      <div class="setting-body">
         <input type="text" v-model="url"></input>
-        <button class="body-button" v-on:click="importURL">
+        <button class="setting-body-button" v-on:click="importURL">
           <span>import</span>
           <div v-if="importing" class="busy">
             <div></div>
@@ -15,7 +15,7 @@
           </div>
         </button>
       </div>
-      <div class="description">
+      <div class="setting-description">
         <span>Enter spotify track or album url to import. Examples:
           <ul>
             <li>/v1/albums/08ibdX8K0GETv20UEku3sm</li>

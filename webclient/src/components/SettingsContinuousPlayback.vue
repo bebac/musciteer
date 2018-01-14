@@ -1,22 +1,22 @@
 <template>
   <div>
     <div class="section-content">
-      <div class="header">
+      <div class="setting-header">
         Enable
       </div>
-      <div class="body">
+      <div class="setting-body">
         <input type="checkbox" v-model="enabled" v-on:change="toggle"></input>
       </div>
-      <div class="description">
+      <div class="setting-description">
         <span v-if="enabled">Uncheck to disable continuous playback.</span>
         <span v-else>Check to enable continuous playback.</span>
       </div>
     </div>
     <div class="section-content">
-      <div class="header">
+      <div class="setting-header">
         Type
       </div>
-      <div class="body">
+      <div class="setting-body">
         <select v-model="type" v-on:change="setType">
           <option v-for="t in types">{{t}}</option>
         </select>
@@ -29,7 +29,7 @@
           </svg>
         </div>
       </div>
-      <div class="description">
+      <div class="setting-description">
         <span>Set continuous playback type.</span>
       </div>
     </div>

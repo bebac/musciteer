@@ -1,9 +1,9 @@
 <template>
   <div class="section-content">
-    <div class="header">
+    <div class="setting-header">
       Directories
     </div>
-    <div class="body">
+    <div class="setting-body">
       <ul>
         <li v-for="dir in directories">
           <input type="text" v-model="dir.value" v-on:change="set" v-on:keyup.13="set"></input>
@@ -23,7 +23,7 @@
         </li>
       </ul>
     </div>
-    <div class="description">
+    <div class="setting-description">
       <span>Configure directories to scan for local music files.</span>
     </div>
   </div>

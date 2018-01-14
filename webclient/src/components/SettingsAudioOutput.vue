@@ -1,9 +1,9 @@
 <template>
   <div class="section-content">
-    <div class="header">
+    <div class="setting-header">
       Output
     </div>
-    <div class="body">
+    <div class="setting-body">
       <select v-model="current" v-on:change="set">
         <option v-for="device in devices">{{device}}</option>
       </select>
@@ -16,7 +16,7 @@
         </svg>
       </div>
     </div>
-    <div class="description">
+    <div class="setting-description">
       <span>The audio output device.</span>
     </div>
   </div>

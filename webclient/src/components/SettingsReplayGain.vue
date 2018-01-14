@@ -1,12 +1,12 @@
 <template>
   <div class="section-content">
-    <div class="header">
+    <div class="setting-header">
       Replay Gain
     </div>
-    <div class="body">
+    <div class="setting-body">
       <input type="checkbox" v-model="enabled" v-on:change="toggle"></input>
     </div>
-    <div class="description">
+    <div class="setting-description">
       <span v-if="enabled">Uncheck to disable replay gain.</span>
       <span v-else>Check to enable replay gain.</span>
     </div>

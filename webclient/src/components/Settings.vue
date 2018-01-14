@@ -4,7 +4,7 @@
     <div class="main">
       <m-queue-update></m-queue-update>
       <div id="m-settings">
-        <div class="header">
+        <div class="settings-header">
           <h1>Settings</h1>
         </div>
         <div class="section-header">
@@ -118,19 +118,19 @@
       display: flex;
       align-items: flex-start;
 
-      .header, .body, .description
+      .setting-header, .setting-body, .setting-description
       {
         flex: 1;
         padding: 0.33em 1em;
       }
 
-      .header
+      .setting-header
       {
         font-weight: bold;
         text-align: right;
       }
 
-      .body
+      .setting-body
       {
         position: relative;
 
@@ -145,12 +145,12 @@
         }
       }
 
-      .body-button
+      .setting-body-button
       {
         margin: 1.33em 0;
       }
 
-      .description
+      .setting-description
       {
         text-align: left;
       }

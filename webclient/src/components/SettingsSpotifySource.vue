@@ -1,26 +1,26 @@
 <template>
   <div>
     <div class="section-content">
-      <div class="header">
+      <div class="setting-header">
         Username
       </div>
-      <div class="body">
+      <div class="setting-body">
         <input type="text" v-model="username"></input>
       </div>
-      <div class="description">
+      <div class="setting-description">
         <span v-if="ok">{{message}}</span>
         <span v-else>Spotify premium username</span>
       </div>
     </div>
     <div class="section-content">
-      <div class="header">
+      <div class="setting-header">
         Password
       </div>
-      <div class="body">
+      <div class="setting-body">
         <input type="password" v-model="password"></input>
-        <button class="body-button" v-on:click="activate">activate</button>
+        <button class="setting-body-button" v-on:click="activate">activate</button>
       </div>
-      <div class="description">
+      <div class="setting-description">
         <span v-if="ok"></span>
         <span v-else>Spotify premium password</span>
       </div>

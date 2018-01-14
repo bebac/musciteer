@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <transition :name=transition>
+    <!--<transition :name=transition>-->
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
-    </transition>
+    <!--</transition>-->
     <m-connection></m-connection>
   </div>
 </template>
@@ -54,7 +54,7 @@
       flex-direction: column;
       height: 100%;
 
-      #header
+      .header
       {
         flex: 0 0 auto;
         background: linear-gradient(to bottom, saturate($color-base, 2%), transparentize($color-base, 0.4));
@@ -62,14 +62,14 @@
         border-bottom: 1px solid desaturate(darken($color-base, 10%), 5%);
       }
 
-      #main
+      .main
       {
         position: relative;
         flex: 1;
         overflow: auto;
       }
 
-      #footer
+      .footer
       {
         flex: 0 0 4em;
         background-color: $color-base;

@@ -1,9 +1,9 @@
 <template>
   <div id="album-page">
-    <div id="header">
+    <div class="header">
       <m-header></m-header>
     </div>
-    <div id="main">
+    <div class="main">
       <m-queue-update></m-queue-update>
       <div id="album">
         <div v-if="album" key="album" >
@@ -39,7 +39,7 @@
         </div>
       </div>
     </div>
-    <div id="footer">
+    <div class="footer">
       <m-footer></m-footer>
     </div>
   </div>

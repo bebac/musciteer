@@ -1,9 +1,9 @@
 <template>
   <div id="settings-page">
-    <div id="header">
+    <div class="header">
       <m-header></m-header>
     </div>
-    <div id="main">
+    <div class="main">
       <m-queue-update></m-queue-update>
       <div id="m-settings">
         <div class="header">
@@ -36,7 +36,7 @@
         <m-spotify-import></m-spotify-import>
       </div>
     </div>
-    <div id="footer">
+    <div class="footer">
       <m-footer></m-footer>
     </div>
   </div>

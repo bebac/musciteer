@@ -1,9 +1,9 @@
 <template>
   <div id="albums-page">
-    <div id="header">
+    <div class="header">
       <m-header></m-header>
     </div>
-    <div id="main">
+    <div id="albums" class="main">
       <m-queue-update></m-queue-update>
       <div id="m-albums">
         <m-loader v-if="loading"></m-loader>
@@ -18,7 +18,7 @@
         </ol>
       </div>
     </div>
-    <div id="footer">
+    <div class="footer">
       <m-footer></m-footer>
     </div>
   </div>
@@ -47,15 +47,15 @@
       return {
         loading: false,
         albums: [],
+        element: null,
         top: 0
       }
     },
 
     methods: {
       set_scroll_top: function () {
-        let main = document.getElementById('main')
-        if (main) {
-          main.scrollTop = this.top
+        if (this.element) {
+          this.element.scrollTop = this.top
         }
       }
     },
@@ -85,6 +85,10 @@
       }
     },
 
+    mounted: function (el) {
+      this.element = document.getElementById('albums')
+    },
+
     beforeRouteEnter (to, from, next) {
       next(
         vm => {
@@ -94,9 +98,8 @@
     },
 
     beforeRouteLeave (to, from, next) {
-      let main = document.getElementById('main')
-      if (main) {
-        this.top = main.scrollTop
+      if (this.element) {
+        this.top = this.element.scrollTop
       }
       next()
     }

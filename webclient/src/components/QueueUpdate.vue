@@ -1,9 +1,9 @@
 <template>
   <div id="notification" v-if="showing">
-    <div class="header">
+    <div class="notification-header">
       <h1>{{queue_update.queue_size}}</h1>
     </div>
-    <div class="body">
+    <div class="notification-body">
       <h2>{{queue_update.track.title}}</h2>
       <h3>{{queue_update.track.artists[0].name}}</h3>
     </div>
@@ -60,13 +60,13 @@
     align-items: center;
     z-index: 9999;
 
-    .header, .body
+    .notification-header, .notification-body
     {
       background: rgba(33, 33, 33, 0);
       border: none;
     }
 
-    .header
+    .notification-header
     {
       flex: 0 0 auto;
       min-width: 0;
@@ -78,7 +78,7 @@
       }
     }
 
-    .body
+    .notification-body
     {
       flex: 1;
       min-width: 0;

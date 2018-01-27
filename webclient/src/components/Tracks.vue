@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="tracks-page">
     <m-header></m-header>
     <div id="tracks" class="main">
       <m-queue-update></m-queue-update>
@@ -185,6 +185,11 @@
 <style lang="scss">
   @import "../styles/mixins.scss";
   @import "../styles/variables.scss";
+
+  #tracks-page
+  {
+    background-color: #fff;
+  }
 
   #m-tracks
   {

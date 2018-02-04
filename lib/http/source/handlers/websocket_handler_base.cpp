@@ -100,7 +100,8 @@ namespace http
     switch ( header.opcode() )
     {
       case 0:
-        // Not implemented yet.
+        // TODO: Implement continuation.
+        std::cerr << "continuation frame not implemented!" << std::endl;
         break;
       case 1:
       {
@@ -118,11 +119,25 @@ namespace http
         break;
       }
       case 2:
-        // Not implemented yet.
+        // TODO: Implement binary frames.
+        std::cerr << "binary frame not implemented!" << std::endl;
+        break;
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+        std::cerr << "received reserved websocket frame!" << std::endl;
         break;
       case 8:
         payload.setstate(std::ios_base::eofbit);
         return;
+      case 9:
+        std::cerr << "websocket ping not implemented!" << std::endl;
+        break;
+      case 10:
+        std::cerr << "websocket pong not implemented!" << std::endl;
+        break;
     }
   }
 

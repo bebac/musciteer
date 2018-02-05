@@ -393,7 +393,7 @@ namespace musciteer
 
     if ( notifier_ )
     {
-      notifier_->stream_end();
+      notifier_->stream_end(audio_error);
       notifier_.reset();
     }
     else {
@@ -477,12 +477,20 @@ namespace musciteer
       auto replaygain = source_.rg_track_gain();
       auto replaygain_peak = source_.rg_track_peak();
 
-      output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
-      output.set_params(2, 44100);
-      output.prepare();
+      try
+      {
+        output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
+        output.set_params(2, 44100);
+        output.prepare();
 
-      if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
-        session_error(sp_error_message(err));
+        if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
+          session_error(sp_error_message(err));
+        }
+      }
+      catch(const audio_output_error& e)
+      {
+        std::cerr << "spotify track loaded audio output error! " << e.what() << std::endl;
+        notifier_->stream_end(true);
       }
     }
   }
@@ -588,8 +596,16 @@ namespace musciteer
 
       if ( output.is_prepared() )
       {
-        output.start();
-        notify(session, message_id::begin_session);
+        try
+        {
+          output.start();
+          notify(session, message_id::begin_session);
+        }
+        catch(const audio_output_error& e)
+        {
+          std::cerr << "spotify music delivery audio output error! " << e.what() << std::endl;
+          notify(session, message_id::audio_error);
+        }
       }
       else {
         notify(session, message_id::progress_session);

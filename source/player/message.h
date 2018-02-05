@@ -202,9 +202,11 @@ public:
   audio_output_stream_end_notification(audio_output_stream_end_notification&& other)
   {
     stream_id = std::move(other.stream_id);
+    audio_output_error = std::move(other.audio_output_error);
   }
 public:
   unsigned stream_id;
+  bool audio_output_error;
 };
 
 // ----------------------------------------------------------------------------

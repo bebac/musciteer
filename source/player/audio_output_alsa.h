@@ -60,6 +60,8 @@ public:
   void open(const std::string& device_name);
   void close();
 public:
+  operator bool() const;
+public:
   float get_replaygain_scale() const;
 public:
   bool get_replaygain_enabled() const;

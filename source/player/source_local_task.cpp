@@ -49,13 +49,21 @@ namespace musciteer
     }
     void main() override
     {
-      if ( decode() ) {
-        output_.drain();
+      try
+      {
+        if ( decode() ) {
+          output_.drain();
+        }
+        else {
+          output_.drop();
+        }
+        notifier_.stream_end();
       }
-      else {
-        output_.drop();
+      catch(const audio_output_error& e)
+      {
+        std::cerr << "flac stream decoder audio output error! " << e.what() << std::endl;
+        notifier_.stream_end(true);
       }
-      notifier_.stream_end();
     }
   private:
     void set_md5_checking(bool value)

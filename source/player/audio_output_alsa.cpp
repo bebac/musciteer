@@ -14,7 +14,7 @@
 class audio_output_alsa::audio_output_alsa_impl
 {
 public:
-  audio_output_alsa_impl() : replaygain_enabled_(false), replaygain_(0.0), replaygain_scale_(1.0)
+  audio_output_alsa_impl() : replaygain_enabled_(false), replaygain_(0.0), replaygain_scale_(1.0), handle_(nullptr)
   {
   }
 public:
@@ -35,6 +35,11 @@ public:
     else {
       throw alsa_error(err);
     }
+  }
+public:
+  operator bool() const
+  {
+    return handle_ != nullptr;
   }
 public:
   float get_replaygain_scale() const
@@ -243,6 +248,11 @@ void audio_output_alsa::open(const std::string& device_name)
 void audio_output_alsa::close()
 {
   pimpl_->close();
+}
+
+audio_output_alsa::operator bool() const
+{
+  return !!pimpl_;
 }
 
 float audio_output_alsa::get_replaygain_scale() const

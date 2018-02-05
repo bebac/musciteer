@@ -54,12 +54,12 @@ namespace musciteer
       }
     }
   public:
-    void stream_end()
+    void stream_end(bool audio_output_error = false)
     {
       using std::chrono::steady_clock;
 
       stream_progress_notify(steady_clock::now() - stream_begin_time_, stream_length_);
-      stream_end_notify();
+      stream_end_notify(audio_output_error);
     }
   private:
     void stream_begin_now()
@@ -100,12 +100,13 @@ namespace musciteer
       channel_.send(std::move(m));
     }
   private:
-    void stream_end_notify()
+    void stream_end_notify(bool audio_output_error)
     {
       message m(message::stream_end_notify_id);
       auto& n = m.stream_end_notify;
 
       n.stream_id = id_;
+      n.audio_output_error = audio_output_error;
 
       channel_.send(std::move(m));
     }

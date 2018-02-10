@@ -54,6 +54,7 @@ struct s32_le_n_frame
 // ----------------------------------------------------------------------------
 class audio_output_alsa
 {
+  using error_handler = std::function<void(int error_code)>;
 public:
   audio_output_alsa();
 public:
@@ -61,6 +62,9 @@ public:
   void close();
 public:
   operator bool() const;
+public:
+  void set_error_handler(error_handler);
+  void clr_error_handler();
 public:
   float get_replaygain_scale() const;
 public:
@@ -73,7 +77,7 @@ public:
   unsigned int hw_period_samples() const;
 public:
   void prepare();
-  void start();
+  bool start();
   void drain();
   void drop();
 public:

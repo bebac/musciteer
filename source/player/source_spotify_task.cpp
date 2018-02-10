@@ -377,11 +377,13 @@ namespace musciteer
     {
       sp_session_player_unload(session_);
 
-      if ( ! audio_error )
-      {
-        auto output = player_session_->get_audio_output();
+      auto output = player_session_->get_audio_output();
+
+      if ( ! audio_error ) {
         output.drain();
       }
+
+      output.clr_error_handler();
 
       release_track();
       player_session_.reset();
@@ -477,20 +479,17 @@ namespace musciteer
       auto replaygain = source_.rg_track_gain();
       auto replaygain_peak = source_.rg_track_peak();
 
-      try
-      {
-        output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
-        output.set_params(2, 44100);
-        output.prepare();
+      output.set_error_handler([&](int error_code) {
+        std::cerr << "spotify session audio output error! " << error_code << std::endl;
+        send(message_id::audio_error);
+      });
 
-        if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
-          session_error(sp_error_message(err));
-        }
-      }
-      catch(const audio_output_error& e)
-      {
-        std::cerr << "spotify track loaded audio output error! " << e.what() << std::endl;
-        notifier_->stream_end(true);
+      output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
+      output.set_params(2, 44100);
+      output.prepare();
+
+      if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
+        session_error(sp_error_message(err));
       }
     }
   }
@@ -596,18 +595,12 @@ namespace musciteer
 
       if ( output.is_prepared() )
       {
-        try
-        {
-          output.start();
+        if ( output.start() ) {
           notify(session, message_id::begin_session);
         }
-        catch(const audio_output_error& e)
-        {
-          std::cerr << "spotify music delivery audio output error! " << e.what() << std::endl;
-          notify(session, message_id::audio_error);
-        }
       }
-      else {
+      else
+      {
         notify(session, message_id::progress_session);
       }
 

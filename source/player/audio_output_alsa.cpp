@@ -11,19 +11,36 @@
 #include <cmath>
 
 // ----------------------------------------------------------------------------
+namespace
+{
+  using error_handler = std::function<void(int error_code)>;
+
+  void default_audio_output_error_handler(int error_code)
+  {
+    throw alsa_error(error_code);
+  }
+}
+
+// ----------------------------------------------------------------------------
 class audio_output_alsa::audio_output_alsa_impl
 {
+
 public:
-  audio_output_alsa_impl() : replaygain_enabled_(false), replaygain_(0.0), replaygain_scale_(1.0), handle_(nullptr)
+  audio_output_alsa_impl()
+    :
+    replaygain_enabled_(false),
+    replaygain_(0.0),
+    replaygain_scale_(1.0),
+    handle_(nullptr),
+    error_handler_(default_audio_output_error_handler)
   {
   }
 public:
   void open(const std::string& device_name)
   {
-    auto err = snd_pcm_open(&handle_, device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_open(&handle_, device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0)
+    );
   }
 public:
   void close()
@@ -40,6 +57,15 @@ public:
   operator bool() const
   {
     return handle_ != nullptr;
+  }
+public:
+  void set_error_handler(error_handler func)
+  {
+    error_handler_ = func;
+  }
+  void clr_error_handler()
+  {
+    error_handler_ = default_audio_output_error_handler;
   }
 public:
   float get_replaygain_scale() const
@@ -82,87 +108,81 @@ public:
 public:
   void set_params(int channels, unsigned sample_rate)
   {
-    int err;
-
     snd_pcm_hw_params_t *hw_params;
 
     snd_pcm_hw_params_malloc(&hw_params);
 
-    if ( (err = snd_pcm_hw_params_any(handle_, hw_params)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_any(handle_, hw_params)
+    );
 
-    if ( (err = snd_pcm_hw_params_set_format(handle_, hw_params, SND_PCM_FORMAT_S32_LE)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_format(handle_, hw_params, SND_PCM_FORMAT_S32_LE)
+    );
 
-    if ( (err = snd_pcm_hw_params_set_rate(handle_, hw_params, sample_rate, 0)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_rate(handle_, hw_params, sample_rate, 0)
+    );
 
-    if ( (err = snd_pcm_hw_params_set_channels(handle_, hw_params, channels)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_channels(handle_, hw_params, channels)
+    );
 
-    if ( (err = snd_pcm_hw_params_set_access(handle_, hw_params, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_access(handle_, hw_params, SND_PCM_ACCESS_MMAP_INTERLEAVED)
+    );
 
     unsigned int buffer_us = 1000000;
     int buffer_dir;
 
-    if ( (err = snd_pcm_hw_params_set_buffer_time_max(handle_, hw_params, &buffer_us, &buffer_dir)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_buffer_time_max(handle_, hw_params, &buffer_us, &buffer_dir)
+    );
 
-    if ( (err = snd_pcm_hw_params_set_buffer_time_near(handle_, hw_params, &buffer_us, &buffer_dir)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_buffer_time_near(handle_, hw_params, &buffer_us, &buffer_dir)
+    );
 
     unsigned int period_us = hw_period_samples()*1000000/sample_rate;
     int period_dir;
 
-    if ( (err = snd_pcm_hw_params_set_period_time_near(handle_, hw_params, &period_us, &period_dir)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params_set_period_time_near(handle_, hw_params, &period_us, &period_dir)
+    );
 
-    if ( (err = snd_pcm_hw_params(handle_, hw_params)) < 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_hw_params(handle_, hw_params)
+    );
 
     snd_pcm_hw_params_free(hw_params);
   }
 public:
   void prepare()
   {
-    auto err = snd_pcm_prepare(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_prepare(handle_)
+    );
   }
 public:
-  void start()
+  bool start()
   {
-    auto err = snd_pcm_start(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    return check_snd_pcm_error(
+      snd_pcm_start(handle_)
+    );
   }
 public:
   void drain()
   {
-    auto err = snd_pcm_drain(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_drain(handle_)
+    );
   }
 public:
   void drop()
   {
-    auto err = snd_pcm_drop(handle_);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_drop(handle_)
+    );
   }
 public:
   snd_pcm_sframes_t avail_update()
@@ -172,10 +192,9 @@ public:
 public:
   void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames)
   {
-    auto err = snd_pcm_mmap_begin(handle_, areas, offset, frames);
-    if ( err != 0 ) {
-      throw alsa_error(err);
-    }
+    check_snd_pcm_error(
+      snd_pcm_mmap_begin(handle_, areas, offset, frames)
+    );
   }
 public:
   snd_pcm_uframes_t mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames)
@@ -227,11 +246,26 @@ public:
     snd_device_name_free_hint(hints);
   }
 private:
+  bool check_snd_pcm_error(int error_code)
+  {
+    if ( error_code < 0 )
+    {
+      error_handler_(error_code);
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+private:
   std::atomic<bool>  replaygain_enabled_;
   std::atomic<float> replaygain_;
   std::atomic<float> replaygain_scale_;
 private:
   snd_pcm_t* handle_;
+private:
+  error_handler error_handler_;
 };
 
 // ----------------------------------------------------------------------------
@@ -253,6 +287,16 @@ void audio_output_alsa::close()
 audio_output_alsa::operator bool() const
 {
   return !!pimpl_;
+}
+
+void audio_output_alsa::set_error_handler(error_handler func)
+{
+  pimpl_->set_error_handler(func);
+}
+
+void audio_output_alsa::clr_error_handler()
+{
+  pimpl_->clr_error_handler();
 }
 
 float audio_output_alsa::get_replaygain_scale() const
@@ -295,9 +339,9 @@ void audio_output_alsa::prepare()
   pimpl_->prepare();
 }
 
-void audio_output_alsa::start()
+bool audio_output_alsa::start()
 {
-  pimpl_->start();
+  return pimpl_->start();
 }
 
 void audio_output_alsa::drain()

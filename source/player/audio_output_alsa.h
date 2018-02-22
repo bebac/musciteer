@@ -66,6 +66,8 @@ public:
   void set_error_handler(error_handler);
   void clr_error_handler();
 public:
+  const char* strerror(int error_code) { return snd_strerror(error_code); }
+public:
   float get_replaygain_scale() const;
 public:
   bool get_replaygain_enabled() const;
@@ -82,7 +84,7 @@ public:
   void drop();
 public:
   snd_pcm_sframes_t avail_update();
-  void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames);
+  bool mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames);
   snd_pcm_uframes_t mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames);
 public:
   int recover(int error, int silent);

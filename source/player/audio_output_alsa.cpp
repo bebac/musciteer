@@ -54,9 +54,9 @@ public:
     }
   }
 public:
-  operator bool() const
+  bool handle_is_null() const
   {
-    return handle_ != nullptr;
+    return handle_ == nullptr;
   }
 public:
   void set_error_handler(error_handler func)
@@ -190,9 +190,9 @@ public:
     return snd_pcm_avail_update(handle_);
   }
 public:
-  void mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames)
+  bool mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames)
   {
-    check_snd_pcm_error(
+    return check_snd_pcm_error(
       snd_pcm_mmap_begin(handle_, areas, offset, frames)
     );
   }
@@ -286,7 +286,7 @@ void audio_output_alsa::close()
 
 audio_output_alsa::operator bool() const
 {
-  return !!pimpl_;
+  return !pimpl_->handle_is_null();
 }
 
 void audio_output_alsa::set_error_handler(error_handler func)
@@ -359,9 +359,9 @@ snd_pcm_sframes_t audio_output_alsa::avail_update()
   return pimpl_->avail_update();
 }
 
-void audio_output_alsa::mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames)
+bool audio_output_alsa::mmap_begin(const snd_pcm_channel_area_t** areas,  snd_pcm_uframes_t* offset, snd_pcm_uframes_t* frames)
 {
-  pimpl_->mmap_begin(areas, offset, frames);
+  return pimpl_->mmap_begin(areas, offset, frames);
 }
 
 snd_pcm_uframes_t audio_output_alsa::mmap_commit(snd_pcm_uframes_t offset, snd_pcm_uframes_t frames)

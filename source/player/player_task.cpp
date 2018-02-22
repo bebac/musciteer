@@ -539,6 +539,11 @@ namespace musciteer
     {
       end_session();
     }
+    else if ( m.type == source_notification::id::error )
+    {
+      audio_output_.close();
+      end_session();
+    }
     else if ( m.type == source_notification::id::session_error )
     {
       become_stopped();
@@ -547,7 +552,7 @@ namespace musciteer
 
   void player_task::become_playing(const musciteer::dm::track& track)
   {
-    if ( state_ == stopped )
+    if ( !audio_output_ )
     {
       audio_output_.open(audio_output_device_);
     }

@@ -171,6 +171,7 @@ namespace musciteer
     static void credentials_blob_updated_cb(sp_session *session, const char* blob);
   private:
     sp_session* session_;
+    std::mutex music_delivery_mutex_;
   private:
     dripcore::channel<message> ch_;
     done_ochannel done_ch_;
@@ -356,8 +357,18 @@ namespace musciteer
     {
       notifier_->stream_begin(player_session_->get_audio_output());
     }
-    else {
-      std::cerr << "spotify session - begin_session - notifier_ is null" << std::endl;
+    else
+    {
+      // Something is horribly wrong! Notify the player and try to end session.
+      auto player = musciteer::player();
+
+      player.source_notification(
+        source_notification::id::error,
+        name,
+        "spotify session - notifier_ is null"
+      );
+
+      end_session();
     }
   }
 
@@ -373,6 +384,8 @@ namespace musciteer
 
   void spotify_session::end_session(bool audio_error)
   {
+    std::lock_guard<std::mutex> lock(music_delivery_mutex_);
+
     if ( player_session_ )
     {
       sp_session_player_unload(session_);
@@ -479,17 +492,25 @@ namespace musciteer
       auto replaygain = source_.rg_track_gain();
       auto replaygain_peak = source_.rg_track_peak();
 
-      output.set_error_handler([&](int error_code) {
-        std::cerr << "spotify session audio output error! " << error_code << std::endl;
+      try
+      {
+        output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
+        output.set_params(2, 44100);
+        output.prepare();
+
+        output.set_error_handler([&](int error_code) {
+          std::cerr << "spotify session audio output error! " << output.strerror(error_code) << std::endl;
+          send(message_id::audio_error);
+        });
+
+        if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
+          session_error(sp_error_message(err));
+        }
+      }
+      catch(const audio_output_error& e)
+      {
+        std::cerr << "spotify session - track_loaded - audio output error! " << e.what() << std::endl;
         send(message_id::audio_error);
-      });
-
-      output.set_replaygain((replaygain ? replaygain.value() : 0), (replaygain_peak ? replaygain_peak.value() : 1));
-      output.set_params(2, 44100);
-      output.prepare();
-
-      if ( (err = sp_session_player_play(session_, 1)) != SP_ERROR_OK ) {
-        session_error(sp_error_message(err));
       }
     }
   }
@@ -551,6 +572,9 @@ namespace musciteer
   int spotify_session::music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
+
+    std::lock_guard<std::mutex> lock(self->music_delivery_mutex_);
+
     auto player_session = self->player_session_;
 
     if ( player_session )
@@ -578,7 +602,11 @@ namespace musciteer
         snd_pcm_uframes_t offset;
         snd_pcm_uframes_t frames = remaining;
 
-        output.mmap_begin(&areas, &offset, &frames);
+        if ( !output.mmap_begin(&areas, &offset, &frames) )
+        {
+          notify(session, message_id::audio_error);
+          return 0;
+        }
 
         auto obuf = reinterpret_cast<s32_le_i_frame*>(areas[0].addr) + offset;
 
@@ -590,13 +618,24 @@ namespace musciteer
 
         auto committed = output.mmap_commit(offset, frames);
 
-        remaining -= committed;
+        if ( committed > 0 )
+        {
+          remaining -= committed;
+        }
+        else
+        {
+          notify(session, message_id::audio_error);
+          return 0;
+        }
       }
 
       if ( output.is_prepared() )
       {
         if ( output.start() ) {
           notify(session, message_id::begin_session);
+        }
+        else {
+          notify(session, message_id::audio_error);
         }
       }
       else

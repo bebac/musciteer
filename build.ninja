@@ -13,7 +13,7 @@ rule ld
 #  command = g++ -pthread -Lbuild -o $out $in $libs
 
 rule dep
-  command = git clone $url $out
+  command = git clone --branch $tag $url $out
 
 rule libspotify
   command = wget -qO- https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linux-x86_64-release.tar.gz | tar -xz -C lib/
@@ -25,6 +25,7 @@ build lib/libspotify-12.1.51-Linux-x86_64-release: libspotify
 
 build lib/json/nlohmann: dep
   url = https://github.com/nlohmann/json.git
+  tag = v3.1.1
 
 build deps: phony lib/json/nlohmann/ lib/libspotify-12.1.51-Linux-x86_64-release
 
@@ -112,7 +113,7 @@ build build/libmusciteer_dm.a: ar $
 # main
 
 build build/http_connection.o: cc source/http/http_connection.cpp
-  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include -Ilib/json/nlohmann/include
 
 build build/player/audio_output_alsa.o: cc source/player/audio_output_alsa.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
@@ -136,13 +137,13 @@ build build/player/source_spotify_app_key.o: cc source/player/source_spotify_app
   includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/libspotify-12.1.51-Linux-x86_64-release/include
 
 build build/main.o: cc source/main.cpp
-  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include -Ilib/program-options/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include -Ilib/json/nlohmann/include -Ilib/program-options/include
 
 build build/player/sources.o: cc source/player/sources.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
 build build/spotify_web/api.o: cc source/spotify_web/api.cpp
-  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include
+  includes = -Ilib/dripcore/include -Ilib/msgpack/include -Ilib/http/include -Ilib/json/include -Ilib/json/nlohmann/include
 
 build build/musciteer: ld $
   build/http_connection.o $

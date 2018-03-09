@@ -57,6 +57,7 @@ namespace http
   {
     switch(c)
     {
+    case -1:
     case  0:
     case  1:
     case  2:
@@ -115,6 +116,10 @@ namespace http
 
   std::istream& operator>>(std::istream& is, http::version& version)
   {
+    if ( !is ) {
+      return is;
+    }
+
     version = http::version::unsupported;
 
     // Ignore SP after uri.
@@ -129,8 +134,8 @@ namespace http
       is.get() == 'H' && is.get() == 'T' &&
       is.get() == 'T' && is.get() == 'P' ) )
     {
-      std::cout << "syntax error, expected HTTP next=" << is.peek() << std::endl;
       is.setstate(std::ios_base::failbit);
+      return is;
     }
 
     if ( is.get() == '/' )
@@ -167,6 +172,10 @@ namespace http
 
   std::istream& operator>>(std::istream& is, http::method& method)
   {
+    if ( !is ) {
+      return is;
+    }
+
     method = http::method::not_implemented;
 
     switch ( is.get() )
@@ -242,6 +251,10 @@ namespace http
 
   std::istream& operator>>(std::istream& is, http::headers& headers)
   {
+    if ( !is ) {
+      return is;
+    }
+
     // message-headers must start with token char.
     while ( http::is_token_char(is.peek()) )
     {
@@ -266,7 +279,7 @@ namespace http
     }
 
     // Skip CRLF after version.
-    if ( !(is.get() == '\r' && is.get() == '\n') ) {
+    if ( is && !(is.get() == '\r' && is.get() == '\n') ) {
       // TODO: error.
       std::cout << "error headers should end with crlf" << std::endl;
     }

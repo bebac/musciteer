@@ -393,13 +393,13 @@ void http_connection::main()
   {
     std::cout << "client disconnected" << std::endl;
   }
-  catch(const std::ios_base::failure& e)
-  {
-    //std::cout << "connection " << size_t(this) << " streaming error code=" << e.code() << ", message=" << e.what() << std::endl;
-  }
   catch(const std::exception& e)
   {
     std::cout << "connection error " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << "connection error!" << std::endl;
   }
 }
 
@@ -445,7 +445,9 @@ void http_connection::loop(std::streambuf* sbuf)
     }
     else
     {
-      std::cout << "failed to read request!" << std::endl;
+      if ( !env.is.eof() ) {
+        std::cout << "failed to read request!" << std::endl;
+      }
       break;
     }
   }

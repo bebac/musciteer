@@ -66,8 +66,6 @@ namespace http
       is(sbuf),
       os(sbuf)
     {
-      is.exceptions(std::iostream::failbit);
-      os.exceptions(std::iostream::failbit);
     }
   public:
     std::istream is;

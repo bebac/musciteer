@@ -14,6 +14,7 @@
 // ----------------------------------------------------------------------------
 #include <dripcore/task.h>
 #include <dripcore/channel.h>
+#include <dripcore/timer.h>
 
 // ----------------------------------------------------------------------------
 namespace musciteer

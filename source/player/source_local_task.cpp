@@ -56,7 +56,18 @@ namespace musciteer
 
       if ( decode() )
       {
+        output_.set_error_handler([&](int error_code) {
+          if ( error_code != -EAGAIN ) {
+            throw audio_output_error(error_code);
+          }
+        });
+
         output_.drain();
+
+        while ( output_.is_draining()  ) {
+          sleep_for(std::chrono::duration<double, std::milli>(100));
+        }
+
         notifier_.stream_end();
       }
       else

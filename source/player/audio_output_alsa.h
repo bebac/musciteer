@@ -80,7 +80,7 @@ public:
 public:
   void prepare();
   bool start();
-  void drain();
+  bool drain();
   void drop();
 public:
   snd_pcm_sframes_t avail_update();
@@ -90,8 +90,13 @@ public:
   int recover(int error, int silent);
 public:
   bool is_open();
+  bool is_setup();
   bool is_prepared();
   bool is_running();
+  bool is_xrun();
+  bool is_draining();
+public:
+  const char* strstate();
 public:
   static void each(std::function<void(std::string&& device_name)> value_cb);
 private:

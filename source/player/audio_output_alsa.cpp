@@ -39,7 +39,7 @@ public:
   void open(const std::string& device_name)
   {
     check_snd_pcm_error(
-      snd_pcm_open(&handle_, device_name.c_str(), SND_PCM_STREAM_PLAYBACK, 0)
+      snd_pcm_open(&handle_, device_name.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)
     );
   }
 public:
@@ -171,9 +171,9 @@ public:
     );
   }
 public:
-  void drain()
+  bool drain()
   {
-    check_snd_pcm_error(
+    return check_snd_pcm_error(
       snd_pcm_drain(handle_)
     );
   }
@@ -208,8 +208,38 @@ public:
   }
 public:
   bool is_open()     { return snd_pcm_state(handle_) == SND_PCM_STATE_OPEN; }
+  bool is_setup()    { return snd_pcm_state(handle_) == SND_PCM_STATE_SETUP; }
   bool is_prepared() { return snd_pcm_state(handle_) == SND_PCM_STATE_PREPARED; }
   bool is_running()  { return snd_pcm_state(handle_) == SND_PCM_STATE_RUNNING; }
+  bool is_xrun()     { return snd_pcm_state(handle_) == SND_PCM_STATE_XRUN; }
+  bool is_draining() { return snd_pcm_state(handle_) == SND_PCM_STATE_DRAINING; }
+public:
+  const char* strstate()
+  {
+    switch ( snd_pcm_state(handle_) )
+    {
+      case SND_PCM_STATE_OPEN:
+        return "open";
+      case SND_PCM_STATE_SETUP:
+        return "setup";
+      case SND_PCM_STATE_PREPARED:
+        return "prepared";
+      case SND_PCM_STATE_RUNNING:
+        return "running";
+      case SND_PCM_STATE_XRUN:
+        return "xrun";
+      case SND_PCM_STATE_DRAINING:
+        return "draining";
+      case SND_PCM_STATE_PAUSED:
+        return "paused";
+      case SND_PCM_STATE_SUSPENDED:
+        return "suspended";
+      case SND_PCM_STATE_DISCONNECTED:
+        return "disconnected";
+      default:
+        return "unknown";
+    }
+  }
 public:
   static void each(std::function<void(std::string&& device_name)> value_cb)
   {
@@ -344,9 +374,9 @@ bool audio_output_alsa::start()
   return pimpl_->start();
 }
 
-void audio_output_alsa::drain()
+bool audio_output_alsa::drain()
 {
-  pimpl_->drain();
+  return pimpl_->drain();
 }
 
 void audio_output_alsa::drop()
@@ -379,6 +409,11 @@ bool audio_output_alsa::is_open()
   return pimpl_->is_open();
 }
 
+bool audio_output_alsa::is_setup()
+{
+  return pimpl_->is_setup();
+}
+
 bool audio_output_alsa::is_prepared()
 {
   return pimpl_->is_prepared();
@@ -387,6 +422,21 @@ bool audio_output_alsa::is_prepared()
 bool audio_output_alsa::is_running()
 {
   return pimpl_->is_running();
+}
+
+bool audio_output_alsa::is_xrun()
+{
+  return pimpl_->is_xrun();
+}
+
+bool audio_output_alsa::is_draining()
+{
+  return pimpl_->is_draining();
+}
+
+const char* audio_output_alsa::strstate()
+{
+  return pimpl_->strstate();
 }
 
 void audio_output_alsa::each(std::function<void(std::string&& device_name)> value_cb)

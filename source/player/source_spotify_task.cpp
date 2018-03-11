@@ -151,6 +151,13 @@ namespace musciteer
       ch_.send(message{std::forward<M_args>(message_args)...});
     }
   private:
+    template<class Rep, class Period>
+    void sleep_for(const std::chrono::duration<Rep, Period>& duration)
+    {
+      timer_.set(duration, [&](){ resume(); });
+      yield();
+    }
+  private:
     static void logged_in_cb(sp_session *session, sp_error error);
     static void logged_out_cb(sp_session *session);
     static void metadata_updated_cb(sp_session *session);
@@ -182,6 +189,7 @@ namespace musciteer
     std::shared_ptr<player_session> player_session_;
     dm::track_source source_;
     std::unique_ptr<notification_sender> notifier_;
+    dripcore::timer timer_;
   private:
     static constexpr const char* name = "spotify";
   };
@@ -392,8 +400,19 @@ namespace musciteer
 
       auto output = player_session_->get_audio_output();
 
-      if ( ! audio_error ) {
+      if ( ! audio_error )
+      {
+        output.set_error_handler([&](int error_code) {
+          if ( error_code != -EAGAIN ) {
+            throw audio_output_error(error_code);
+          }
+        });
+
         output.drain();
+
+        while ( output.is_draining()  ) {
+          sleep_for(std::chrono::duration<double, std::milli>(100));
+        }
       }
 
       output.clr_error_handler();

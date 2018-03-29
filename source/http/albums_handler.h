@@ -12,11 +12,11 @@
 #include "api_handler_base.h"
 
 // ----------------------------------------------------------------------------
-#include "../dm/albums.h"
-#include "../dm/album_cover.h"
+#include "../flac/metadata.h"
 
 // ----------------------------------------------------------------------------
-#include <FLAC++/metadata.h>
+#include "../dm/albums.h"
+#include "../dm/album_cover.h"
 
 // ----------------------------------------------------------------------------
 class albums_handler : public api_handler_base
@@ -201,23 +201,32 @@ private:
             auto track_source = track.sources_get("local");
             auto filename = track_source.uri();
 
-            FLAC::Metadata::Picture picture;
+            musciteer::flac::metadata_chain metadata;
+            musciteer::flac::picture* picture_ptr = nullptr;
 
-            if (
-              get_picture(filename, picture, FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER) ||
-              get_picture(filename, picture, FLAC__STREAM_METADATA_PICTURE_TYPE_MEDIA)
-            )
+            metadata.on_picture(
+              [&](musciteer::flac::picture& picture)
+              {
+                if ( picture.type == FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER ) {
+                  picture_ptr = &picture;
+                }
+                else if ( !picture_ptr && picture.type == FLAC__STREAM_METADATA_PICTURE_TYPE_MEDIA ) {
+                  picture_ptr = &picture;
+                }
+              }
+            );
+
+            metadata.read(filename);
+
+            if ( picture_ptr )
             {
-              std::string data;
-
-              data.assign(reinterpret_cast<const char*>(picture.get_data()), picture.get_data_length());
-
               env.os << "HTTP/1.1 200 OK" << crlf
-                << "Content-Type: " << picture.get_mime_type() << crlf
-                << "Content-Length: " << picture.get_data_length() << crlf
+                << "Content-Type: " << picture_ptr->mime_type << crlf
+                << "Content-Length: " << picture_ptr->data_length << crlf
                 << "Cache-Control: max-age=86400" << crlf
-                << crlf
-                << data;
+                << crlf;
+
+              env.os.write(reinterpret_cast<const char*>(picture_ptr->data), picture_ptr->data_length);
 
               found = true;
             }
@@ -234,21 +243,6 @@ private:
     {
       not_found();
     }
-  }
-private:
-  bool get_picture(const std::string& filename, FLAC::Metadata::Picture& picture, FLAC__StreamMetadata_Picture_Type type)
-  {
-    return FLAC::Metadata::get_picture(
-      filename.c_str(),
-      picture,
-      type,
-      NULL,
-      NULL,
-      -1,
-      -1,
-      -1,
-      -1
-    );
   }
 };
 

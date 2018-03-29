@@ -17,7 +17,7 @@
 #include "dm/tracks.h"
 
 // ----------------------------------------------------------------------------
-#include <FLAC++/metadata.h>
+#include "flac/metadata.h"
 
 // ----------------------------------------------------------------------------
 namespace musciteer
@@ -32,15 +32,6 @@ namespace musciteer
       albums_(musciteer::dm::albums()),
       artists_(musciteer::dm::artists())
     {
-      if ( !FLAC::Metadata::get_tags(filename_.c_str(), comments_) )
-      {
-        throw std::runtime_error("failed to read flac comments metadata");
-      }
-
-      if ( !FLAC::Metadata::get_streaminfo(filename_.c_str(), stream_info_) )
-      {
-        throw std::runtime_error("failed to read flac streaminfo metadata");
-      }
     }
   public:
     void run()
@@ -58,53 +49,68 @@ namespace musciteer
       std::string tag_rg_album_gain;
       std::string tag_rg_album_peak;
       std::string alt_id;
+      size_t      total_samples;
+      size_t      sample_rate;
 
-      each_comment([&](std::string name, std::string value)
+      flac::metadata_chain metadata;
+
+      metadata.on_stream_info(
+        [&](flac::stream_info& stream_info)
+        {
+          total_samples = stream_info.total_samples;
+          sample_rate   = stream_info.sample_rate;
+        }
+      );
+
+      auto set_tag_vars = [&](std::string& key, std::string& value)
       {
-        if ( name == "TITLE" ) {
-          tag_title = value;
+        if ( key == "TITLE" ) {
+          tag_title = std::move(value);
         }
-        else if ( name == "ARTIST" ) {
-          tag_artist = value;
+        else if ( key == "ARTIST" ) {
+          tag_artist = std::move(value);
         }
-        else if ( name == "ALBUM" ) {
-          tag_album = value;
+        else if ( key == "ALBUM" ) {
+          tag_album = std::move(value);
         }
-        else if ( name == "ALBUM_ARTIST" || name == "ALBUM ARTIST" || name == "ALBUMARTIST" ) {
-          tag_album_artist = value;
+        else if ( key == "ALBUM_ARTIST" || key == "ALBUM ARTIST" || key == "ALBUMARTIST" ) {
+          tag_album_artist = std::move(value);
         }
-        else if ( name == "TRACK_NUMBER" || name == "TRACK NUMBER" || name == "TRACKNUMBER" ) {
+        else if ( key == "TRACK_NUMBER" || key == "TRACK NUMBER" || key == "TRACKNUMBER" ) {
           tag_tn = std::stoi(value);
         }
-        else if ( name == "DISC_NUMBER" || name == "DISC NUMBER" || name == "DISCNUMBER" ) {
+        else if ( key == "DISC_NUMBER" || key == "DISC NUMBER" || key == "DISCNUMBER" ) {
           tag_dn = std::stoi(value);
         }
-        else if ( name == "DISCID" ) {
-          tag_disc_id = value;
+        else if ( key == "DISCID" ) {
+          tag_disc_id = std::move(value);
         }
-        else if ( name == "REPLAYGAIN_REFERENCE_LOUDNESS" ) {
-          tag_rg_ref_loudness = value;
+        else if ( key == "REPLAYGAIN_REFERENCE_LOUDNESS" ) {
+          tag_rg_ref_loudness = std::move(value);
         }
-        else if ( name == "REPLAYGAIN_TRACK_GAIN" ) {
-          tag_rg_track_gain = value;
+        else if ( key == "REPLAYGAIN_TRACK_GAIN" ) {
+          tag_rg_track_gain = std::move(value);
         }
-        else if ( name == "REPLAYGAIN_TRACK_PEAK" ) {
-          tag_rg_track_peak = value;
+        else if ( key == "REPLAYGAIN_TRACK_PEAK" ) {
+          tag_rg_track_peak = std::move(value);
         }
-        else if ( name == "REPLAYGAIN_ALBUM_GAIN" ) {
-          tag_rg_album_gain = value;
+        else if ( key == "REPLAYGAIN_ALBUM_GAIN" ) {
+          tag_rg_album_gain = std::move(value);
         }
-        else if ( name == "REPLAYGAIN_ALBUM_PEAK" ) {
-          tag_rg_album_peak = value;
+        else if ( key == "REPLAYGAIN_ALBUM_PEAK" ) {
+          tag_rg_album_peak = std::move(value);
         }
         else
         {
           //std::cout << "unhandled comment name=" << name << ", value=" << value << std::endl;
         }
-        //
-        // TODO: replaygain.
-        //
+      };
+
+      metadata.on_vorbis_comment([&](flac::vorbis_comment& vorbis_comment) {
+        flac::vorbis_comment_each_kv(vorbis_comment, set_tag_vars);
       });
+
+      metadata.read(filename_);
 
 #if 0
       std::cout
@@ -224,7 +230,7 @@ namespace musciteer
       track_.title(tag_title);
       track_.track_number(tag_tn);
       track_.disc_number(tag_dn);
-      track_.duration(stream_info_.get_total_samples() / stream_info_.get_sample_rate() * 1000);
+      track_.duration(total_samples / sample_rate * 1000);
       track_.album(album_);
       track_.artists_add(artist_);
       track_.sources_add(source);
@@ -305,22 +311,6 @@ namespace musciteer
       });
     }
   private:
-    void each_comment(std::function<void(std::string name, std::string value)> cb)
-    {
-      for ( unsigned i=0; i<comments_->get_num_comments(); ++i )
-      {
-        auto c = comments_->get_comment(i);
-
-        std::string name = c.get_field_name();
-
-        for ( size_t i=0; i<name.length(); ++i ) {
-          name[i] = std::toupper(name[i]);
-        }
-
-        cb(name, c.get_field_value());
-      }
-    }
-  private:
     std::string filename_;
   private:
     musciteer::dm::tracks tracks_;
@@ -331,9 +321,6 @@ namespace musciteer
     musciteer::dm::album album_;
     musciteer::dm::artist album_artist_;
     musciteer::dm::artist artist_;
-  private:
-    FLAC::Metadata::VorbisComment* comments_;
-    FLAC::Metadata::StreamInfo stream_info_;
   };
 }
 

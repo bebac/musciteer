@@ -157,7 +157,7 @@ build build/musciteer: ld $
   build/player/sources.o $
   build/spotify_web/api.o $
   build/main.o | build/libdripcore.a build/libmusciteer_dm.a build/libhttp.a build/libmsgpack.a build/libprogram-options.a
-  libs = -lrt -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC -lFLAC++ -lanl -lssl -lcrypto -lcrypto++ -lkyotocabinet -lspotify
+  libs = -lrt -Llib/libspotify-12.1.51-Linux-x86_64-release/lib -lprogram-options -ldripcore -lmusciteer_dm -lmsgpack -lhttp -lasound -lFLAC -lanl -lssl -lcrypto -lcrypto++ -lkyotocabinet -lspotify
 
 
 ###
@@ -187,6 +187,9 @@ build build/test.d/test_storage.o: cc test/test_storage.cpp
 build build/test.d/test_player_ctpb_provider.o: cc test/test_player_ctpb_provider.cpp
   includes = -Ilib/dripcore/include -Ilib/msgpack/include
 
+build build/test.d/test_flac_metadata.o: cc test/test_flac_metadata.cpp
+  includes = -Ilib/msgpack/include
+
 build build/test: ld $
   build/test.d/test_http_common.o $
   build/test.d/test_http_request.o $
@@ -195,8 +198,9 @@ build build/test: ld $
   build/test.d/test_replay_gain_value.o $
   build/test.d/test_storage.o $
   build/test.d/test_player_ctpb_provider.o $
+  build/test.d/test_flac_metadata.o $
   build/test.d/main.o | build/libhttp.a build/libmsgpack.a build/libmusciteer_dm.a
-  libs = -ldripcore -lmsgpack -lhttp -lmusciteer_dm -lkyotocabinet -lanl -lssl -lcrypto
+  libs = -ldripcore -lmsgpack -lhttp -lmusciteer_dm -lFLAC -lkyotocabinet -lanl -lssl -lcrypto
 
 
 ###
@@ -206,7 +210,7 @@ build build/tools.d/flac_import.o: cc source/tools/flac_import.cpp
   includes = -Ilib/msgpack/include
 
 build build/flac_import: ld build/tools.d/flac_import.o | build/libmusciteer_dm.a build/libmsgpack.a
-  libs = -lmusciteer_dm -lFLAC++ -lmsgpack -lkyotocabinet
+  libs = -lmusciteer_dm -lFLAC -lmsgpack -lkyotocabinet
 
 ###
 # flac_rg_tagger
@@ -215,4 +219,4 @@ build build/tools.d/flac_rg_tagger.o: cc source/tools/flac_rg_tagger.cpp
   includes = -Ilib/msgpack/include
 
 build build/flac_rg_tagger: ld build/tools.d/flac_rg_tagger.o | build/libmusciteer_dm.a build/libmsgpack.a
-  libs = -lmusciteer_dm -lFLAC++ -lmsgpack -lkyotocabinet
+  libs = -lmusciteer_dm -lmsgpack -lkyotocabinet

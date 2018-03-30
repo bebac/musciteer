@@ -414,6 +414,11 @@ namespace musciteer
           sleep_for(std::chrono::duration<double, std::milli>(100));
         }
       }
+      else
+      {
+        output.drop();
+        output.close();
+      }
 
       output.clr_error_handler();
 
@@ -601,6 +606,12 @@ namespace musciteer
       auto samples = reinterpret_cast<const s16_le_i_frame*>(frames);
       auto i = 0;
       auto output = player_session->get_audio_output();
+
+      if ( ! (output.is_prepared() || output.is_running()) ) {
+        std::cerr << "spotify_session::music_delivery audio output wrong state " << output.strstate() << std::endl;
+        return 0;
+      }
+
       auto avail = output.avail_update();
       auto len = std::min(num_frames, static_cast<int>(avail));
       auto remaining = len;
@@ -655,11 +666,16 @@ namespace musciteer
         }
         else {
           notify(session, message_id::audio_error);
+          return 0;
         }
+      }
+      else if ( output.is_running () )
+      {
+        notify(session, message_id::progress_session);
       }
       else
       {
-        notify(session, message_id::progress_session);
+        return 0;
       }
 
       return len;

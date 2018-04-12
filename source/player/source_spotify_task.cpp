@@ -607,24 +607,41 @@ namespace musciteer
       auto i = 0;
       auto output = player_session->get_audio_output();
 
-      if ( ! (output.is_prepared() || output.is_running()) ) {
+      if ( output.is_xrun() )
+      {
+        std::cerr << "spotify_session::music_delivery audio output state " << output.strstate() << std::endl;
+      }
+      else if ( ! (output.is_prepared() || output.is_running()) )
+      {
         std::cerr << "spotify_session::music_delivery audio output wrong state " << output.strstate() << std::endl;
         return 0;
       }
 
       auto avail = output.avail_update();
-      auto len = std::min(num_frames, static_cast<int>(avail));
-      auto remaining = len;
-      auto scale = (1<<16) * output.get_replaygain_scale();
 
       if ( avail < 0 )
       {
-        if ( output.recover(avail, 1) < 0 ) {
-          std::cerr << "spotify_session::music_delivery audio output recover failed avail=" << avail << std::endl;
+        if ( output.recover(avail, 1) < 0 )
+        {
+          std::cerr << "spotify_session::music_delivery audio output recover failed " << output.strerror(avail) << std::endl;
           notify(session, message_id::audio_error);
           return 0;
         }
+        else {
+          avail = output.avail_update();
+        }
       }
+
+      if ( avail < 0 )
+      {
+        std::cerr << "spotify_session::music_delivery audio output avail < 0 " << output.strerror(avail) << ", state " << output.strstate() << std::endl;
+        notify(session, message_id::audio_error);
+        return 0;
+      }
+
+      auto len = std::min(num_frames, static_cast<int>(avail));
+      auto remaining = len;
+      auto scale = (1<<16) * output.get_replaygain_scale();
 
       while ( remaining > 0 )
       {

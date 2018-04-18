@@ -24,7 +24,6 @@ namespace
 // ----------------------------------------------------------------------------
 class audio_output_alsa::audio_output_alsa_impl
 {
-
 public:
   audio_output_alsa_impl()
     :
@@ -104,7 +103,7 @@ public:
     replaygain_scale_ = scale;
   }
 public:
-  unsigned int hw_period_samples() const { return 1024; }
+  constexpr unsigned int hw_period_samples() const { return 1024; }
 public:
   void set_params(int channels, unsigned sample_rate)
   {
@@ -207,14 +206,14 @@ public:
     return snd_pcm_recover(handle_, error, silent);
   }
 public:
-  bool is_open()     { return snd_pcm_state(handle_) == SND_PCM_STATE_OPEN; }
-  bool is_setup()    { return snd_pcm_state(handle_) == SND_PCM_STATE_SETUP; }
-  bool is_prepared() { return snd_pcm_state(handle_) == SND_PCM_STATE_PREPARED; }
-  bool is_running()  { return snd_pcm_state(handle_) == SND_PCM_STATE_RUNNING; }
-  bool is_xrun()     { return snd_pcm_state(handle_) == SND_PCM_STATE_XRUN; }
-  bool is_draining() { return snd_pcm_state(handle_) == SND_PCM_STATE_DRAINING; }
+  bool is_open() const     { return snd_pcm_state(handle_) == SND_PCM_STATE_OPEN; }
+  bool is_setup() const    { return snd_pcm_state(handle_) == SND_PCM_STATE_SETUP; }
+  bool is_prepared() const { return snd_pcm_state(handle_) == SND_PCM_STATE_PREPARED; }
+  bool is_running() const  { return snd_pcm_state(handle_) == SND_PCM_STATE_RUNNING; }
+  bool is_xrun() const     { return snd_pcm_state(handle_) == SND_PCM_STATE_XRUN; }
+  bool is_draining() const { return snd_pcm_state(handle_) == SND_PCM_STATE_DRAINING; }
 public:
-  const char* strstate()
+  const char* strstate() const
   {
     switch ( snd_pcm_state(handle_) )
     {
@@ -404,37 +403,37 @@ int audio_output_alsa::recover(int error, int silent)
   return pimpl_->recover(error, silent);
 }
 
-bool audio_output_alsa::is_open()
+bool audio_output_alsa::is_open() const
 {
   return pimpl_->is_open();
 }
 
-bool audio_output_alsa::is_setup()
+bool audio_output_alsa::is_setup() const
 {
   return pimpl_->is_setup();
 }
 
-bool audio_output_alsa::is_prepared()
+bool audio_output_alsa::is_prepared() const
 {
   return pimpl_->is_prepared();
 }
 
-bool audio_output_alsa::is_running()
+bool audio_output_alsa::is_running() const
 {
   return pimpl_->is_running();
 }
 
-bool audio_output_alsa::is_xrun()
+bool audio_output_alsa::is_xrun() const
 {
   return pimpl_->is_xrun();
 }
 
-bool audio_output_alsa::is_draining()
+bool audio_output_alsa::is_draining() const
 {
   return pimpl_->is_draining();
 }
 
-const char* audio_output_alsa::strstate()
+const char* audio_output_alsa::strstate() const
 {
   return pimpl_->strstate();
 }

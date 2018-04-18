@@ -89,14 +89,14 @@ public:
 public:
   int recover(int error, int silent);
 public:
-  bool is_open();
-  bool is_setup();
-  bool is_prepared();
-  bool is_running();
-  bool is_xrun();
-  bool is_draining();
+  bool is_open() const;
+  bool is_setup() const;
+  bool is_prepared() const;
+  bool is_running() const;
+  bool is_xrun() const;
+  bool is_draining() const;
 public:
-  const char* strstate();
+  const char* strstate() const;
 public:
   static void each(std::function<void(std::string&& device_name)> value_cb);
 private:

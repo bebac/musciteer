@@ -25,7 +25,10 @@ namespace musciteer
     player_notification_sender(unsigned id, message_channel ch)
       :
       id_(id),
-      channel_(ch)
+      channel_(ch),
+      stream_begin_time_(std::chrono::steady_clock::time_point::max()),
+      stream_notify_next_(),
+      stream_length_(0)
     {
     }
   public:
@@ -58,7 +61,12 @@ namespace musciteer
     {
       using std::chrono::steady_clock;
 
-      stream_progress_notify(steady_clock::now() - stream_begin_time_, stream_length_);
+      auto now = steady_clock::now();
+
+      if ( now > stream_begin_time_ ) {
+        stream_progress_notify(now - stream_begin_time_, stream_length_);
+      }
+
       stream_end_notify(audio_output_error);
     }
   private:

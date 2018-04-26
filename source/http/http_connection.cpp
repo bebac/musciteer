@@ -356,15 +356,29 @@ void websocket_recv_task::on_message(const std::string& message)
   }
 }
 
+namespace
+{
+  const std::regex index_re{
+    "^(/$|/artists|/artists/ar.{4}|/albums|/albums/al.{4}|/tracks|/playlists|/settings|/player|/spotify)",
+    std::regex::optimize
+  };
+
+  const std::regex api_re{
+    "^/api/([^/]*)(/.*)?",
+    std::regex::optimize
+  };
+
+  const std::regex assets_re{
+    "^/(assets/.+)",
+    std::regex::optimize
+  };
+}
+
 // ----------------------------------------------------------------------------
 http_connection::http_connection(dripcore::socket socket)
   :
   socket_(std::move(socket)),
-  streambuf_(),
-  api_re_("^/api/([^/]*)(/.*)?", std::regex::optimize),
-  assets_re_("^/(assets/.+)", std::regex::optimize),
-  album_re_("^/(albums/al.{4})", std::regex::optimize),
-  artist_re_("^/(artists/ar.{4})", std::regex::optimize)
+  streambuf_()
 {
   std::cout << "connection " << size_t(this) << std::endl;
 }
@@ -512,17 +526,12 @@ void http_connection::dispatch(http::request_environment& env)
 
   std::smatch match;
 
-  if (
-    path == "/" || path == "/albums" || path == "/tracks" || path == "/playlists" ||
-    path == "/settings" || path == "/player" || path == "/artists" || path == "/spotify" ||
-    std::regex_match(path, match, album_re_) ||
-    std::regex_match(path, match, artist_re_)
-  )
+  if ( std::regex_match(path, match, index_re) )
   {
     static_file_handler handler(env);
     handler.call("index.html");
   }
-  else if ( std::regex_match(path, match, api_re_) )
+  else if ( std::regex_match(path, match, api_re) )
   {
     if ( match.size() == 3 )
     {
@@ -571,7 +580,7 @@ void http_connection::dispatch(http::request_environment& env)
       not_found(env.os);
     }
   }
-  else if ( std::regex_match(path, match, assets_re_) )
+  else if ( std::regex_match(path, match, assets_re) )
   {
     if ( match.size() == 2 )
     {

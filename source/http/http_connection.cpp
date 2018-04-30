@@ -513,16 +513,10 @@ std::string http_connection::sec_websocket_accept_digest(const std::string& sec_
 // ----------------------------------------------------------------------------
 void http_connection::dispatch(http::request_environment& env)
 {
-  auto uri       = env.uri();
-  auto path      = uri;
-  auto query     = std::string{};
-  auto query_pos = path.find_first_of('?');
-
-  if ( query_pos != std::string::npos )
-  {
-    path  = uri.substr(0, query_pos);
-    query = uri.substr(query_pos+1);
-  }
+  const auto& uri      = env.uri();
+  const auto query_pos = uri.find_first_of('?');
+  const auto path      = uri.substr(0, query_pos);;
+  const auto query     = uri.substr(query_pos == std::string::npos ? uri.size() : query_pos+1);
 
   std::smatch match;
 

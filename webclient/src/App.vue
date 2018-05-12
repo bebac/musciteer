@@ -57,7 +57,6 @@
       .header
       {
         flex: 0 0 auto;
-        background: linear-gradient(to bottom, saturate($color-base, 2%), transparentize($color-base, 0.4));
         //border-top: 1px solid desaturate(darken($color-base, 5%), 10%);
         border-bottom: 1px solid desaturate(darken($color-base, 10%), 5%);
       }
@@ -100,6 +99,7 @@
 
   .slide-up-leave-active {
   }
+
 
   .slide-down-enter {
     opacity: 0;

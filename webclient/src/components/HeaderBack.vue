@@ -56,6 +56,13 @@
   {
     //visibility: hidden;
     @include size(2em);
+    svg
+    {
+
+      stroke: #888;
+      fill: #888;
+    }
+
   }
 
   .hidden

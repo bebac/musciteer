@@ -3,7 +3,7 @@
     <div id="m-header">
       <div>
         <m-header-back></m-header-back>
-        <div>
+        <div id="m-header-logo">
           Musciteer
         </div>
         <m-menu-show v-on:click="show_nav = !show_nav"></m-menu-show>
@@ -71,6 +71,16 @@
 <style lang="scss">
   @import "../styles/variables.scss";
 
+  #m-header-logo
+  {
+    padding: 0.33em;
+    color: rgba(201, 161, 0, 1);
+    font-size: 1.16em;
+    font-weight: 400;
+    text-shadow: 2px 2px 2px rgba(128, 128, 128, 0.3);
+    letter-spacing: 0.15em;
+  }
+
   #m-header
   {
     display: flex;
@@ -78,6 +88,7 @@
       flex-direction: column;
     }
     height: 100%;
+    font-family: 'Montserrat', sans-serif;
 
     >div
     {
@@ -92,12 +103,12 @@
       align-items: center;
       flex: 1;
       padding: 1em;
-      color: darken($color-base, 25%);
 
       >div:nth-child(2)
       {
         display: flex;
         align-items: center;
+        justify-content: center;
         flex: 1;
         height: 2em;
       }
@@ -130,9 +141,7 @@
         a
         {
           padding: 0 1em;
-          font-weight: bold;
-          text-transform: uppercase;
-          color: desaturate(darken($color-complement, 15%), 10%);
+          color: #666;
         }
 
         a:link
@@ -151,7 +160,7 @@
 
         a.router-link-active
         {
-          color: desaturate(darken($color-complement, 40%), 10%);
+          color: rgba(201, 161, 0, 1);
         }
       }
 
@@ -165,8 +174,6 @@
         a
         {
           padding: 0.5em;
-          font-weight: 600;
-          text-transform: uppercase;
           color: #aaa;
         }
 

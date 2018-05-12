@@ -190,6 +190,7 @@ namespace musciteer
     dm::track_source source_;
     std::unique_ptr<notification_sender> notifier_;
     dripcore::timer timer_;
+    dripcore::timer process_events_timer_;
   private:
     static constexpr const char* name = "spotify";
   };
@@ -410,8 +411,11 @@ namespace musciteer
 
         output.drain();
 
-        while ( output.is_draining()  ) {
+        while ( output.is_draining()  )
+        {
           sleep_for(std::chrono::duration<double, std::milli>(100));
+          process_events();
+          progress_session();
         }
       }
       else
@@ -448,6 +452,10 @@ namespace musciteer
       sp_session_process_events(session_, &next_timeout);
     }
     while (next_timeout == 0);
+
+    process_events_timer_.set(std::chrono::duration<double, std::milli>(next_timeout), [&](){
+      send(message_id::process_events);
+    });
   }
 
   void spotify_session::logged_in(sp_error error)

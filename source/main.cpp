@@ -66,13 +66,17 @@ namespace musciteer
 // ----------------------------------------------------------------------------
 void init_openssl_library(void)
 {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   SSL_library_init();
+#else
+  OPENSSL_init_ssl(0, NULL);
+#endif
 
   SSL_load_error_strings();
 
-  /* ERR_load_crypto_strings(); */
-
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   OPENSSL_config(NULL);
+#endif
 
   /* Include <openssl/opensslconf.h> to get this define */
 #if defined (OPENSSL_THREADS)

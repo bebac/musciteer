@@ -178,7 +178,6 @@ namespace musciteer
     static void credentials_blob_updated_cb(sp_session *session, const char* blob);
   private:
     sp_session* session_;
-    std::mutex music_delivery_mutex_;
   private:
     dripcore::channel<message> ch_;
     done_ochannel done_ch_;
@@ -393,8 +392,6 @@ namespace musciteer
 
   void spotify_session::end_session(bool audio_error)
   {
-    std::lock_guard<std::mutex> lock(music_delivery_mutex_);
-
     if ( player_session_ )
     {
       sp_session_player_unload(session_);
@@ -604,8 +601,6 @@ namespace musciteer
   int spotify_session::music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
   {
     auto self = reinterpret_cast<spotify_session*>(sp_session_userdata(session));
-
-    std::lock_guard<std::mutex> lock(self->music_delivery_mutex_);
 
     auto player_session = self->player_session_;
 

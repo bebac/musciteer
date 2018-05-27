@@ -45,6 +45,7 @@ namespace msgpack
     istream& operator>>(int&);
     istream& operator>>(unsigned int&);
     istream& operator>>(long long&);
+    istream& operator>>(unsigned long int&);
     istream& operator>>(unsigned long long&);
     istream& operator>>(bool&);
     istream& operator>>(float&);
@@ -91,6 +92,12 @@ namespace msgpack
   inline istream& istream::operator>>(long long& value)
   {
     value = read_i64();
+    return *this;
+  }
+
+  inline istream& istream::operator>>(unsigned long int& value)
+  {
+    value = read_u64();
     return *this;
   }
 
@@ -173,9 +180,7 @@ namespace msgpack
         unsigned char b[8];
       } tmp;
 
-      for ( auto i = 0; i < 8; ++i ) {
-        tmp.b[i] = get();
-      }
+      std::istream::read(reinterpret_cast<char*>(tmp.b), sizeof(tmp.b));
 
       return be64toh(tmp.v);
     }

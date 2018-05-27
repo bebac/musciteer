@@ -39,8 +39,8 @@ namespace msgpack
     ostream& operator<<(int);
     ostream& operator<<(unsigned int);
     ostream& operator<<(long);
-    ostream& operator<<(unsigned long);
     ostream& operator<<(long long);
+    ostream& operator<<(unsigned long);
     ostream& operator<<(unsigned long long);
     ostream& operator<<(float);
     ostream& operator<<(double);
@@ -112,6 +112,12 @@ namespace msgpack
     return *this;
   }
 
+  inline ostream& ostream::operator<<(unsigned long value)
+  {
+    write_u64(value);
+    return *this;
+  }
+
   inline ostream& ostream::operator<<(unsigned long long value)
   {
     write_u64(value);
@@ -164,9 +170,7 @@ namespace msgpack
         unsigned char b[8];
       } tmp{T(htobe64(v))};
 
-      for ( auto i = 0; i < 8; ++i ) {
-        std::ostream::put(tmp.b[i]);
-      }
+      std::ostream::write(reinterpret_cast<char*>(tmp.b), sizeof(tmp.b));
     }
   }
 
